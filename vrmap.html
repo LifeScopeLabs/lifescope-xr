@@ -1,0 +1,75 @@
+
+<script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+<script src="src/mapbox-terrain.js" charset="utf-8"></script>
+<script src="src/aframe-curve-component.js"></script>
+
+<body>
+  <a-scene>
+    <a-assets>
+      <img id="floor" crossorigin="anonymous" src="https://cdn.glitch.com/374d5984-1ba8-431a-a9f5-93b3993f0dc4%2Ffloor.jpg?1523568844114">
+      <img id="sky" crossorigin="anonymous" src="https://cdn.glitch.com/4bdc937e-543e-4b0b-ae40-27afe346404a%2Fnightsky.jpg?1491096117462">
+      <img id="earth" crossorigin="anonymous" src="https://cdn.glitch.com/4bdc937e-543e-4b0b-ae40-27afe346404a%2FMapOfEarth.jpg?1491096483136">
+      <img id="clouds" crossorigin="anonymous" src="https://cdn.glitch.com/4bdc937e-543e-4b0b-ae40-27afe346404a%2Fclouds.png?1491110023655">
+      <img id="moon" crossorigin="anonymous" src="https://cdn.glitch.com/4bdc937e-543e-4b0b-ae40-27afe346404a%2Frsz_moon.jpg?1491100234279">
+      
+      <img id="marker-red" crossorigin="anonymous" src="https://cdn.glitch.com/374d5984-1ba8-431a-a9f5-93b3993f0dc4%2Fmap-marker.png?1523569474067">
+      <img id="marker-blue" crossorigin="anonymous" src="https://cdn.glitch.com/374d5984-1ba8-431a-a9f5-93b3993f0dc4%2Fmap-marker-purple.png?1523571762697">
+      <img id="marker-green" crossorigin="anonymous" src="https://cdn.glitch.com/374d5984-1ba8-431a-a9f5-93b3993f0dc4%2Fmap-marker-green.png?1523571762446">
+      <img id="marker-yellow" crossorigin="anonymous" src="https://cdn.glitch.com/374d5984-1ba8-431a-a9f5-93b3993f0dc4%2Fmap-marker-sky-yellow.png?1523571762308">
+      <img id="marker-sky-blue" crossorigin="anonymous" src="https://cdn.glitch.com/374d5984-1ba8-431a-a9f5-93b3993f0dc4%2Fmap-marker-sky-blue.png?1523571762564">
+    </a-assets>
+      
+    <!-- Floor -->
+    <a-entity geometry="primitive: plane; width: 16; height: 16"
+              material="src:#floor; repeat: 8 8"
+              rotation="-90 0 0"
+              position="0 0 -4">
+    </a-entity>
+
+    <!-- Lights -->
+    <a-entity light="type: ambient; color: #333"></a-entity>
+		<a-entity light="color: #888; intensity: 0.5; castShadow: true" position="-20 20 0"></a-entity>
+		<a-entity light="color: #888; intensity: 1.5; castShadow: true" position="+20 2 0"></a-entity>
+    
+    <!-- Demo Map -->
+    <a-mapbox-terrain latitude='34.023552' longitude='-118.286189' zoom-level='10'/>
+  
+    <!-- Demo Markers -->
+    <a-image width="0.2", height="0.2" src="#marker-red" material="transparent: true;" rotation="0 0 0" position="0 0.15 0"></a-image>
+    <a-image width="0.2", height="0.2" src="#marker-red" material="transparent: true;" rotation="0 0 0" position="0.5 0.15 0"></a-image>
+    <a-image width="0.2", height="0.2" src="#marker-red" material="transparent: true;" rotation="0 0 0" position="0 0.15 0.5"></a-image>
+    
+    <a-image width="0.2", height="0.2" src="#marker-blue" material="transparent: true;" rotation="0 0 0" position="1.09 0.15 0.54"></a-image>
+    <a-image width="0.2", height="0.2" src="#marker-blue" material="transparent: true;" rotation="0 0 0" position="1.59 0.15 0.514"></a-image>
+    <a-image width="0.2", height="0.2" src="#marker-blue" material="transparent: true;" rotation="0 0 0" position="0.39 0.15 0.354"></a-image>
+    
+    <a-image width="0.2", height="0.2" src="#marker-green" material="transparent: true;" rotation="0 0 0" position="1.9 0.15 1.04"></a-image>
+    <a-image width="0.2", height="0.2" src="#marker-green" material="transparent: true;" rotation="0 0 0" position="1.59 0.15 0.914"></a-image>
+    <a-image width="0.2", height="0.2" src="#marker-green" material="transparent: true;" rotation="0 0 0" position="0.39 0.15 1.354"></a-image>
+    
+    <a-image width="0.2", height="0.2" src="#marker-yellow" material="transparent: true;" rotation="0 0 0" position="0.2 0.15 0.4"></a-image>
+    <a-image width="0.2", height="0.2" src="#marker-yellow" material="transparent: true;" rotation="0 0 0" position="0.19 0.15 0.914"></a-image>
+    <a-image width="0.2", height="0.2" src="#marker-yellow" material="transparent: true;" rotation="0 0 0" position="-0.39 0.15 0.354"></a-image>
+    
+    <a-image width="0.2", height="0.2" src="#marker-sky-blue" material="transparent: true;" rotation="0 0 0" position="-0.12 0.15 1.4"></a-image>
+    <a-image width="0.2", height="0.2" src="#marker-sky-blue" material="transparent: true;" rotation="0 0 0" position="-0.129 0.15 0.74"></a-image>
+    <a-image width="0.2", height="0.2" src="#marker-sky-blue" material="transparent: true;" rotation="0 0 0" position="-0.439 0.15 0.65"></a-image>
+    
+    
+    <a-curve id="track1">
+        <a-curve-point position="-1 1 -3"></a-curve-point>w
+        <a-curve-point position="1 1 -3"></a-curve-point>
+    </a-curve>
+    
+    <!-- Draw the Curve -->
+    <a-draw-curve curveref="#track1" material="shader: line; color: blue;"></a-draw-curve>
+    
+    <!-- Clone a Box along the Curve -->
+    <a-entity clone-along-curve="curve: #track1; spacing: 0.2; scale: 1 1 1; rotation: 0 0 0;" geometry="primitive:box; height:0.1; width:0.2; depth:0.1"></a-entity>
+  
+    
+    <!-- Sky -->
+    <a-sky src="#sky" rotation="90 0 90">
+    </a-sky>
+	</a-scene>
+</body>
