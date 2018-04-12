@@ -50,6 +50,7 @@ This repo contains a series of AR/VR Views written to extend lifescope-app codeb
 - [Marker Maker](https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html)
 - [BitScoop Marker](https://github.com/LifeScopeLabs/lifescopelabs.github.io/tree/master/assets/xr)
 - [Networked AFrame](https://github.com/networked-aframe/networked-aframe#more-examples)
+- https://ngokevin.github.io/kframe/
 
 ## 2. Phone AR Gateways (concept phase, low priority)
 
@@ -163,6 +164,8 @@ Examples
 - [AFrame Room Component](https://github.com/omgitsraven/aframe-room-component)
 - [3d.io Room Objects](https://3d.io/docs/api/1/aframe-components.html)
 - [Networked AFrame](https://github.com/networked-aframe/networked-aframe#more-examples)
+- https://www.mapbox.com/mapbox-gl-js/example/3d-buildings/
+- https://blog.mapbox.com/global-elevation-data-6689f1d0ba65
 
 # BitScoop WebXR Examples
 
