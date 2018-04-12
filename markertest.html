@@ -1,10 +1,7 @@
+
+
 <!-- include a-frame -->
 <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
-
-<!-- include ar.js for aframe -->
-<script src='src/aframe-ar.js'></script>
-
-
 <script src="src/mapbox-terrain.js" charset="utf-8"></script>
 
 <!-- start the body of your page -->
@@ -15,19 +12,15 @@
 	</div>
 
 	<!-- Define your 3d scene and enabled ar.js -->
-	<a-scene embedded arjs='trackingMethod: best;'>
+	<a-scene embedded>
 
 		<a-entity light="type: ambient; color: #333"></a-entity>
 		<a-entity light="color: #888; intensity: 0.5; castShadow: true" position="-20 20 0"></a-entity>
 		<a-entity light="color: #888; intensity: 1.5; castShadow: true" position="+20 2 0"></a-entity>
 
-		<!-- Create a anchor to attach your augmented reality -->
-		<a-anchor hit-testing-enabled='true'>
 
 			<!-- Add your augmented reality here -->
-			<a-mapbox-terrain latitude='34.023552' longitude='-118.286189' zoom-level='10'/>
-
-		</a-anchor>
+		<a-mapbox-terrain latitude='34.023552' longitude='-118.286189' zoom-level='10'/>
 
 		<!-- Define a static camera -->
 		<a-camera-static/>
