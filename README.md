@@ -52,6 +52,7 @@ This repo contains a series of AR/VR Views written to extend lifescope-app codeb
 - [BitScoop Marker](https://github.com/LifeScopeLabs/lifescopelabs.github.io/tree/master/assets/xr)
 - [Networked AFrame](https://github.com/networked-aframe/networked-aframe#more-examples)
 - https://ngokevin.github.io/kframe/
+- https://github.com/mattrei/aframe-geojson-component
 
 ## 2. Phone AR Gateways (concept phase, low priority)
 
