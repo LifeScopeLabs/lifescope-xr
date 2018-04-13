@@ -42,6 +42,7 @@ This repo contains a series of AR/VR Views written to extend lifescope-app codeb
 - [AR.JS](https://github.com/jeromeetienne/AR.js/tree/master/aframe/demos/demo-mapbox)
 - [AFrame (0.8+)](https://aframe.io/)
 - [Mapbox (0.44.1+)](https://www.mapbox.com/mapbox-gl-js/api/)
+- https://github.com/kig/JSARToolKit/tree/master/demos/markers
 
 ### Examples
 - [AR.JS Mapbox with marker](https://github.com/jeromeetienne/AR.js/tree/master/aframe/demos/demo-mapbox)
