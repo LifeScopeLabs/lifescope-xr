@@ -1,0 +1,19 @@
+{
+  "name": "lifescope-xr",
+  "version": "1.0.0",
+  "description": "lifescope extended reality",
+  "author": "thomas mohr",
+
+  "scripts": {
+    "dev": "nuxt",
+    "debug": "nuxt build && node --inspect-brk=5858 node_modules/.bin/nuxt",
+    "build": "nuxt build",
+    "start": "nuxt build && nuxt start --inspect-brk=5858",
+    "generate": "nuxt generate",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint"
+  },
+  "dependencies": {
+    "nuxt": "^1.4.0"
+  }
+}
