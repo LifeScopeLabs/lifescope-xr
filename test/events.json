@@ -1,0 +1,82 @@
+{
+    "id": "moop",
+    "connection": "sdfasdfsadfsdfdsf"
+    "contact_interaction_type": "message",
+    "contacts": ["sfdsafasd","Bsdfsdfufsfdfer"],
+    ,
+
+    content: {
+        type: [Buffer],
+        index: false
+    },
+
+    context: {
+        type: String,
+        index: false
+    },
+
+    created: {
+        type: Date,
+        index: false
+    },
+
+    datetime: {
+        type: Date,
+        index: false
+    },
+
+    identifier: {
+        type: String,
+        index: false
+    },
+
+    provider: {
+        type: String,
+        index: false
+    },
+
+    provider_name: {
+        type: String,
+        index: false
+    },
+
+    source: {
+        type: String,
+        index: false
+    },
+
+    type: {
+        type: String,
+        index: false
+    },
+
+    updated: {
+        type: Date,
+        index: false
+    },
+
+    user_id: {
+        type: Buffer,
+        index: false
+    },
+
+    user_id_string: {
+        type: String,
+        get: function () {
+            return this.user_id.toString('hex')
+        },
+        set: function (val) {
+            if (val && this._conditions && this._conditions.user_id_string) {
+                this._conditions.user_id = uuid(val);
+
+                delete this._conditions.user_id_string;
+            }
+
+            this.user_id = uuid(val);
+        }
+    },
+},
+{
+    collection: 'events',
+}
+}
