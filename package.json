@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "lifescope extended reality",
   "author": "thomas mohr",
-
   "scripts": {
     "dev": "nuxt",
     "debug": "nuxt build && node --inspect-brk=5858 node_modules/.bin/nuxt",
