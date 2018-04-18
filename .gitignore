@@ -1,0 +1,8 @@
+.DS_Store
+.nuxt/
+node_modules/
+nuxt.config.js
+package-lock.json
+static/.DS_Store
+yarn-error.log
+yarn.lock
