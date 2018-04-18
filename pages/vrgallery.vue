@@ -25,7 +25,8 @@
 
       <!-- Create scene -->
       <!-- Floor -->
-      <a-entity geometry="primitive: plane; width: 8; height: 400"
+      <a-entity id="floor"
+                geometry="primitive: plane; width: 8; height: 400"
                 material="src:#floor; repeat: 4 200"
                 rotation="-90 0 0"
                 position="0 0 -4">
@@ -34,41 +35,69 @@
 
 
       <!-- Wall left -->
-      <a-entity geometry="primitive: plane; width: 400; height: 4"
+      <a-entity id="wall-left"
+                geometry="primitive: plane; width: 400; height: 4"
                 material="color: #fff4cc; repeat: 4 200"
                 rotation="0 90 0"
                 position="-4 2 4">
       </a-entity>
       
       <!-- Wall right -->
-      <a-entity geometry="primitive: plane; width: 400; height: 4"
+      <a-entity id="wall-right"
+                geometry="primitive: plane; width: 400; height: 4"
                 material="color: #fff4cc; repeat: 4 200"
                 rotation="180 90 0"
                 position="4 2 4">
       </a-entity>
       
       <!-- Wall back -->
-      <a-entity geometry="primitive: plane; width: 8; height: 4"
+      <a-entity id="wall-back"
+                geometry="primitive: plane; width: 8; height: 4"
                 material="color: #fff4cc; repeat: 4 200"
                 rotation="0 180 0"
                 position="0 2 8">
       </a-entity>
-      <!-- Canvas back  <wall-image/> <xrtext/>-->
+      <!-- Canvas back  <wall-image/> <xrtext/>
       <a-entity layout="type: line; margin: 4"
                 rotation="0 180 0"
                 position="-.1 1.9 3.9">
-        <a-entity text="Hello, XR!"></a-entity>
+        <a-entity text="Hello, XR!"
+                  position="0 1 7.9"
+                  rotation="180 0 180"
+                  scale="2 2 1"></a-entity>
+      </a-entity>
+      -->
+
+
+      <!-- Text entity on back wall 
+      <a-entity position="0 1 7.9"
+                rotation="180 0 180"
+                scale="2 2 1"
+                text="width: 1.5; color: white; value: Lorem ipsum dolor sit amet">
+      </a-entity>
+      
+      <xrtext></xrtext>-->
+
+      <!-- Text entity in entity on back wall
+      <a-entity position="0 1 7.9"
+                rotation="180 0 180">
+                <a-entity
+                          scale="2 2 1"
+                          text="width: 1.5; color: white; value: Lorem ipsum dolor sit amet">
+                </a-entity>
+      </a-entity>
+      -->
+
+      <!-- xrtext component in entity on back wall -->
+      <a-entity position="0 1 7.9"
+                rotation="180 0 180">
+                <xrtexttext/>
       </a-entity>
 
 
-      <a-entity position="-2.5 1 0"
-                      text="anchor: left; width: 1.5; color: white; value: [LEFT ANCHOR] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam">
-            </a-entity>
-
-
-
       <!-- Canvas left -->
-      <a-entity layout="type: line; margin: 4"
+      <a-entity id="canvas-left"
+                layout="type: line; margin: 4"
                 rotation="0 90 0"
                 position="-3.8 2 0">
         <a-entity v-for="photo of photos.slice(0, photos.length/2)"
@@ -81,7 +110,8 @@
       
 
       <!-- Canvas right -->
-      <a-entity layout="type: line; margin: 4"
+      <a-entity id="canvas-right"
+                layout="type: line; margin: 4"
                 rotation="0 90 0"
                 position="3.8 2 0">
         <a-entity v-for="photo of photos.slice(photos.length/2, photos.length)"
@@ -95,7 +125,7 @@
      
       
       <!-- Earth -->
-      <a-sphere position="0 1 -4" radius="1" material="src:#earth; metalness: ; roughness: 1;">
+      <a-sphere id="Earth" position="0 1 -4" radius="1" material="src:#earth; metalness: ; roughness: 1;">
           <a-animation attribute="rotation"
                  easing="linear" 
                  dur="150000"
@@ -106,7 +136,7 @@
       </a-sphere>
       
       <!-- Sky -->
-      <a-sky src="#sky" rotation="90 0 90">
+      <a-sky id="Sky" src="#sky" rotation="90 0 90">
       </a-sky>
       
     </a-scene>
