@@ -1,6 +1,4 @@
 <template>
-
-  
   <section class="bcontainer">
     <a-scene>
 
@@ -53,8 +51,20 @@
       <a-entity geometry="primitive: plane; width: 8; height: 4"
                 material="color: #fff4cc; repeat: 4 200"
                 rotation="0 180 0"
-                position="0 2 4">
+                position="0 2 8">
       </a-entity>
+      <!-- Canvas back  <wall-image/> <xrtext/>-->
+      <a-entity layout="type: line; margin: 4"
+                rotation="0 180 0"
+                position="-.1 1.9 3.9">
+        <a-entity text="Hello, XR!"></a-entity>
+      </a-entity>
+
+
+      <a-entity position="-2.5 1 0"
+                      text="anchor: left; width: 1.5; color: white; value: [LEFT ANCHOR] Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam">
+            </a-entity>
+
 
 
       <!-- Canvas left -->
