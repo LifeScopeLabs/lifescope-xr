@@ -13,6 +13,7 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "aframe": "^0.8.2",
     "nuxt": "^1.4.0"
   }
 }

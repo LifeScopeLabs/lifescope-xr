@@ -21,6 +21,12 @@
              :src="photo.src"
              >
       </a-assets>
+
+      <!-- Load assets with imageLoader-->
+
+      <imageLoader v-for="wimage in wallimages"
+                   :key="wimage.id"
+                   :image="wimage" />
       
 
       <!-- Create scene -->
@@ -57,45 +63,47 @@
                 rotation="0 180 0"
                 position="0 2 8">
       </a-entity>
-      <!-- Canvas back  <wall-image/> <xrtext/>
-      <a-entity layout="type: line; margin: 4"
-                rotation="0 180 0"
-                position="-.1 1.9 3.9">
-        <a-entity text="Hello, XR!"
-                  position="0 1 7.9"
-                  rotation="180 0 180"
-                  scale="2 2 1"></a-entity>
+
+
+
+      <!-- wallimage on back wall 
+      <a-entity id="Component text"
+                position="0 1 7.9"
+                rotation="180 0 180">
+                <xrtext/>
+                <wallimage v-for="wimage in wallimages"
+                           :key="wimage.id"
+                           :image="wimage"
+                           position="0 1 0"/>
       </a-entity>
       -->
-
-
-      <!-- Text entity on back wall 
-      <a-entity position="0 1 7.9"
-                rotation="180 0 180"
-                scale="2 2 1"
-                text="width: 1.5; color: white; value: Lorem ipsum dolor sit amet">
-      </a-entity>
-      
-      <xrtext></xrtext>-->
-
-      <!-- Text entity in entity on back wall
-      <a-entity position="0 1 7.9"
-                rotation="180 0 180">
-                <a-entity
-                          scale="2 2 1"
-                          text="width: 1.5; color: white; value: Lorem ipsum dolor sit amet">
-                </a-entity>
-      </a-entity>
-      -->
-
-      <!-- xrtext component in entity on back wall -->
-      <a-entity position="0 1 7.9"
-                rotation="180 0 180">
-                <xrtexttext/>
-      </a-entity>
 
 
       <!-- Canvas left -->
+      <a-entity id="canvas-left"
+                      layout="type: line; margin: 4"
+                      rotation="0 90 0"
+                      position="-3.8 2 0">
+              <wallimage v-for="wimage of wallimages.slice(0, wallimages.length/2)"
+                        :key="wimage.id"
+                        :image="wimage"
+                        rotation="0 0 0">
+              </wallimage>
+      </a-entity>
+
+      <!-- Canvas right -->
+      <a-entity id="canvas-right"
+                layout="type: line; margin: 4"
+                rotation="0 90 0"
+                position="3.8 2 0">
+              <wallimage v-for="wimage of wallimages.slice(wallimages.length/2, wallimages.length)"
+                        :key="wimage.id"
+                        :image="wimage"
+                        rotation="0 0 0">
+              </wallimage>
+      </a-entity>
+
+      <!-- Canvas left old 
       <a-entity id="canvas-left"
                 layout="type: line; margin: 4"
                 rotation="0 90 0"
@@ -107,9 +115,9 @@
                   rotation="0 0 0">
         </a-entity>
       </a-entity>
-      
+      -->
 
-      <!-- Canvas right -->
+      <!-- Canvas right old 
       <a-entity id="canvas-right"
                 layout="type: line; margin: 4"
                 rotation="0 90 0"
@@ -121,6 +129,7 @@
                   rotation="0 0 0">
         </a-entity>
       </a-entity>
+      -->
       
      
       
@@ -144,7 +153,26 @@
 </template>
 
 
+<!-- to delete -->
 <script>
+Vue.component('test-text', {
+  template: `
+            <a-entity scale="2 2 1" text="width: 1.5; color: white; value: Lorem ipsum dolor sit amet"></a-entity>`,
+  data () {
+    return {
+      someText: "Hello, XR!"
+    }
+  }
+})
+</script>
+
+
+
+<script>
+import xrtext from "../components/xrtext.vue"
+import wallimage from "../components/wallimage.vue"
+import imageLoader from "../components/imageLoader.vue"
+
   console.log("from index.vue <script>");
 
   export default {
@@ -235,15 +263,305 @@
                 },
                 {
                   id:"action-adventure-alps",
-                  src:"/static/photos/action-adventure-alps.jpg"
+                  src:"/photos/action-adventure-alps.jpg"
                 },
-                ]
+                ],
+        wallimages:
+          [
+
+            {
+                "id": "24",
+                "connection": "asdfa",
+                "connection_id_string": "25",
+                "created": "2018-04-17T18:25:43.511Z",
+                "embed_content": "aContent",
+                "embed_format": "email",
+                "embed_thumbnail": "/iris.jpg",
+                "embeded_format": "jpg",
+                "identifier": "26",
+                "mimetype": "text/plain",
+                "owner": "me",
+                "provider_name": "Google",
+                "remote_id": "1",
+                "tagMasks": {
+                    "added": ["adsfs", "ewaf"],
+                    "removed": ["adsfs", "ewaf"],
+                    "source": ["adsfs", "ewaf"]
+                },
+                "text": "words",
+                "thumbnail": "thumb",
+                "title": "aTitle",
+                "type": "someType",
+                "updated": "2018-04-17T18:25:43.511Z",
+                "url": "https://duckduckgo.com/",
+                "user_id": "345",
+                "user_id_string": "234"
+            },
+            {
+                "id": "27",
+                "connection": "asdfa",
+                "connection_id_string": "28",
+                "created": "2018-04-17T18:25:43.511Z",
+                "embed_content": "aContent",
+                "embed_format": "email",
+                "embed_thumbnail": "/accomplishment-adult-adventure.jpg",
+                "embeded_format": "jpg",
+                "identifier": "29",
+                "mimetype": "text/plain",
+                "owner": "me",
+                "provider_name": "Google",
+                "remote_id": "2",
+                "tagMasks": {
+                    "added": ["adsfs", "ewaf"],
+                    "removed": ["adsfs", "ewaf"],
+                    "source": ["adsfs", "ewaf"]
+                },
+                "text": "words",
+                "thumbnail": "thumb",
+                "title": "aTitle",
+                "type": "someType",
+                "updated": "2018-04-17T18:25:43.511Z",
+                "url": "https://duckduckgo.com/",
+                "user_id": "345",
+                "user_id_string": "234"
+            },
+            {
+                "id": "30",
+                "connection": "asdfa",
+                "connection_id_string": "32",
+                "created": "2018-04-17T18:25:43.511Z",
+                "embed_content": "aContent",
+                "embed_format": "email",
+                "embed_thumbnail": "/action-adventure-alps.jpg",
+                "embeded_format": "jpg",
+                "identifier": "33",
+                "mimetype": "text/plain",
+                "owner": "me",
+                "provider_name": "Google",
+                "remote_id": "3",
+                "tagMasks": {
+                    "added": ["adsfs", "ewaf"],
+                    "removed": ["adsfs", "ewaf"],
+                    "source": ["adsfs", "ewaf"]
+                },
+                "text": "words",
+                "thumbnail": "thumb",
+                "title": "aTitle",
+                "type": "someType",
+                "updated": "2018-04-17T18:25:43.511Z",
+                "url": "https://duckduckgo.com/",
+                "user_id": "345",
+                "user_id_string": "234"
+            },
+            {
+                "id": "34",
+                "connection": "asdfa",
+                "connection_id_string": "35",
+                "created": "2018-04-17T18:25:43.511Z",
+                "embed_content": "aContent",
+                "embed_format": "email",
+                "embed_thumbnail": "/action-adventure-blur.jpg",
+                "embeded_format": "jpg",
+                "identifier": "36",
+                "mimetype": "text/plain",
+                "owner": "me",
+                "provider_name": "Google",
+                "remote_id": "4",
+                "tagMasks": {
+                    "added": ["adsfs", "ewaf"],
+                    "removed": ["adsfs", "ewaf"],
+                    "source": ["adsfs", "ewaf"]
+                },
+                "text": "words",
+                "thumbnail": "thumb",
+                "title": "aTitle",
+                "type": "someType",
+                "updated": "2018-04-17T18:25:43.511Z",
+                "url": "https://duckduckgo.com/",
+                "user_id": "345",
+                "user_id_string": "234"
+            },
+            {
+                "id": "37",
+                "connection": "asdfa",
+                "connection_id_string": "38",
+                "created": "2018-04-17T18:25:43.511Z",
+                "embed_content": "aContent",
+                "embed_format": "email",
+                "embed_thumbnail": "/action-beach-fun.jpg",
+                "embeded_format": "jpg",
+                "identifier": "39",
+                "mimetype": "text/plain",
+                "owner": "me",
+                "provider_name": "Google",
+                "remote_id": "5",
+                "tagMasks": {
+                    "added": ["adsfs", "ewaf"],
+                    "removed": ["adsfs", "ewaf"],
+                    "source": ["adsfs", "ewaf"]
+                },
+                "text": "words",
+                "thumbnail": "thumb",
+                "title": "aTitle",
+                "type": "someType",
+                "updated": "2018-04-17T18:25:43.511Z",
+                "url": "https://duckduckgo.com/",
+                "user_id": "345",
+                "user_id_string": "234"
+            },
+            {
+                "id": "40",
+                "connection": "asdfa",
+                "connection_id_string": "41",
+                "created": "2018-04-17T18:25:43.511Z",
+                "embed_content": "aContent",
+                "embed_format": "email",
+                "embed_thumbnail": "/adult-book-business.jpg",
+                "embeded_format": "jpg",
+                "identifier": "42",
+                "mimetype": "text/plain",
+                "owner": "me",
+                "provider_name": "Google",
+                "remote_id": "6",
+                "tagMasks": {
+                    "added": ["adsfs", "ewaf"],
+                    "removed": ["adsfs", "ewaf"],
+                    "source": ["adsfs", "ewaf"]
+                },
+                "text": "words",
+                "thumbnail": "thumb",
+                "title": "aTitle",
+                "type": "someType",
+                "updated": "2018-04-17T18:25:43.511Z",
+                "url": "https://duckduckgo.com/",
+                "user_id": "345",
+                "user_id_string": "234"
+            },
+            {
+                "id": "43",
+                "connection": "asdfa",
+                "connection_id_string": "44",
+                "created": "2018-04-17T18:25:43.511Z",
+                "embed_content": "aContent",
+                "embed_format": "email",
+                "embed_thumbnail": "/adventure-albay-clouds.jpg",
+                "embeded_format": "jpg",
+                "identifier": "45",
+                "mimetype": "text/plain",
+                "owner": "me",
+                "provider_name": "Google",
+                "remote_id": "7",
+                "tagMasks": {
+                    "added": ["adsfs", "ewaf"],
+                    "removed": ["adsfs", "ewaf"],
+                    "source": ["adsfs", "ewaf"]
+                },
+                "text": "words",
+                "thumbnail": "thumb",
+                "title": "aTitle",
+                "type": "someType",
+                "updated": "2018-04-17T18:25:43.511Z",
+                "url": "https://duckduckgo.com/",
+                "user_id": "345",
+                "user_id_string": "234"
+            },
+            {
+                "id": "46",
+                "connection": "asdfa",
+                "connection_id_string": "47",
+                "created": "2018-04-17T18:25:43.511Z",
+                "embed_content": "aContent",
+                "embed_format": "email",
+                "embed_thumbnail": "/adventure-ancient-architecture.jpg",
+                "embeded_format": "jpg",
+                "identifier": "48",
+                "mimetype": "text/plain",
+                "owner": "me",
+                "provider_name": "Google",
+                "remote_id": "8",
+                "tagMasks": {
+                    "added": ["adsfs", "ewaf"],
+                    "removed": ["adsfs", "ewaf"],
+                    "source": ["adsfs", "ewaf"]
+                },
+                "text": "words",
+                "thumbnail": "thumb",
+                "title": "aTitle",
+                "type": "someType",
+                "updated": "2018-04-17T18:25:43.511Z",
+                "url": "https://duckduckgo.com/",
+                "user_id": "345",
+                "user_id_string": "234"
+            },
+            {
+                "id": "49",
+                "connection": "asdfa",
+                "connection_id_string": "50",
+                "created": "2018-04-17T18:25:43.511Z",
+                "embed_content": "aContent",
+                "embed_format": "email",
+                "embed_thumbnail": "/adventure-backlit-community.jpg",
+                "embeded_format": "jpg",
+                "identifier": "51",
+                "mimetype": "text/plain",
+                "owner": "me",
+                "provider_name": "Google",
+                "remote_id": "9",
+                "tagMasks": {
+                    "added": ["adsfs", "ewaf"],
+                    "removed": ["adsfs", "ewaf"],
+                    "source": ["adsfs", "ewaf"]
+                },
+                "text": "words",
+                "thumbnail": "thumb",
+                "title": "aTitle",
+                "type": "someType",
+                "updated": "2018-04-17T18:25:43.511Z",
+                "url": "https://duckduckgo.com/",
+                "user_id": "345",
+                "user_id_string": "234"
+            },
+            {
+                "id": "52",
+                "connection": "asdfa",
+                "connection_id_string": "53",
+                "created": "2018-04-17T18:25:43.511Z",
+                "embed_content": "aContent",
+                "embed_format": "email",
+                "embed_thumbnail": "/adventure-ball-shaped-blur.jpg",
+                "embeded_format": "jpg",
+                "identifier": "54",
+                "mimetype": "text/plain",
+                "owner": "me",
+                "provider_name": "Google",
+                "remote_id": "10",
+                "tagMasks": {
+                    "added": ["adsfs", "ewaf"],
+                    "removed": ["adsfs", "ewaf"],
+                    "source": ["adsfs", "ewaf"]
+                },
+                "text": "words",
+                "thumbnail": "thumb",
+                "title": "aTitle",
+                "type": "someType",
+                "updated": "2018-04-17T18:25:43.511Z",
+                "url": "https://duckduckgo.com/",
+                "user_id": "345",
+                "user_id_string": "234"
+            }
+        ]
+        
       }
     },
     computed: {
       numberOfPhotos: function () {
         return photos.length
       }
+    },
+    components: {
+      xrtext,
+      wallimage,
+      imageLoader
     }
   }
 </script>
