@@ -22,8 +22,8 @@ export default {
             x = "/photos" + x
             //x = x.replace(/\.[^/.]+$/, "")  // remove extension
             //x = x.replace(/^\//g, '') // remove leading slash
-            console.log("imageSrc: " + x)
-            console.log("this.image.id: " + this.image.id)
+            //console.log("imageSrc: " + x)
+            //console.log("this.image.id: " + this.image.id)
             return x
         }
     }

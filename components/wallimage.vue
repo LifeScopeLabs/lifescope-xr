@@ -13,7 +13,7 @@ export default {
 
     computed: {
         imageMaterial: function () {
-            console.log("id: " + this.image.id)
+            //console.log("id: " + this.image.id)
             return 'src: #' + this.image.id + '; side: double'
         }
     }

@@ -2,6 +2,7 @@
   <section class="bcontainer">
     <a-scene>
 
+      <!-- TODO : Load locally instead of from rawgit-->
       <!-- Load assets -->
       <a-assets>
         <img id="floor" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/floor.jpg">
@@ -10,19 +11,9 @@
         <img id="clouds" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/Clouds.png">
         <img id="eye" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/iris.jpg">
       </a-assets>
-      
-      <!-- Travel Photos from https://www.pexels.com/search/travel/
-           loaded via v-for and nuxt data -->
-      <a-assets>
-        <img v-for="photo of photos"
-             :key="photo.id"
-             :id="photo.id"
-             crossorigin="anonymous"
-             :src="photo.src"
-             >
-      </a-assets>
 
-      <!-- Load assets with imageLoader-->
+      <!-- Load assets with imageLoader -->
+      <!-- https://www.pexels.com/search/travel/ -->
 
       <imageLoader v-for="wimage in wallimages"
                    :key="wimage.id"
@@ -66,20 +57,46 @@
 
 
 
-      <!-- wallimage on back wall 
-      <a-entity id="Component text"
+      <!-- put stuff on back wall -->
+      <a-entity id="Back wall stuff"
                 position="0 1 7.9"
                 rotation="180 0 180">
-                <xrtext/>
-                <wallimage v-for="wimage in wallimages"
-                           :key="wimage.id"
-                           :image="wimage"
-                           position="0 1 0"/>
+                <canvasC 
+                        :imageC="singleTestImage"
+                        :textValueC="'Hello from canvas!'">
+                </canvasC> 
       </a-entity>
-      -->
-
+      
 
       <!-- Canvas left -->
+      <a-entity id="canvas-left"
+                      layout="type: line; margin: 4"
+                      rotation="0 90 0"
+                      position="-3.8 1 0">
+              <canvasC v-for="wimage of wallimages.slice(0, wallimages.length/2)"
+                        :key="wimage.id"
+                        :imageC="wimage"
+                        :textValueC="wimage.embed_thumbnail"
+                        rotation="0 0 0">
+              </canvasC>
+      </a-entity>
+
+      <!-- Canvas right -->
+      <!-- TODO : flip text -->
+      <a-entity id="canvas-right"
+                layout="type: line; margin: 4"
+                rotation="0 90 0"
+                position="3.8 1 0">
+              <canvasC v-for="wimage of wallimages.slice(wallimages.length/2, wallimages.length)"
+                        :key="wimage.id"
+                        :imageC="wimage"
+                        :textValueC="wimage.embed_thumbnail"
+                        rotation="0 0 0">
+              </canvasC>
+      </a-entity>
+      
+
+      <!-- Canvas left old 
       <a-entity id="canvas-left"
                       layout="type: line; margin: 4"
                       rotation="0 90 0"
@@ -90,8 +107,9 @@
                         rotation="0 0 0">
               </wallimage>
       </a-entity>
+      -->
 
-      <!-- Canvas right -->
+      <!-- Canvas right old 
       <a-entity id="canvas-right"
                 layout="type: line; margin: 4"
                 rotation="0 90 0"
@@ -102,7 +120,7 @@
                         rotation="0 0 0">
               </wallimage>
       </a-entity>
-
+      -->
       <!-- Canvas left old 
       <a-entity id="canvas-left"
                 layout="type: line; margin: 4"
@@ -153,18 +171,6 @@
 </template>
 
 
-<!-- to delete -->
-<script>
-Vue.component('test-text', {
-  template: `
-            <a-entity scale="2 2 1" text="width: 1.5; color: white; value: Lorem ipsum dolor sit amet"></a-entity>`,
-  data () {
-    return {
-      someText: "Hello, XR!"
-    }
-  }
-})
-</script>
 
 
 
@@ -172,6 +178,7 @@ Vue.component('test-text', {
 import xrtext from "../components/xrtext.vue"
 import wallimage from "../components/wallimage.vue"
 import imageLoader from "../components/imageLoader.vue"
+import canvasC from "../components/canvasC.vue"
 
   console.log("from index.vue <script>");
 
@@ -181,6 +188,7 @@ import imageLoader from "../components/imageLoader.vue"
       return {
         name: "Lifescope",
         description: "The Internet of You",
+        // photos is no longer being used, safe to delete
         photos: [{
                   id: "action-adventure-blur",
                   src: "/photos/action-adventure-blur.jpg"
@@ -266,6 +274,27 @@ import imageLoader from "../components/imageLoader.vue"
                   src:"/photos/action-adventure-alps.jpg"
                 },
                 ],
+        singleTestImage: {
+          "id": "24",
+          "connection": "asdfa",
+          "connection_id_string": "25",
+          "created": "2018-04-17T18:25:43.511Z",
+          "embed_content": "aContent",
+          "embed_format": "email",
+          "embed_thumbnail": "/iris.jpg",
+          "embeded_format": "jpg",
+          "identifier": "26",
+          "mimetype": "text/plain",
+          "owner": "me",
+          "provider_name": "Google",
+          "remote_id": "1",
+          "tagMasks": {
+              "added": ["adsfs", "ewaf"],
+              "removed": ["adsfs", "ewaf"],
+              "source": ["adsfs", "ewaf"]
+          }
+        },
+        // TODO : Load wallimages from test/content.json
         wallimages:
           [
 
@@ -555,13 +584,14 @@ import imageLoader from "../components/imageLoader.vue"
     },
     computed: {
       numberOfPhotos: function () {
-        return photos.length
+        return wallimages.length
       }
     },
     components: {
       xrtext,
       wallimage,
-      imageLoader
+      imageLoader,
+      canvasC
     }
   }
 </script>
