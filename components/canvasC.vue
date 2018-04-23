@@ -19,6 +19,7 @@
 </template>
 
 <script>
+// TOOD : rename to carousol-content-object, abstract to carousol-object
 // naming this file canvas.vue instead of canvasC.vue caused problems
 import xrtext from "../components/xrtext.vue"
 import wallimage from "../components/wallimage.vue"
