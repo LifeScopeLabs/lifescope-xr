@@ -3,7 +3,6 @@
     <a-assets>
         <img :key="image.id"
             :id="image.id"
-            crossorigin="anonymous"
             :src="this.imageSrc">
     </a-assets>
     
