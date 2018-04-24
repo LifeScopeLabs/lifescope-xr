@@ -8,6 +8,12 @@ The LIFESCOPE API allows anyone to create a shared virtual space to access their
 
 This repo contains a series of AR/VR Views written to extend lifescope-app codebase as JS/Vue/Nuxt plugins.
 
+# Demos
+- [VR Gallery](https://cdn.rawgit.com/LifeScopeLabs/lifescope-xr/adc7a0a4d042e838cf85327bd1ca4d5ef44536fb/vrgallery.html)
+- [AR Map](https://cdn.rawgit.com/LifeScopeLabs/lifescope-xr/adc7a0a4d042e838cf85327bd1ca4d5ef44536fb/armap.html)
+- [VR Map](https://cdn.rawgit.com/LifeScopeLabs/lifescope-xr/adc7a0a4d042e838cf85327bd1ca4d5ef44536fb/vrmap.html)
+- [VR Portal](https://cdn.rawgit.com/LifeScopeLabs/lifescope-xr/adc7a0a4d042e838cf85327bd1ca4d5ef44536fb/index.html)
+
 # Augmented Reality
 
 **LIFESCOPE AR Marker**
@@ -68,6 +74,7 @@ This repo contains a series of AR/VR Views written to extend lifescope-app codeb
 - [AR.JS](https://github.com/jeromeetienne/AR.js/tree/master/aframe/demos/demo-mapbox)
 - [AFrame (0.8+)](https://aframe.io/)
 - [Mapbox (0.44.1+)](https://www.mapbox.com/mapbox-gl-js/api/)
+- chrome://flags/#enable-gamepad-extensions
 
 ### Examples
 - [AR.JS markerless](https://github.com/1d10t/test)
@@ -76,6 +83,8 @@ This repo contains a series of AR/VR Views written to extend lifescope-app codeb
 - [Marker Maker](https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html)
 - [BitScoop Marker](https://github.com/LifeScopeLabs/lifescopelabs.github.io/tree/master/assets/xr)
 - [Networked AFrame](https://github.com/networked-aframe/networked-aframe#more-examples)
+- https://github.com/jeromeetienne/aframe-ar
+- https://immersive-web.github.io/webxr/
 
 ## 3. Facial recognition (concept phase, low priority)
 ## Requirements
