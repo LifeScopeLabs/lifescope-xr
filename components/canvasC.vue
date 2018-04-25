@@ -1,5 +1,5 @@
 <template>
-    <a-entity event-set__click="testMethod">
+    <a-entity>
         <wallimage :image="imageC"
                    position="0 1 0"/>
         

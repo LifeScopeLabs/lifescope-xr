@@ -1,6 +1,6 @@
 <template>
   <section class="bcontainer">
-    <a-scene>
+    <a-scene log="AFRAME component log: a-scene">
 
       <!-- Load assets -->
       <a-assets>
@@ -19,6 +19,12 @@
                    :image="wimage" />
 
       
+
+      <!-- Camera -->
+      <a-camera>
+        <a-entity cursor="rayOrigin: mouse"></a-entity>
+        <!-- Or <a-cursor></a-cursor> -->
+      </a-camera>
 
       <!-- Create scene -->
       <!-- Floor -->
@@ -58,12 +64,13 @@
 
 
       <!-- put stuff on back wall -->
-      <a-entity id="Back wall stuff"
+      <a-entity id="back-wall-stuff"
                 position="0 1 7.9"
                 rotation="180 0 180">
                 <canvasC 
                         :imageC="singleTestImage"
-                        :textValueC="'Hello from canvas!'">
+                        :textValueC="'Hello from canvas!'"
+                        :cursor-listener-openlink="singleTestImage.url">
                 </canvasC> 
       </a-entity>
       
@@ -77,7 +84,8 @@
                         :key="wimage.id"
                         :imageC="wimage"
                         :textValueC="wimage.embed_thumbnail"
-                        rotation="0 0 0">
+                        rotation="0 0 0"
+                        :cursor-listener-openlink="wimage.url">
               </canvasC>
       </a-entity>
 
@@ -91,7 +99,8 @@
                         :key="wimage.id"
                         :imageC="wimage"
                         :textValueC="wimage.embed_thumbnail"
-                        rotation="0 0 0">
+                        rotation="0 0 0"
+                        :cursor-listener-openlink="wimage.url">
               </canvasC>
       </a-entity>
       
@@ -160,6 +169,155 @@ export default {
     wallimage,
     imageLoader,
     canvasC
+  },
+  methods: {
+    testMethod: function () {
+      console.log("testMethod called")
+    },
+    testBrowser: function () {
+      // check if we have access to the browser
+      if (process.browser) {
+        console.log("process.browser")
+      }
+    },
+    createLogAFRAMEcomponent: function () {
+      // create AFRAME component log
+      // logs a message to console
+      // ex: <a-scene log="Hello, a-scene!">
+      // TODO : check that component DNE before creating
+      if (process.browser) {
+        console.log("AFRAME = require('aframe')")
+        AFRAME = require('aframe')
+      
+        AFRAME.registerComponent('log', {
+          schema: {type: 'string'},
+
+          init: function () {
+            var stringToLog = this.data;
+            console.log(stringToLog);
+          }
+        });
+      }
+    },
+
+    changeTextOnBackwall: function (new_text) {
+      // Demonstrates how to change an attribute within an a-frame entity
+      // TODO : Refactor so we can just change textValueC in the canvasC
+      console.log("changeTextOnBackwall")
+      var sceneEl = document.querySelector('a-scene');
+      var backWall = sceneEl.querySelector('#back-wall-stuff')
+      var textBox = backWall.querySelector('a-entity').querySelectorAll('a-entity')[1]
+      //console.log(backWall);
+      //console.log(textBox)
+      textBox.setAttribute('text', {value: new_text})
+    },
+
+    openLink: function (link) {
+      console.log("openLink: " + link)
+      window.open(link, "_self")
+    },
+
+    addEventListenerToBackwall: function () {
+      // Demonstrate how to use an on click listener 
+      // on an a-frame entity to follow a regular web link
+
+      console.log("addEventListenerToBackwall")
+      var sceneEl = document.querySelector('a-scene');
+      var backWall = sceneEl.querySelector('#back-wall-stuff')
+      var aCanvas = backWall.querySelector('a-entity')
+      
+      // TODO : there has got to be a better way to do this
+      var openLink = this.openLink
+
+      aCanvas.addEventListener("click", function () {
+        console.log("clicked!")
+        openLink("https://www.duckduckgo.com")
+      })
+    },
+
+    createOpenLinkOnClickListenerAframeComponent: function () {
+      // create an aframe component that adds an onClick event listener  
+      // that opens a link
+      // TODO : open link based on element's data
+      // TODO : Decide if this belongs in canvasC.vue
+      
+      console.log("createOpenLinkOnClickListenerAframeComponent")
+      if (process.browser) {
+        console.log("AFRAME = require('aframe')")
+        AFRAME = require('aframe')
+
+        // TODO : there has got to be a better way to do this
+        var openLink = this.openLink
+
+        AFRAME.registerComponent('cursor-listener-openlink', {
+          // regisers an Aframe component that opens a link
+          // when the a-entity is clicked
+          // ex: <a-entity cursor-listener-openlink="https://aframe.io/docs/0.8.0/components/cursor.html">
+
+          schema: {
+            type: 'string'
+          },
+
+          init: function () {
+            console.log("registerComponent cursor-listener-openlink init")
+            //console.log(this)
+            //console.log(this.el)
+            console.log(this.data)
+
+            // TODO : refactor?
+            var link = this.data
+
+            this.el.addEventListener('click', function (evt) {
+              //console.log('I was clicked at: ', evt.detail.intersection.point);
+              openLink(link)// "https://www.duckduckgo.com")
+            });
+          }
+        });
+      }
+    }
+  
+  },
+
+  // Lifecycle hooks
+  // https://vuejs.org/v2/api/#Options-Lifecycle-Hooks
+  beforeCreate () {
+    console.log("beforeCreate")
+  },
+  created () {
+    //  data observation, computed properties, methods, watch/event callbacks
+    console.log("created")
+  },
+  beforeMount () {
+    console.log("beforeMount")
+  },
+  mounted () {
+    // el is replaced by the newly created vm.$el
+    console.log("mounted")
+
+    // Create Aframe components
+    this.createLogAFRAMEcomponent()
+    this.createOpenLinkOnClickListenerAframeComponent()
+
+    // test
+    //this.changeTextOnBackwall("Hello from changeTextOnBackwall")
+
+    this.$nextTick(function () {
+      // Code that will run only after the
+      // entire view has been rendered
+      console.log("mounted nextTick")
+    })
+  },
+  beforeUpdate () {
+    console.log("beforeUpdate")
+  },
+  updated () {
+    console.log("updated")
+  },
+  beforeDestroy () {
+    console.log("beforeDestroy")
+  },
+  destroyed () {
+    console.log("destroyed")
   }
 }
 </script>

@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "aframe": "^0.8.2",
+    "aframe-layout-component": "^4.3.1",
     "isomorphic-fetch": "^2.2.1",
     "nuxt": "^1.4.0"
   }

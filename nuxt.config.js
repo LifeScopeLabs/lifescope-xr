@@ -1,5 +1,8 @@
 module.exports = {
-    plugins: [
-
-    ]
+    build: {
+      vendor: [
+        'aframe',
+        'aframe-layout-component'
+      ]
+    }
   }
