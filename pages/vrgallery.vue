@@ -11,6 +11,13 @@
         <img id="eye" src="/iris.jpg">
       </a-assets>
 
+      <!-- Geojson -->
+      <a-assets>
+        <a-asset-item id="geojson-simple" src="geodata/simple.geojson" />
+      </a-assets>
+ 
+      
+
       <!-- Load assets with imageLoader -->
       <!-- https://www.pexels.com/search/travel/ -->
 
@@ -104,7 +111,12 @@
               </canvasC>
       </a-entity>
       
-     
+      
+      <!-- Globe -->
+      <a-entity id="globe-container"
+                position="0 2 -10">
+                    
+      </a-entity>
       <!-- Earth -->
       <a-sphere id="Earth" position="0 1 -4" radius="1" material="src:#earth; metalness: ; roughness: 1;">
           <a-animation attribute="rotation"
@@ -113,7 +125,6 @@
                  fill="forwards"
                  to="0 360 0"
                  repeat="indefinite"></a-animation>
-
       </a-sphere>
       
       <!-- Sky -->
@@ -238,7 +249,6 @@ export default {
     createOpenLinkOnClickListenerAframeComponent: function () {
       // create an aframe component that adds an onClick event listener  
       // that opens a link
-      // TODO : open link based on element's data
       // TODO : Decide if this belongs in canvasC.vue
       
       console.log("createOpenLinkOnClickListenerAframeComponent")
@@ -259,10 +269,7 @@ export default {
           },
 
           init: function () {
-            console.log("registerComponent cursor-listener-openlink init")
-            //console.log(this)
-            //console.log(this.el)
-            console.log(this.data)
+            //console.log("registerComponent cursor-listener-openlink init")
 
             // TODO : refactor?
             var link = this.data
@@ -274,7 +281,18 @@ export default {
           }
         });
       }
-    }
+    },
+
+    injectGeojson : function () {
+        var sceneEl = document.querySelector('a-scene');
+
+        sceneEl.addEventListener('loaded', function () {
+          console.log("injectGeojson")
+          // add GeoJson.  
+          var aContainer = sceneEl.querySelector('#globe-container')
+          aContainer.innerHTML = '<a-entity id="globe" geometry="primitive: sphere; radius: 1;" material="color: #F0A;" geojson="src: #geojson-simple; featureKey: name;"></a-entity>';
+        });
+      }
   
   },
 
@@ -298,9 +316,12 @@ export default {
     this.createLogAFRAMEcomponent()
     this.createOpenLinkOnClickListenerAframeComponent()
 
+    // Inject geojson
+    this.injectGeojson()
+
     // test
     //this.changeTextOnBackwall("Hello from changeTextOnBackwall")
-
+ 
     this.$nextTick(function () {
       // Code that will run only after the
       // entire view has been rendered
