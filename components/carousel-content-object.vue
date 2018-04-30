@@ -19,22 +19,16 @@
 </template>
 
 <script>
-// TOOD : rename to carousol-content-object, abstract to carousol-object
-// naming this file canvas.vue instead of canvasC.vue caused problems
+
 import xrtext from "../components/xrtext.vue"
 import wallimage from "../components/wallimage.vue"
 
-console.log("from canvas.vue <script>")
+console.log("from carousel-content-object.vue <script>")
 export default {
     props: ['imageC', 'textValueC', 'connection'],
     components: {
         xrtext,
         wallimage
-    },
-    methods: {
-        testMethod: function (event) {
-            conosle.log("testMethod called")
-        }
     }
   }
 </script>

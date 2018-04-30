@@ -1,6 +1,8 @@
 <template>
   <section class="bcontainer">
-    <a-scene log="AFRAME component log: a-scene">
+    <log-aframe-component/>
+    <open-link-aframe-component/>
+    <a-scene mylog="AFRAME component log: a-scene">
 
       <!-- Load assets -->
       <a-assets>
@@ -69,41 +71,41 @@
       <a-entity id="back-wall-stuff"
                 position="0 1 7.9"
                 rotation="180 0 180">
-                <canvasC 
+                <carouselContentObject 
                         :imageC="singleTestImage"
-                        :textValueC="'Hello from canvas!'"
+                        :textValueC="'Hello from Carousel!'"
                         :cursor-listener-openlink="singleTestImage.url">
-                </canvasC> 
+                </carouselContentObject> 
       </a-entity>
       
 
-      <!-- Canvas left -->
-      <a-entity id="canvas-left"
+      <!-- Carousel left -->
+      <a-entity id="carousel-left"
                       layout="type: line; margin: 4"
                       rotation="0 90 0"
                       position="-3.8 1 0">
-              <canvasC v-for="wimage of wallimages.slice(0, wallimages.length/2)"
+              <carouselContentObject v-for="wimage of wallimages.slice(0, wallimages.length/2)"
                         :key="wimage.id"
                         :imageC="wimage"
                         :textValueC="wimage.embed_thumbnail"
                         rotation="0 0 0"
                         :cursor-listener-openlink="wimage.url">
-              </canvasC>
+              </carouselContentObject>
       </a-entity>
 
-      <!-- Canvas right -->
+      <!-- Carousel right -->
       <!-- TODO : flip text -->
-      <a-entity id="canvas-right"
+      <a-entity id="carousel-right"
                 layout="type: line; margin: 4"
                 rotation="0 90 0"
                 position="3.8 1 0">
-              <canvasC v-for="wimage of wallimages.slice(wallimages.length/2, wallimages.length)"
+              <carouselContentObject v-for="wimage of wallimages.slice(wallimages.length/2, wallimages.length)"
                         :key="wimage.id"
                         :imageC="wimage"
                         :textValueC="wimage.embed_thumbnail"
                         rotation="0 0 0"
                         :cursor-listener-openlink="wimage.url">
-              </canvasC>
+              </carouselContentObject>
       </a-entity>
       
       
@@ -112,6 +114,8 @@
                 position="0 2 -10">
                     
       </a-entity>
+      <globe/>
+      
       <!-- Earth -->
       <a-sphere id="Earth" position="0 1 -4" radius="1" material="src:#earth; metalness: ; roughness: 1;">
           <a-animation attribute="rotation"
@@ -137,10 +141,11 @@
 <script>
 import fetch from 'isomorphic-fetch'
 
-import xrtext from "../components/xrtext.vue"
-import wallimage from "../components/wallimage.vue"
 import imageLoader from "../components/imageLoader.vue"
-import canvasC from "../components/canvasC.vue"
+import carouselContentObject from "../components/carousel-content-object.vue"
+
+import logAframeComponent from "../components/logAframeComponent.vue"
+import openLinkAframeComponent from "../components/openLinkAframeComponent"
 
 console.log("from index.vue <script>");
 
@@ -165,216 +170,14 @@ export default {
               singleTestImage: loadedJson[0] }
     });
   },
-  computed: {
-    numberOfPhotos: function () {
-      return wallimages.length
-    }
-  },
+
   components: {
-    xrtext,
-    wallimage,
+    logAframeComponent,
     imageLoader,
-    canvasC
+    carouselContentObject,
+    openLinkAframeComponent
   },
-  methods: {
-    testMethod: function () {
-      console.log("testMethod called")
-    },
-    testBrowser: function () {
-      // check if we have access to the browser
-      if (process.browser) {
-        console.log("process.browser")
-      }
-    },
-    createLogAFRAMEcomponent: function () {
-      // create AFRAME component log
-      // logs a message to console
-      // ex: <a-scene log="Hello, a-scene!">
-      // TODO : check that component DNE before creating
-      if (process.browser) {
-        console.log("AFRAME = require('aframe')")
-        AFRAME = require('aframe')
-      
-        AFRAME.registerComponent('log', {
-          schema: {type: 'string'},
-
-          init: function () {
-            var stringToLog = this.data;
-            console.log(stringToLog);
-          }
-        });
-      }
-    },
-
-    changeTextOnBackwall: function (new_text) {
-      // Demonstrates how to change an attribute within an a-frame entity
-      // TODO : Refactor so we can just change textValueC in the canvasC
-      console.log("changeTextOnBackwall")
-      var sceneEl = document.querySelector('a-scene');
-      var backWall = sceneEl.querySelector('#back-wall-stuff')
-      var textBox = backWall.querySelector('a-entity').querySelectorAll('a-entity')[1]
-      //console.log(backWall);
-      //console.log(textBox)
-      textBox.setAttribute('text', {value: new_text})
-    },
-
-    openLink: function (link) {
-      console.log("openLink: " + link)
-      window.open(link, "_self")
-    },
-
-    addEventListenerToBackwall: function () {
-      // Demonstrate how to use an on click listener 
-      // on an a-frame entity to follow a regular web link
-
-      console.log("addEventListenerToBackwall")
-      var sceneEl = document.querySelector('a-scene');
-      var backWall = sceneEl.querySelector('#back-wall-stuff')
-      var aCanvas = backWall.querySelector('a-entity')
-      
-      // TODO : there has got to be a better way to do this
-      var openLink = this.openLink
-
-      aCanvas.addEventListener("click", function () {
-        console.log("clicked!")
-        openLink("https://www.duckduckgo.com")
-      })
-    },
-
-    createOpenLinkOnClickListenerAframeComponent: function () {
-      // create an aframe component that adds an onClick event listener  
-      // that opens a link
-      // TODO : Decide if this belongs in canvasC.vue
-      
-      console.log("createOpenLinkOnClickListenerAframeComponent")
-      if (process.browser) {
-        console.log("AFRAME = require('aframe')")
-        AFRAME = require('aframe')
-
-        // TODO : there has got to be a better way to do this
-        var openLink = this.openLink
-
-        AFRAME.registerComponent('cursor-listener-openlink', {
-          // regisers an Aframe component that opens a link
-          // when the a-entity is clicked
-          // ex: <a-entity cursor-listener-openlink="https://aframe.io/docs/0.8.0/components/cursor.html">
-
-          schema: {
-            type: 'string'
-          },
-
-          init: function () {
-            //console.log("registerComponent cursor-listener-openlink init")
-
-            // TODO : refactor?
-            var link = this.data
-
-            this.el.addEventListener('click', function (evt) {
-              //console.log('I was clicked at: ', evt.detail.intersection.point);
-              openLink(link)// "https://www.duckduckgo.com")
-            });
-          }
-        });
-      }
-    },
-
-    injectGeojsonSimple : function () {
-        var sceneEl = document.querySelector('a-scene');
-
-        sceneEl.addEventListener('loaded', function () {
-          console.log("injectGeojsonSimple")
-          // add GeoJson.  
-          var aContainer = sceneEl.querySelector('#globe-container')
-          aContainer.innerHTML = '<a-entity id="globe" geometry="primitive: sphere; radius: 1;" material="color: #F0A;" geojson="src: #geojson-simple; featureKey: name;"></a-entity>';
-        });
-    },
-
-    injectGeojson : function (src) {
-      // inject a-entity of a globe with geojson from src
-      var sceneEl = document.querySelector('a-scene');
-
-      sceneEl.addEventListener('loaded', function () {
-        console.log("injectGeojsonTest")
-        // add GeoJson.  
-        var aContainer = sceneEl.querySelector('#globe-container')
-        aContainer.innerHTML = '<a-entity id="globe" geometry="primitive: sphere; radius: 1;" material="color: #F0A;" geojson="src: #' + src + '; featureKey: name;"></a-entity>';
-      });
-    },
-
-    loadGeoAsset : function (geoAsset) {
-      // loads geojson data into assets on the fly
-      console.log("loadGeoAsset")
-
-      var sceneEl = document.querySelector('a-scene');
-      var geosrc = this.geoObjectToUrl(geoAsset)
-      //console.log(geosrc)
-
-      sceneEl.addEventListener('loaded', function () {
-        console.log("loadGeoAsset")
-        
-        // add GeoJson asset  
-        var aAssets = sceneEl.querySelector('#geo-assets')
-        var geoAsset = document.createElement("a-asset-item");
-        geoAsset.setAttribute('id', 'geojson-fly')
-        geoAsset.setAttribute('src', geosrc)//'/simple.geojson')//geosrc)
-
-        //console.log(geoAsset)
-        aAssets.appendChild(geoAsset)
-        //console.log(aAssets)
-      });
-    },
-
-    latlongToGeojsonPoint : function (lat, long) {
-      // creates a geojson point object from lat/long values
-      console.log("latlongToGeojsonPoint")
-      var gj = {"type": "FeatureCollection",
-                "features": []}
-      var feature = {
-        "type": "Feature",
-        "properties": {},
-        "geometry": {
-          "type": "Point",
-          "coordinates": [
-            lat,
-            long
-          ]
-        }
-      }
-      gj.features.push(feature)
-      //console.log(gj)
-      return(gj)
-    },
-
-    latlongToGeojsonLine : function (coordinates) {
-      console.log("latlongToGeojsonLine")
-      // creates a geojson line object from an array of lat/long values
-      // coordinates is an array of lat long values
-      // [[0,1], [300,-20], [0, -20]]
-      var gj = {"type": "FeatureCollection",
-                "features": []}
-      var feature = {
-        "type": "Feature",
-        "properties": {},
-        "geometry": {
-          "type": "LineString",
-          "coordinates": coordinates
-        }
-      }
-      gj.features.push(feature)
-      //console.log(gj)
-      return(gj)
-    },
-
-    geoObjectToUrl : function (geo) {
-      // converts a geojson object into a url
-      console.log("geoObjectToUrl")
-      //console.log(geo)
-      var url = 'data:text/json;charset=utf8,' + encodeURIComponent(JSON.stringify(geo));
-      //console.log(url)
-      return(url)
-    }
   
-  },
 
   // Lifecycle hooks
   // https://vuejs.org/v2/api/#Options-Lifecycle-Hooks
@@ -393,17 +196,10 @@ export default {
     console.log("mounted")
 
     // Create Aframe components
-    this.createLogAFRAMEcomponent()
-    this.createOpenLinkOnClickListenerAframeComponent()
+    //this.createLogAFRAMEcomponent()
+    //this.createOpenLinkOnClickListenerAframeComponent()
 
-    // Inject geojson
-    //this.injectGeojson()
-    this.loadGeoAsset(this.latlongToGeojsonLine([[0,1], [300,-20], [0, -20]]))
-    this.injectGeojson('geojson-fly');
-
-    // test
-    //this.changeTextOnBackwall("Hello from changeTextOnBackwall")
- 
+  
     this.$nextTick(function () {
       // Code that will run only after the
       // entire view has been rendered
