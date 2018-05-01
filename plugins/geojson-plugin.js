@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import globe from '../components/globe.vue';
+import globe from '../components/map/globe/globe.vue';
 
 const GeoJsonPlugin = {
 

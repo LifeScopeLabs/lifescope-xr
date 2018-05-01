@@ -1,43 +1,43 @@
 <template>
-    <a-entity id="carousel">
+    <a-entity class="gallery-carousel">
         <!-- Carousel left -->
-        <a-entity id="carousel-left"
+        <a-entity class="gallery-carousel-left"
                         layout="type: line; margin: 4"
                         rotation="0 90 0"
                         position="-3.8 1 0">
-                <carouselContentObject v-for="wimage of content.slice(0, content.length/2)"
+                <carouselItem v-for="wimage of content.slice(0, content.length/2)"
                             :key="wimage.id"
                             :image="wimage"
                             :textValue="wimage.embed_thumbnail"
                             rotation="0 0 0"
-                            :cursor-listener-openlink="wimage.url">
-                </carouselContentObject>
+                            :cursor-listener-highlight="wimage.url">
+                </carouselItem>
         </a-entity>
         <!-- Carousel right -->
-        <a-entity id="carousel-right"
+        <a-entity class="gallery-carousel-right"
                     layout="type: line; margin: 4"
                     rotation="0 90 0"
                     position="3.8 1 0">
-                <carouselContentObject v-for="wimage of content.slice(content.length/2, content.length)"
+                <carouselItem v-for="wimage of content.slice(content.length/2, content.length)"
                             :key="wimage.id"
                             :image="wimage"
                             :textValue="wimage.embed_thumbnail"
                             rotation="180 0 180"
-                            :cursor-listener-openlink="wimage.url">
-                </carouselContentObject>
+                            :cursor-listener-highlight="wimage.url">
+                </carouselItem>
         </a-entity>
     </a-entity>
 </template>
 
 <script>
 
-import carouselContentObject from "../components/carousel-content-object.vue"
+import carouselItem from "./components/carousel-item.vue"
 
 console.log("from carousel.vue <script>")
 export default {
     props: ['content'],
     components: {
-        carouselContentObject
+        carouselItem
     }
   }
 </script>

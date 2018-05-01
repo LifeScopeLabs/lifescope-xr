@@ -67,7 +67,7 @@ export default {
           var feature = {
             "type": "Feature",
             // must give name property for featureKey or point will not be shown
-            "properties": {"name": nextID++},
+            "properties": {"name": 'point-' + nextID++},
             "geometry": {
               "type": "Point",
               "coordinates": [
