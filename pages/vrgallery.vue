@@ -1,8 +1,10 @@
 <template>
   <section class="bcontainer">
+
     <log-aframe-component/>
     <open-link-aframe-component/>
-    <a-scene mylog="AFRAME component log: a-scene">
+
+    <a-scene mylog="AFRAME component mylog: a-scene">
 
       <!-- Load assets -->
       <a-assets>
@@ -20,7 +22,7 @@
  
       <!-- Load assets with imageLoader -->
       <!-- https://www.pexels.com/search/travel/ -->
-      <imageLoader v-for="wimage in wallimages"
+      <imageLoader v-for="wimage in content"
                    :key="wimage.id"
                    :image="wimage" />
 
@@ -39,8 +41,6 @@
                 position="0 0 -4">
       </a-entity>
       
-
-
       <!-- Wall left -->
       <a-entity id="wall-left"
                 geometry="primitive: plane; width: 400; height: 4"
@@ -57,64 +57,13 @@
                 position="4 2 4">
       </a-entity>
       
-      <!-- Wall back -->
-      <a-entity id="wall-back"
-                geometry="primitive: plane; width: 8; height: 4"
-                material="color: #fff4cc; repeat: 4 200"
-                rotation="0 180 0"
-                position="0 2 8">
-      </a-entity>
 
 
-
-      <!-- put stuff on back wall -->
-      <a-entity id="back-wall-stuff"
-                position="0 1 7.9"
-                rotation="180 0 180">
-                <carouselContentObject 
-                        :imageC="singleTestImage"
-                        :textValueC="'Hello from Carousel!'"
-                        :cursor-listener-openlink="singleTestImage.url">
-                </carouselContentObject> 
-      </a-entity>
-      
-
-      <!-- Carousel left -->
-      <a-entity id="carousel-left"
-                      layout="type: line; margin: 4"
-                      rotation="0 90 0"
-                      position="-3.8 1 0">
-              <carouselContentObject v-for="wimage of wallimages.slice(0, wallimages.length/2)"
-                        :key="wimage.id"
-                        :imageC="wimage"
-                        :textValueC="wimage.embed_thumbnail"
-                        rotation="0 0 0"
-                        :cursor-listener-openlink="wimage.url">
-              </carouselContentObject>
-      </a-entity>
-
-      <!-- Carousel right -->
-      <!-- TODO : flip text -->
-      <a-entity id="carousel-right"
-                layout="type: line; margin: 4"
-                rotation="0 90 0"
-                position="3.8 1 0">
-              <carouselContentObject v-for="wimage of wallimages.slice(wallimages.length/2, wallimages.length)"
-                        :key="wimage.id"
-                        :imageC="wimage"
-                        :textValueC="wimage.embed_thumbnail"
-                        rotation="0 0 0"
-                        :cursor-listener-openlink="wimage.url">
-              </carouselContentObject>
-      </a-entity>
-      
+      <!-- Carousel -->
+      <carousel :content="content"/>
       
       <!-- Globe -->
-      <a-entity id="globe-container"
-                position="0 2 -10">
-                    
-      </a-entity>
-      <globe/>
+      <globe position="0 1.6 -10" :latLongValues="llv"/>
       
       <!-- Earth -->
       <a-sphere id="Earth" position="0 1 -4" radius="1" material="src:#earth; metalness: ; roughness: 1;">
@@ -129,6 +78,31 @@
       <!-- Sky -->
       <a-sky id="Sky" src="#sky" rotation="90 0 90">
       </a-sky>
+
+
+
+
+
+
+      <!-- Wall back -->
+      <a-entity id="wall-back"
+                geometry="primitive: plane; width: 8; height: 4"
+                material="color: #fff4cc; repeat: 4 200"
+                rotation="0 180 0"
+                position="0 2 8">
+      </a-entity>
+
+      <!-- put stuff on back wall -->
+      <a-entity id="back-wall-stuff"
+                position="0 1 7.9"
+                rotation="180 0 180">
+                <carouselContentObject 
+                        :image="singleTestContent"
+                        :textValue="'Hello from Carousel!'"
+                        :cursor-listener-openlink="singleTestContent.url">
+                </carouselContentObject> 
+      </a-entity>
+      
       
     </a-scene>
   </section>
@@ -140,6 +114,8 @@
 
 <script>
 import fetch from 'isomorphic-fetch'
+
+import carousel from '../components/carousel.vue'
 
 import imageLoader from "../components/imageLoader.vue"
 import carouselContentObject from "../components/carousel-content-object.vue"
@@ -155,6 +131,7 @@ export default {
     return {
       name: "Lifescope",
       description: "The Internet of You",
+      llv: [[0,1], [300,-20], [0, -20], [-300, 5], [-450, 100], [-450, 100], [0,1]]
     }
   },
   asyncData () {
@@ -166,12 +143,13 @@ export default {
     .then(function(loadedJson) {
       //console.log(loadedJson);
       //console.log(loadedJson[0])
-      return { wallimages: loadedJson,
-              singleTestImage: loadedJson[0] }
+      return { content: loadedJson,
+              singleTestContent: loadedJson[0] }
     });
   },
 
   components: {
+    carousel,
     logAframeComponent,
     imageLoader,
     carouselContentObject,
@@ -194,11 +172,6 @@ export default {
   mounted () {
     // el is replaced by the newly created vm.$el
     console.log("mounted")
-
-    // Create Aframe components
-    //this.createLogAFRAMEcomponent()
-    //this.createOpenLinkOnClickListenerAframeComponent()
-
   
     this.$nextTick(function () {
       // Code that will run only after the

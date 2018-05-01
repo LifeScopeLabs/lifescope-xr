@@ -1,18 +1,18 @@
 <template>
     <a-entity>
-        <wallimage :image="imageC"
+        <wallimage :image="image"
                    position="0 1 0"/>
         
 
-        <xrtext :textValue="textValueC"
+        <xrtext :textValue="textValue"
                 position="0 -.2 0"/>
 
 
-        <xrtext :textValue="imageC.connection"
+        <xrtext :textValue="image.connection"
                    position="0 -.4 0"/>
-        <xrtext :textValue="imageC.updated"
+        <xrtext :textValue="image.updated"
                    position="0 -.6 0"/>
-        <xrtext :textValue="imageC.homepoint"
+        <xrtext :textValue="image.homepoint"
                    position="0 -.8 0"/>
     </a-entity>
     
@@ -25,7 +25,7 @@ import wallimage from "../components/wallimage.vue"
 
 console.log("from carousel-content-object.vue <script>")
 export default {
-    props: ['imageC', 'textValueC', 'connection'],
+    props: ['image', 'textValue', 'connection'],
     components: {
         xrtext,
         wallimage

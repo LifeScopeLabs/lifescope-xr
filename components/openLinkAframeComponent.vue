@@ -5,8 +5,8 @@
 export default {
     methods: {
         openLink: function (link) {
-        console.log("openLink: " + link)
-        window.open(link, "_self")
+            console.log("openLink: " + link)
+            window.open(link, "_self")
         },
 
         createOpenLinkOnClickListenerAframeComponent: function () {

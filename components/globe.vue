@@ -1,5 +1,5 @@
 <template>
-    <a-entity id="globe-container" position="0 1.8 -10"></a-entity>
+    <a-entity id="globe-container" :position="position"></a-entity>
     
 </template>
 
@@ -8,11 +8,12 @@
 
 console.log("from globe.vue <script>")
 export default {
-    methods: {
-        testMethod: function (event) {
-            console.log("testMethod called")
-        },
+    props: {
+      'position': {default: '0 1.6 -10'},
+      'latLongValues': {default: () => [[0,1], [300,-20], [0, -20], [-300, 5], [0,1]]}
+      },
 
+    methods: {
         injectGeojson : function (src) {
         // inject a-entity of a globe with geojson from src
         var sceneEl = document.querySelector('a-scene');
@@ -40,7 +41,7 @@ export default {
           var aAssets = sceneEl.querySelector('#geo-assets')
           var geoAsset = document.createElement("a-asset-item");
           geoAsset.setAttribute('id', 'geojson-fly')
-          geoAsset.setAttribute('src', geosrc)//'/simple.geojson')//geosrc)
+          geoAsset.setAttribute('src', geosrc)
 
           //console.log(geoAsset)
           aAssets.appendChild(geoAsset)
@@ -102,7 +103,7 @@ export default {
     
     mounted () {
         console.log("globe mounted")
-        this.loadGeoAsset(this.latlongToGeojsonLine([[0,1], [300,-20], [0, -20], [-300, 5], [0,1]]))
+        this.loadGeoAsset(this.latlongToGeojsonLine(this.latLongValues))
         this.injectGeojson('geojson-fly');
     }
   }
