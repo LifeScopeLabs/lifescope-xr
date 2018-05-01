@@ -27,7 +27,7 @@
         "url": "https://duckduckgo.com/?q=google",
         "user_id": "345",
         "user_id_string": "234",
-        "homepoint": ["33.6195", "-117.7855"]
+        "homepoint": ["0", "0"]
     },
     {
         "id": "27",
@@ -56,7 +56,7 @@
         "url": "https://duckduckgo.com/?q=eff",
         "user_id": "345",
         "user_id_string": "234",
-        "homepoint": ["0", "-117.7855"]
+        "homepoint": ["0", "45"]
     },
     {
         "id": "30",
@@ -85,7 +85,7 @@
         "url": "https://duckduckgo.com/?q=wikipedia",
         "user_id": "345",
         "user_id_string": "234",
-        "homepoint": ["0", "0"]
+        "homepoint": ["0", "90"]
     },
     {
         "id": "34",
@@ -114,7 +114,7 @@
         "url": "https://duckduckgo.com/?q=amazon",
         "user_id": "345",
         "user_id_string": "234",
-        "homepoint": ["45", "180"]
+        "homepoint": ["0", "135"]
     },
     {
         "id": "37",
@@ -143,7 +143,7 @@
         "url": "https://duckduckgo.com/?q=xr",
         "user_id": "345",
         "user_id_string": "234",
-        "homepoint": ["-45", "-90"]
+        "homepoint": ["45", "0"]
     },
     {
         "id": "40",
@@ -172,7 +172,7 @@
         "url": "https://duckduckgo.com/?q=javascript",
         "user_id": "345",
         "user_id_string": "234",
-        "homepoint": ["30", "60"]
+        "homepoint": ["45", "-45"]
     },
     {
         "id": "43",
@@ -201,7 +201,7 @@
         "url": "https://duckduckgo.com/?q=nuxt",
         "user_id": "345",
         "user_id_string": "234",
-        "homepoint": ["-20", "60"]
+        "homepoint": ["45", "-90"]
     },
     {
         "id": "46",
@@ -230,7 +230,7 @@
         "url": "https://duckduckgo.com/?q=vuejs",
         "user_id": "345",
         "user_id_string": "234",
-        "homepoint": ["50", "-120"]
+        "homepoint": ["45", "-120"]
     },
     {
         "id": "49",
@@ -259,7 +259,7 @@
         "url": "https://duckduckgo.com/?q=bing",
         "user_id": "345",
         "user_id_string": "234",
-        "homepoint": ["70", "-100"]
+        "homepoint": ["90", "0"]
     },
     {
         "id": "52",
@@ -288,6 +288,6 @@
         "url": "https://duckduckgo.com/?q=tor",
         "user_id": "345",
         "user_id_string": "234",
-        "homepoint": ["33.6195", "-117.7855"]
+        "homepoint": ["0", "0"]
     }
 ]

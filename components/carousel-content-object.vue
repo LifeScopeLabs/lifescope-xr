@@ -3,11 +3,8 @@
         <wallimage :image="image"
                    position="0 1 0"/>
         
-
         <xrtext :textValue="textValue"
                 position="0 -.2 0"/>
-
-
         <xrtext :textValue="image.connection"
                    position="0 -.4 0"/>
         <xrtext :textValue="image.updated"

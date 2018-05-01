@@ -62,11 +62,13 @@
       <!-- Carousel -->
       <carousel :content="content"/>
       
-      <!-- Globe -->
-      <globe position="0 1.6 -10" :latLongValues="llv"/>
+      <!-- Globe  -->
+      <globe position="0 1 -4" :geoCoordinates="geoCoord"/>
+        
+
       
       <!-- Earth -->
-      <a-sphere id="Earth" position="0 1 -4" radius="1" material="src:#earth; metalness: ; roughness: 1;">
+      <a-sphere id="Earth" position="0 1 -4" radius=".99" material="src:#earth; metalness: ; roughness: 1;">
           <a-animation attribute="rotation"
                  easing="linear" 
                  dur="150000"
@@ -131,7 +133,7 @@ export default {
     return {
       name: "Lifescope",
       description: "The Internet of You",
-      llv: [[0,1], [300,-20], [0, -20], [-300, 5], [-450, 100], [-450, 100], [0,1]]
+      geoCoord: [[0,1], [300,-20], [0, -20], [-300, 5], [-450, 100], [-450, 100], [0,1]]
     }
   },
   asyncData () {
@@ -179,7 +181,7 @@ export default {
   created () {
     //  data observation, computed properties, methods, watch/event callbacks
     console.log("created")
-    this.llv = this.contentToGeoPoints(this.content)
+    this.geoCoord = this.contentToGeoPoints(this.content)
   },
   beforeMount () {
     console.log("beforeMount")

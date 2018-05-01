@@ -1,5 +1,12 @@
 <template>
-    <a-entity id="globe-container" :position="position"></a-entity>
+    <a-entity id="globe-container" :position="position">
+      <a-animation attribute="rotation"
+                 easing="linear" 
+                 dur="150000"
+                 fill="forwards"
+                 to="0 360 0"
+                 repeat="indefinite"></a-animation>
+    </a-entity>
     
 </template>
 
@@ -10,7 +17,7 @@ console.log("from globe.vue <script>")
 export default {
     props: {
       'position': {default: '0 1.6 -10'},
-      'latLongValues': {default: () => [[0,1], [300,-20], [0, -20], [-300, 5], [0,1]]}
+      'geoCoordinates': {default: () => [[0,1], [300,-20], [0, -20], [-300, 5], [0,1]]}
       },
 
     methods: {
@@ -22,7 +29,7 @@ export default {
           console.log("injectGeojsonTest")
           // add GeoJson.  
           var aContainer = document.querySelector('#globe-container')
-          aContainer.innerHTML = '<a-entity id="globe" geometry="primitive: sphere; radius: 1;" material="color: #F0A;" geojson="src: #' + src + '; featureKey: name;"></a-entity>';
+          aContainer.innerHTML = '<a-entity id="globe" geometry="primitive: sphere; radius: 1;" material="color: #F0A;" geojson="src: #' + src + '; featureKey: name;"></a-entity>'; // 
         });
       },
 
@@ -49,24 +56,29 @@ export default {
         });
       },
 
-      latlongToGeojsonPoint : function (lat, long) {
-        // creates a geojson point object from lat/long values
+      latlongToGeojsonPoints : function (coordinates) {
+        // creates a geojson FeatureCollection of Points
+        // from an array of lat/long values
         console.log("latlongToGeojsonPoint")
         var gj = {"type": "FeatureCollection",
                   "features": []}
-        var feature = {
-          "type": "Feature",
-          "properties": {},
-          "geometry": {
-            "type": "Point",
-            "coordinates": [
-              lat,
-              long
-            ]
+        var nextID = 0;
+        for (var coord of coordinates) {
+          var feature = {
+            "type": "Feature",
+            // must give name property for featureKey or point will not be shown
+            "properties": {"name": nextID++},
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                coord[0],
+                coord[1]
+              ]
+            }
           }
+          gj.features.push(feature)
         }
-        gj.features.push(feature)
-        //console.log(gj)
+        console.log(gj)
         return(gj)
       },
 
@@ -103,7 +115,7 @@ export default {
     
     mounted () {
         console.log("globe mounted")
-        this.loadGeoAsset(this.latlongToGeojsonLine(this.latLongValues))
+        this.loadGeoAsset(this.latlongToGeojsonPoints(this.geoCoordinates))
         this.injectGeojson('geojson-fly');
     }
   }
