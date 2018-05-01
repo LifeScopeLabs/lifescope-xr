@@ -156,6 +156,20 @@ export default {
     openLinkAframeComponent
   },
   
+  methods: {
+      contentToGeoPoints: function(content) {
+        console.log("contentToGeoPoints")
+        // returns an array of points (lat/long pairs)
+        // extracted from content objects
+        var points = [];
+
+        for (var c of content) {
+          points.push(c.homepoint)
+        }
+
+        return points
+      }
+  },
 
   // Lifecycle hooks
   // https://vuejs.org/v2/api/#Options-Lifecycle-Hooks
@@ -165,6 +179,7 @@ export default {
   created () {
     //  data observation, computed properties, methods, watch/event callbacks
     console.log("created")
+    this.llv = this.contentToGeoPoints(this.content)
   },
   beforeMount () {
     console.log("beforeMount")
@@ -172,6 +187,7 @@ export default {
   mounted () {
     // el is replaced by the newly created vm.$el
     console.log("mounted")
+
   
     this.$nextTick(function () {
       // Code that will run only after the
