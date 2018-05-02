@@ -58,7 +58,17 @@ export default {
         return res.json();
         })
       .then(function(loadedJson) {
-        //console.log(loadedJson);
+        console.log("loadedJson: " + loadedJson);
+        
+        
+        var someData = loadedJson.forEach(element => {
+
+          console.log(element)
+          console.log(element.id)
+          //var test = new lifescopeObjects.Content(element.id, element)
+          //console.log(test)
+        });//loadedJson.map(x=> new lifescopeObjects.Content(x.id, x))
+        //console.log(someData)
         return { content: loadedJson}
       });
       /*
