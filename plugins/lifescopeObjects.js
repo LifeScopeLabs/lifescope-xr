@@ -71,7 +71,6 @@ class Contacts extends LSObj {
   }
 }
 
-
 class Content extends LSObj {
   constructor(id, obj) {
     super(id);
@@ -102,7 +101,6 @@ class Content extends LSObj {
     Object.assign(obj, this);
   }
 }
-
 
 class Event extends LSObj {
   constructor(id, obj) {
@@ -140,8 +138,6 @@ class Event extends LSObj {
   // }
 }
 
-
-
 class Location extends LSObj {
   constructor(id, obj) {
     super(id);
@@ -161,8 +157,6 @@ class Location extends LSObj {
   }
 }
 
-
-
 class Provider extends LSObj {
   constructor(id, obj) {
     super(id);
@@ -174,7 +168,6 @@ class Provider extends LSObj {
   }
 }
 
-
 class Person extends LSObj {
   constructor(id, obj) {
     super(id);
@@ -183,7 +176,6 @@ class Person extends LSObj {
   }
 }
 
-
 class Place extends LSObj {
   constructor(id, obj) {
     super(id);
@@ -191,7 +183,6 @@ class Place extends LSObj {
     Object.assign(obj, this);
   }
 }
-
 
 class Search extends LSObj {
   constructor(id, obj) {
@@ -215,7 +206,6 @@ class Search extends LSObj {
     Object.assign(obj, this);
   }
 }
-
 
 class Session extends LSObj {
   constructor(id, obj) {
@@ -248,7 +238,6 @@ class Session extends LSObj {
   }
 }
 
-
 class Tag extends LSObj {
   constructor(id, obj) {
     super(id);
@@ -262,7 +251,6 @@ class Tag extends LSObj {
   }
 }
 
-
 class Thing extends LSObj {
   constructor(id, obj) {
     super(id);
@@ -272,7 +260,6 @@ class Thing extends LSObj {
     Object.assign(obj, this);
   }
 }
-
 
 class User extends LSObj {
   constructor(id, obj) {
@@ -301,6 +288,23 @@ class User extends LSObj {
   }
 }
 
-
 // TESTS
 // var objT1 = new LSObj(2);
+
+export default {
+  LSObj,
+  Connection,
+  AssociationSession,
+  Contacts,
+  Content,
+  Event,
+  Location,
+  Provider,
+  Person,
+  Place,
+  Search,
+  Session,
+  Tag,
+  Thing,
+  User
+}

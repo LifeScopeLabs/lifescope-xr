@@ -43,7 +43,7 @@ export default {
     },
 
     mounted () {
-        console.log(this.image.id)
+        //console.log(this.image.id)
     }
   }
 </script>

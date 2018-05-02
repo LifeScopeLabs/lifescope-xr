@@ -50,6 +50,8 @@ export default {
         imageLoader
     },
     asyncData () {
+      console.log("asyncData")
+      console.log(lifescopeObjects.Content)
       return fetch("http://localhost:3000/test/content.json")
       .then(function(res) {
         //console.log(res)
@@ -66,7 +68,8 @@ export default {
         console.log(res);
         const result = { content: res.map(x=> new lifescopeObjects.Content(x.id, x))};
         return result;
-      });*/
+      });
+      */
     }
     
   }
