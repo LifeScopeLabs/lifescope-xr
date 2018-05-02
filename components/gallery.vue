@@ -1,5 +1,5 @@
 <template>
-  <a-entity>
+  <a-entity class="gallery">
       <!-- load Aframe components -->
       <acomp-highlight/>
 

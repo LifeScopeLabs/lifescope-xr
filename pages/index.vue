@@ -21,13 +21,13 @@
     <!-- Load assets with imageLoader -->
     <!-- https://www.pexels.com/search/travel/ -->
     <imageLoader v-for="wimage in content"
-                 :key="wimage.id"
-                 :image="wimage" />
+                  :key="wimage.id"
+                  :image="wimage" />
 
     <!-- gallery -->
     <gallery :content="content"/>
 
-    <!-- Sky -->
+    <!-- Sky   change id to class?-->
     <a-sky id="Sky" src="#sky" rotation="90 0 90">
     </a-sky>
 
@@ -36,6 +36,8 @@
 
 <script>
 import fetch from 'isomorphic-fetch'
+
+import lifescopeObjects from "../plugins/lifescopeObjects.js"
 
 import gallery from "../components/gallery.vue"
 
@@ -57,7 +59,15 @@ export default {
         //console.log(loadedJson);
         return { content: loadedJson}
       });
-    },
-
+      /*
+      console.log("asyncData")
+      const content = fetch("http://localhost:3000/test/content.json")
+      .then(function(res) {
+        console.log(res);
+        const result = { content: res.map(x=> new lifescopeObjects.Content(x.id, x))};
+        return result;
+      });*/
+    }
+    
   }
 </script>

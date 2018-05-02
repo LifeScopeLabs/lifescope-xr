@@ -78,7 +78,7 @@ export default {
           }
           gj.features.push(feature)
         }
-        console.log(gj)
+        //console.log(gj)
         return(gj)
       },
 

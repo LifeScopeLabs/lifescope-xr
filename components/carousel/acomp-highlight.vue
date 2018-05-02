@@ -6,12 +6,13 @@ export default {
     methods: {
         highlight: function () {
             console.log("highlight")
+            console.log(this)
         },
 
         createHighlightOnClickListenerAframeComponent: function () {
             // create an aframe component that adds an onClick event listener  
             // that highlights the content on the carousel and globe
-            // TODO : Decide if this belongs in carouselContentObject.vue
+            // TODO : Decide if this belongs in somewhere else like carousel-item.vue
             
             console.log("createHighlightOnClickListenerAframeComponent")
             if (process.browser) {

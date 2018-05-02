@@ -1,5 +1,5 @@
 <template>
-    <a-entity>
+    <a-entity class="carousel-item">
         <a-entity
             geometry="primitive: plane; width: 3; height: 2"
             :material="this.imageMaterial"
@@ -43,7 +43,7 @@ export default {
     },
 
     mounted () {
-        //console.log(this.key)
+        console.log(this.image.id)
     }
   }
 </script>
