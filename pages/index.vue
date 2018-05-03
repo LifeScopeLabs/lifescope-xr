@@ -1,6 +1,5 @@
 <template>
   <a-scene>
-
     <!-- Load assets -->
     <a-assets class="assets-sky">
       <img id="sky" src="/nightsky.jpg">
@@ -35,51 +34,43 @@
 </template>
 
 <script>
-import fetch from 'isomorphic-fetch'
+import fetch from 'isomorphic-fetch';
 
-import lifescopeObjects from "../plugins/lifescopeObjects.js"
+import lifescopeObjects from '../plugins/lifescopeObjects';
 
-import gallery from "../components/gallery.vue"
+import gallery from "../components/gallery.vue";
 
-import imageLoader from "../components/util/image-loader.vue"
+import imageLoader from "../components/util/image-loader.vue";
 
 console.log("from index.vue <script>")
 export default {
     components: {
         gallery,
-        imageLoader
+        imageLoader,
+        lifescopeObjects
     },
     asyncData () {
-      console.log("asyncData")
-      console.log(lifescopeObjects.Content)
+      console.log("asyncData");
+      //console.log(lifescopeObjects.Content);
       return fetch("http://localhost:3000/test/content.json")
       .then(function(res) {
-        //console.log(res)
+        //console.log(res);
         return res.json();
         })
       .then(function(loadedJson) {
-        console.log("loadedJson: " + loadedJson);
+        //console.log("loadedJson: " + loadedJson);
         
-        
+        var result = [];
         var someData = loadedJson.forEach(element => {
-
-          console.log(element)
-          console.log(element.id)
-          //var test = new lifescopeObjects.Content(element.id, element)
-          //console.log(test)
+          var item = new lifescopeObjects.Content(element);
+          result.push(item);
+          //console.log(item instanceof lifescopeObjects.Content);
         });//loadedJson.map(x=> new lifescopeObjects.Content(x.id, x))
-        //console.log(someData)
-        return { content: loadedJson}
+        //console.log("someData: " + someData);
+        //console.log("result: " + result);
+        return { content: result };
       });
-      /*
-      console.log("asyncData")
-      const content = fetch("http://localhost:3000/test/content.json")
-      .then(function(res) {
-        console.log(res);
-        const result = { content: res.map(x=> new lifescopeObjects.Content(x.id, x))};
-        return result;
-      });
-      */
+
     }
     
   }

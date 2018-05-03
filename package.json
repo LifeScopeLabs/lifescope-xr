@@ -4,6 +4,7 @@
   "description": "lifescope extended reality",
   "author": "(https://lifescope.io)",
   "scripts": {
+    "dev": "nuxt",
     "debug": "nuxt build && nuxt start --inspect-brk=3333",
     "build": "nuxt build",
     "start": "nuxt build && nuxt start",

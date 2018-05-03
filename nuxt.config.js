@@ -7,6 +7,7 @@ module.exports = {
       ]
     },
     plugins: [
-      '~/plugins/geojson-plugin.js'
+      '~/plugins/geojson-plugin.js',
+      '~/plugins/lifescope-objects-plugin.js'
     ]
   }

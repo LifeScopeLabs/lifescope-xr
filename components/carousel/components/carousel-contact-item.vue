@@ -1,5 +1,5 @@
 <template>
-    <a-entity class="carousel-item carousel-content-item">
+    <a-entity class="carousel-item carousel-contact-item">
         <a-entity
             geometry="primitive: plane; width: 3; height: 2"
             :material="this.imageMaterial"
@@ -8,7 +8,7 @@
         </a-entity>
 
         <a-entity scale="2 2 1"
-                  :text="this.textString(image.embed_thumbnail)"
+                  :text="this.textString(image.handle)"
                   position="0 -.2 0"/>
         <a-entity scale="2 2 1"
                   :text="this.textString('connection: ' + image.connection)"
@@ -16,16 +16,12 @@
         <a-entity scale="2 2 1"
                   :text="this.textString('updated: ' + image.updated)"
                    position="0 -.6 0"/>
-        <a-entity scale="2 2 1"
-                  :text="this.textString('homepoint: ' + image.homepoint)"
-                   position="0 -.8 0"/>
     </a-entity>
     
 </template>
 
 <script>
 
-console.log("from carousel-item.vue <script>")
 export default {
     props: ['image'],
 

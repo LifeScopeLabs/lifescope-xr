@@ -1,3 +1,7 @@
+<template>
+</template>
+
+<script>
 'use strict';
 
 class LSObj {
@@ -277,3 +281,4 @@ export default {
   Thing,
   User
 }
+</script>

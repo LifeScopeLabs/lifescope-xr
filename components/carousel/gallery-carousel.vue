@@ -8,7 +8,6 @@
                 <carouselItem v-for="wimage of content.slice(0, content.length/2)"
                             :key="wimage.id"
                             :image="wimage"
-                            :textValue="wimage.embed_thumbnail"
                             rotation="0 0 0"
                             :cursor-listener-highlight="wimage.url">
                 </carouselItem>
@@ -21,7 +20,6 @@
                 <carouselItem v-for="wimage of content.slice(content.length/2, content.length)"
                             :key="wimage.id"
                             :image="wimage"
-                            :textValue="wimage.embed_thumbnail"
                             rotation="180 0 180"
                             :cursor-listener-highlight="wimage.url">
                 </carouselItem>
