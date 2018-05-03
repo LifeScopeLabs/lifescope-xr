@@ -34,7 +34,7 @@
       </a-entity>
 
       <!-- Carousel -->
-      <gallery-carousel :content="content"/>
+      <gallery-carousel v-bind:content='content'/>
       
       <!-- Globe  -->
       <globe position="0 1.2 -4" :geoCoordinates="geoCoord"/>
@@ -56,6 +56,8 @@
 import galleryCarousel from "../components/carousel/gallery-carousel.vue"
 import acompHighlight from "../components/carousel/acomp-highlight.vue"
 
+import Vue from 'vue'
+
 console.log("from gallery.vue <script>")
 export default {
     data () {
@@ -73,7 +75,12 @@ export default {
         acompHighlight
     },
 
-    props: ['content'],
+    props: {'content': {
+                        validator: function (value) {
+                            console.log("validator: " + (value[0] instanceof Vue.LSObj.LSObj).toString())
+                            return value[0] instanceof Vue.LSObj.LSObj;
+                        }}
+    },
 
     methods: {
         contentToGeoPoints: function(content) {
@@ -105,7 +112,6 @@ export default {
     mounted () {
         // el is replaced by the newly created vm.$el
         console.log("mounted")
-
     
         this.$nextTick(function () {
         // Code that will run only after the

@@ -21,7 +21,7 @@
     <!-- https://www.pexels.com/search/travel/ -->
     <imageLoader v-for="wimage in content"
                   :key="wimage.id"
-                  :image="wimage" />
+                  :image='wimage' />
 
     <!-- gallery -->
     <gallery :content="content"/>
@@ -34,29 +34,42 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
 
 import gallery from "../components/gallery.vue";
 
 import imageLoader from "../components/util/image-loader.vue";
+//import { Vue } from 'vue/types/vue';
 
+console.log("from index.vue <script>")
 export default {
     components: {
         gallery,
         imageLoader
     },
+    asyncData (context) {
+      console.log("asyncData");
 
-    async asyncData (context, callback) {
-        
-      let { data } = await axios.get(`http://localhost:3000/test/content.json`);
+      //debugger; // eslint-disable-line
+            
+      return axios("http://localhost:3000/test/content.json")
+      .then(function(res) {
+        //console.log(res.data)
+        return res.data;
+        })
+      .then(function(loadedJson) {        
+        var result = [];
+        var someData = loadedJson.forEach(element => {
+          var item = new context.app.LSObj.Content(element);
+          result.push(item);
+          //console.log(item instanceof context.app.LSObj.LSObj);
+          //console.log(item)
+        });
 
-      let objArray = [];
-
-      data.forEach(element => {
-        objArray.push(new context.app.LSObj.Content(element));
+        return { content: result };
       });
 
-      return {content: objArray};
     }
+    
   }
 </script>

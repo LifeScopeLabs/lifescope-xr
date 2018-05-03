@@ -24,10 +24,11 @@
 </template>
 
 <script>
+import Vue from 'vue'
 
 console.log("from carousel-item.vue <script>")
 export default {
-    props: ['image'],
+    props: {image: Vue.LSObj.LSObj},
 
     computed: {
         imageMaterial: function () {

@@ -7,7 +7,7 @@
                         position="-3.8 1 0">
                 <carouselItem v-for="wimage of content.slice(0, content.length/2)"
                             :key="wimage.id"
-                            :image="wimage"
+                            :image='wimage'
                             rotation="0 0 0"
                             :cursor-listener-highlight="wimage.url">
                 </carouselItem>
@@ -19,7 +19,7 @@
                     position="3.8 1 0">
                 <carouselItem v-for="wimage of content.slice(content.length/2, content.length)"
                             :key="wimage.id"
-                            :image="wimage"
+                            :image='wimage'
                             rotation="180 0 180"
                             :cursor-listener-highlight="wimage.url">
                 </carouselItem>
@@ -31,9 +31,16 @@
 
 import carouselItem from "./components/carousel-item.vue"
 
+import Vue from 'vue'
+
 console.log("from carousel.vue <script>")
 export default {
-    props: ['content'],
+    props: {'content': {
+                        validator: function (value) {
+                            console.log("validator: " + (value[0] instanceof Vue.LSObj.LSObj).toString())
+                            return value[0] instanceof Vue.LSObj.LSObj;
+                        }}
+    },
     components: {
         carouselItem
     }
