@@ -16,6 +16,11 @@ export default {
 
     methods: {
         workaround: function () {
+
+            debugger; // eslint-disable-line
+
+            console.log('this: ' + this);
+
             return this.image.id;
         },
         imageSrc: function () {

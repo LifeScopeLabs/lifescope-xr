@@ -34,46 +34,29 @@
 </template>
 
 <script>
-import fetch from 'isomorphic-fetch';
+import axios from 'axios'
 
 import gallery from "../components/gallery.vue";
 
 import imageLoader from "../components/util/image-loader.vue";
 
-console.log("from index.vue <script>")
 export default {
     components: {
         gallery,
         imageLoader
     },
-    asyncData (context) {
 
-      debugger; // eslint-disable-line
-
-      console.log("asyncData");
-      
-      console.log(context.app.LSObj);
-      
-      return fetch("http://localhost:3000/test/content.json")
-      .then(function(res) {
-        //console.log(res);
-        return res.json();
-        })
-      .then(function(loadedJson) {
-        //console.log("loadedJson: " + loadedJson);
+    async asyncData (context, callback) {
         
-        var result = [];
-        var someData = loadedJson.forEach(element => {
-          var item = element;
-          result.push(item);
-          //console.log(item instanceof Vue.LSObj.Content);
-        });//loadedJson.map(x=> new Vue.LSObj.Content(x.id, x))
-        //console.log("someData: " + someData);
-        //console.log("result: " + result);
-        return { content: result };
+      let { data } = await axios.get(`http://localhost:3000/test/content.json`);
+
+      let objArray = [];
+
+      data.forEach(element => {
+        objArray.push(new context.app.LSObj.Content(element));
       });
 
+      return {content: objArray};
     }
-    
   }
 </script>
