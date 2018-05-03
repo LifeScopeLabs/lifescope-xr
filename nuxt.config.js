@@ -3,7 +3,8 @@ module.exports = {
       vendor: [
         'aframe',
         'aframe-layout-component',
-        'aframe-geojson-component'
+        'aframe-geojson-component',
+        'lifescope-objects'
       ]
     },
     plugins: [

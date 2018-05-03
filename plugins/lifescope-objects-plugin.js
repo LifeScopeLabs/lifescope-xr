@@ -1,13 +1,10 @@
 import Vue from 'vue'
-import lifescopeObjects from '../components/lifescope-objects.vue';
+import lifescopeObjects from 'lifescope-objects';
 
-const LifescopeObjectsPlugin = {
+Vue.use(lifescopeObjects);
 
-    install(Vue, options) {
-        Vue.component('lifescope-objects', lifescopeObjects)
-    }
-  };
-  
-  Vue.use(LifescopeObjectsPlugin)
-
-  export default LifescopeObjectsPlugin;
+export default ({ app }, inject) => {
+    // Set `LSObj` instance on `app`
+    // This way we can use it in middleware and pages `asyncData`/`fetch`
+    lifescopeObjects.install(app);
+}

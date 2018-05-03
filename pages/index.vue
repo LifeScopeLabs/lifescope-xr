@@ -36,8 +36,6 @@
 <script>
 import fetch from 'isomorphic-fetch';
 
-import lifescopeObjects from '../plugins/lifescopeObjects';
-
 import gallery from "../components/gallery.vue";
 
 import imageLoader from "../components/util/image-loader.vue";
@@ -46,12 +44,16 @@ console.log("from index.vue <script>")
 export default {
     components: {
         gallery,
-        imageLoader,
-        lifescopeObjects
+        imageLoader
     },
-    asyncData () {
+    asyncData (context) {
+
+      debugger; // eslint-disable-line
+
       console.log("asyncData");
-      //console.log(lifescopeObjects.Content);
+      
+      console.log(context.app.LSObj);
+      
       return fetch("http://localhost:3000/test/content.json")
       .then(function(res) {
         //console.log(res);
@@ -62,10 +64,10 @@ export default {
         
         var result = [];
         var someData = loadedJson.forEach(element => {
-          var item = new lifescopeObjects.Content(element);
+          var item = element;
           result.push(item);
-          //console.log(item instanceof lifescopeObjects.Content);
-        });//loadedJson.map(x=> new lifescopeObjects.Content(x.id, x))
+          //console.log(item instanceof Vue.LSObj.Content);
+        });//loadedJson.map(x=> new Vue.LSObj.Content(x.id, x))
         //console.log("someData: " + someData);
         //console.log("result: " + result);
         return { content: result };

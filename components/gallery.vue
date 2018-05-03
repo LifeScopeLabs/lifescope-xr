@@ -77,7 +77,6 @@ export default {
 
     methods: {
         contentToGeoPoints: function(content) {
-        console.log("contentToGeoPoints")
         // returns an array of points (lat/long pairs)
         // extracted from content objects
         var points = [];

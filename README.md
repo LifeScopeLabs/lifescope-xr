@@ -203,3 +203,8 @@ Social Wars in React VR. A VR demo using the BitScoop Platform for Social Login.
 [infinitewalls]:https://lifescopelabs.github.io/assets/wireframes/PlayCanvasLifeScopeGalleryWireframes.png
 [proceduralvr1]:https://lifescopelabs.github.io/assets/wireframes/ProceduralAFrame1.png
 [proceduralvr2]:https://lifescopelabs.github.io/assets/wireframes/ProceduralAFrame2.png
+
+
+.yarnrc --ignore-engines true
+yarn install --ignore-engines
+yarn add file:../lifescope-objects --save --ignore-engines

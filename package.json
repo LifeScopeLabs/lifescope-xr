@@ -1,11 +1,16 @@
 {
   "name": "lifescope-xr",
   "version": "1.0.0",
+  "engines": {
+    "node": "10.0.0",
+    "yarn": "1.6.0"
+  },
   "description": "lifescope extended reality",
   "author": "(https://lifescope.io)",
   "scripts": {
     "dev": "nuxt",
-    "debug": "nuxt build && nuxt start --inspect-brk=3333",
+    "debug": "node --inspect=3333 node_modules/.bin/nuxt",
+    "dev-debug": "nuxt build && nuxt start --inspect-brk=3333",
     "build": "nuxt build",
     "start": "nuxt build && nuxt start",
     "generate": "nuxt generate",
@@ -17,6 +22,7 @@
     "aframe-geojson-component": "^1.2.4",
     "aframe-layout-component": "^4.3.1",
     "isomorphic-fetch": "^2.2.1",
+    "lifescope-objects": "file:../lifescope-objects",
     "nuxt": "^1.4.0"
   }
 }
