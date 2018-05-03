@@ -20,7 +20,7 @@
       <!-- Wall left -->
       <a-entity id="wall-left"
                 :geometry="'primitive: plane; width:' + wallWidth + '; height: ' + wallHeight"
-                material="color: #fff4cc; side: double; transparent: true; opacity: 0.5;" 
+                material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
                 rotation="0 90 0"
                 :position="-hallWidth/2 + ' ' + wallHeight/2 + ' 0'">
       </a-entity>
@@ -28,7 +28,7 @@
       <!-- Wall right repeat: 4 200" -->
       <a-entity id="wall-right"
                 :geometry="'primitive: plane; width:' + wallWidth + '; height: ' + wallHeight"
-                material="color: #fff4cc; side: double; transparent: true; opacity: 0.5;"
+                material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;"
                 rotation="180 90 0"
                 :position="hallWidth/2 + ' ' + wallHeight/2 + ' 0'">
       </a-entity>
@@ -38,8 +38,6 @@
       
       <!-- Globe  -->
       <globe position="0 1.2 -4" :geoCoordinates="geoCoord"/>
-        
-
       
       <!-- Earth -->
       <a-sphere id="Earth" position="0 1.2 -4" radius=".99" 
