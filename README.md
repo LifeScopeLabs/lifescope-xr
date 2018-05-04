@@ -206,5 +206,15 @@ Social Wars in React VR. A VR demo using the BitScoop Platform for Social Login.
 
 
 .yarnrc --ignore-engines true
-yarn install --ignore-engines
+
 yarn add file:../lifescope-objects --save --ignore-engines
+
+In objects
+
+yarn install --ignore-engines
+yarn link
+
+In XR
+
+yarn install --ignore-engines
+yarn link lifescope-objects
