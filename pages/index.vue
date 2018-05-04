@@ -39,7 +39,6 @@ import axios from 'axios';
 import gallery from "../components/gallery.vue";
 
 import imageLoader from "../components/util/image-loader.vue";
-//import { Vue } from 'vue/types/vue';
 
 console.log("from index.vue <script>")
 export default {
@@ -47,29 +46,23 @@ export default {
         gallery,
         imageLoader
     },
-    asyncData (context) {
+    async asyncData (context) {
       console.log("asyncData");
 
       //debugger; // eslint-disable-line
             
-      return axios("http://localhost:3000/test/content.json")
-      .then(function(res) {
-        //console.log(res.data)
-        return res.data;
-        })
-      .then(function(loadedJson) {        
-        var result = [];
-        var someData = loadedJson.forEach(element => {
-          var item = new context.app.LSObj.Content(element);
-          result.push(item);
+      var testVar = await axios("http://localhost:3000/test/content.json");
+      testVar = testVar.data;     
+      var result = [];
+      var someData = testVar.forEach(element => {
+        var item = new context.app.LSObj.Content(element);
+        result.push(item);
           //console.log(item instanceof context.app.LSObj.LSObj);
           //console.log(item)
         });
-
+        //console.log(result)
         return { content: result };
-      });
-
-    }
+      }
     
   }
 </script>
