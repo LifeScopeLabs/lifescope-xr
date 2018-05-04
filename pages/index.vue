@@ -19,12 +19,10 @@
 
     <!-- Load assets with imageLoader -->
     <!-- https://www.pexels.com/search/travel/ -->
-    <imageLoader v-for="wimage in content"
-                  :key="wimage.id"
-                  :image='wimage' />
+    <imageLoader :LSObjs='LSObjs' />
 
     <!-- gallery -->
-    <gallery :content="content"/>
+    <gallery :LSObjs="LSObjs"/>
 
     <!-- Sky   change id to class?-->
     <a-sky id="Sky" src="#sky" rotation="90 0 90">
@@ -61,7 +59,7 @@ export default {
           //console.log(item)
         });
         //console.log(result)
-        return { content: result };
+        return { LSObjs: result };
       }
     
   }

@@ -1,9 +1,10 @@
 <template>
 
     <a-assets>
-        <img :key="this.workaround()"
-            :id="this.workaround()"
-            :src="this.imageSrc()">
+        <img v-for="image in LSObjs"
+            :key="image.id"
+            :id="image.id"
+            :src="imageSrc(image)">
     </a-assets>
     
 </template>
@@ -12,32 +13,26 @@
 import Vue from 'vue'
 
 export default {
-    props:  {image: Vue.LSObj.LSObj},
+    props:  ['LSObjs'],
     
-    asyncData (context) {
-      console.log("image-loader: asyncData");
-      //debugger; //eslint-disable-line
-      return {acontext: context}
-    },
     methods: {
         workaround: function () {
             return this.image.id;
         },
-        imageSrc: function () {
+        imageSrc: function (image) {
             var x = '';
-            var y = this.image;  // is there a better solution?
             //debugger; // eslint-disable-line
 
             //console.log(Vue.LSObj.Content)
             
-            if (y instanceof Vue.LSObj.Content) {
-                x = y.embed_thumbnail; 
+            if (image instanceof Vue.LSObj.Content) {
+                x = image.embed_thumbnail; 
                 //console.log(x);
-            } else if (this.image instanceof Vue.LSObj.Contacts) {
-                x = this.image.avatar_url;
+            } else if (image instanceof Vue.LSObj.Contacts) {
+                x = image.avatar_url;
             } else {
                 x = '/iris.jpg';
-                 console.log("not a lifescopeObject");
+                console.log("not a lifescopeObject");
             }
             
            //x = y.embed_thumbnail;

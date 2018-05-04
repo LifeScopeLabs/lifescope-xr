@@ -34,7 +34,7 @@
       </a-entity>
 
       <!-- Carousel -->
-      <gallery-carousel v-bind:content='content'/>
+      <gallery-carousel v-bind:LSObjs='LSObjs'/>
       
       <!-- Globe  -->
       <globe position="0 1.2 -4" :geoCoordinates="geoCoord"/>
@@ -75,20 +75,16 @@ export default {
         acompHighlight
     },
 
-    props: {'content': {
-                        validator: function (value) {
-                            console.log("validator: " + (value[0] instanceof Vue.LSObj.LSObj).toString())
-                            return value[0] instanceof Vue.LSObj.LSObj;
-                        }}
-    },
+    props: ['LSObjs'],
+    
 
     methods: {
-        contentToGeoPoints: function(content) {
+        contentToGeoPoints: function(LSObjs) {
         // returns an array of points (lat/long pairs)
         // extracted from content objects
         var points = [];
 
-        for (var c of content) {
+        for (var c of LSObjs) {
           points.push(c.homepoint)
         }
 

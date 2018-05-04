@@ -28,7 +28,7 @@ import Vue from 'vue'
 
 console.log("from carousel-item.vue <script>")
 export default {
-    props: {image: Vue.LSObj.LSObj},
+    props: ['image'],
 
     computed: {
         imageMaterial: function () {
