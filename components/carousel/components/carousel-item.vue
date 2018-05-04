@@ -33,7 +33,8 @@ export default {
     computed: {
         imageMaterial: function () {
             //console.log("id: " + this.image.id)
-            return 'src: #' + this.image.id + '; side: double'
+            debugger;
+            return 'src: #image-' + this.image.id + '; side: double'
         }
     },
 

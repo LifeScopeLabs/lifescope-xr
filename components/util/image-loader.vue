@@ -2,8 +2,8 @@
 
     <a-assets>
         <img v-for="image in LSObjs"
-            :key="image.id"
-            :id="image.id"
+            :key="'image-' + image.id"
+            :id="'image-' + image.id"
             :src="imageSrc(image)">
     </a-assets>
     
@@ -16,19 +16,19 @@ export default {
     props:  ['LSObjs'],
     
     methods: {
-        workaround: function () {
-            return this.image.id;
-        },
+
         imageSrc: function (image) {
             var x = '';
             //debugger; // eslint-disable-line
 
             //console.log(Vue.LSObj.Content)
+            //console.log(this)
+            //console.log(context.LSObj)
             
-            if (image instanceof Vue.LSObj.Content) {
+            if (image instanceof this.$store.state.LSObjs.Content) {
                 x = image.embed_thumbnail; 
-                //console.log(x);
-            } else if (image instanceof Vue.LSObj.Contacts) {
+                console.log(x);
+            } else if (image instanceof this.$store.state.LSObjs.Contact) {
                 x = image.avatar_url;
             } else {
                 x = '/iris.jpg';
@@ -48,35 +48,4 @@ export default {
         }
     }
 }
-/*
-        {image: {
-            type: Vue.LSObj.Content,
-            required: true
-        }
-    },
-    
-    {
-  id: '52',
-  connection: 'asdfa',
-  connection_id_string: '53',
-  created: '2018-04-17T18:25:43.511Z',
-  embed_content: 'aContent',
-  embed_format: 'email',
-  embed_thumbnail: '/adventure-ball-shaped-blur.jpg',
-  identifier: '54',
-  mimetype: 'text/plain',
-  owner: 'me',
-  provider_name: 'Google',
-  remote_id: '10',
-  tagMasks:
-   { added: [ 'adsfs', 'ewaf' ],
-     removed: [ 'adsfs', 'ewaf' ],
-     source: [ 'adsfs', 'ewaf' ] },
-  text: 'words',
-  title: 'aTitle',
-  type: 'someType',
-  updated: '2018-04-17T18:25:43.511Z',
-  url: 'https://duckduckgo.com/?q=tor',
-  user_id: '345',
-  user_id_string: '234' }*/
 </script>

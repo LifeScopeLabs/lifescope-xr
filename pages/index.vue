@@ -46,19 +46,19 @@ export default {
     },
     async asyncData (context) {
       console.log("asyncData");
-
+      //console.log(context)
       //debugger; // eslint-disable-line
             
       var testVar = await axios("http://localhost:3000/test/content.json");
       testVar = testVar.data;     
       var result = [];
       var someData = testVar.forEach(element => {
-        var item = new context.app.LSObj.Content(element);
+        var item = new context.store.state.LSObjs.Content(element);
         result.push(item);
           //console.log(item instanceof context.app.LSObj.LSObj);
           //console.log(item)
         });
-        //console.log(result)
+        //console.log(context.app.LSObj)
         return { LSObjs: result };
       }
     
