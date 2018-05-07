@@ -1,12 +1,15 @@
+import Vue from 'vue'
 import Vuex from 'vuex'
 import lifescopeObjects from 'lifescope-objects';
 
-const createStore = () => {
-  return new Vuex.Store({
+Vue.use(Vuex);
+
+debugger
+
+const store = () => new Vuex.Store({
     state: {
       LSObjs: lifescopeObjects
     }
-  })
-}
+  });
 
-export default createStore
+export default store;

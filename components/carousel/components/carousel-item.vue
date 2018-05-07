@@ -24,8 +24,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
-
 console.log("from carousel-item.vue <script>")
 export default {
     props: ['image'],
@@ -33,7 +31,7 @@ export default {
     computed: {
         imageMaterial: function () {
             //console.log("id: " + this.image.id)
-            debugger;
+            // debugger;
             return 'src: #image-' + this.image.id + '; side: double'
         }
     },

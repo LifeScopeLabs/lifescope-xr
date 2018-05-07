@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     build: {
       vendor: [
         'aframe',
@@ -8,7 +8,9 @@ module.exports = {
       ]
     },
     plugins: [
-      '~/plugins/geojson-plugin.js',
-      '~/plugins/lifescope-objects-plugin.js'
-    ]
+      '~/plugins/geojson-plugin.js'
+    ],
+    babel: {
+      presets: ['es2015', 'stage-3']
+    }
   }

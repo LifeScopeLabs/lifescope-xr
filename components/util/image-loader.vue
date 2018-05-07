@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
+// let lifescopeObjects = require('lifescope-objects');
 
 export default {
     props:  ['LSObjs'],
@@ -19,24 +19,20 @@ export default {
 
         imageSrc: function (image) {
             var x = '';
-            //debugger; // eslint-disable-line
-
-            //console.log(Vue.LSObj.Content)
-            //console.log(this)
-            //console.log(context.LSObj)
+            debugger; // eslint-disable-line
             
-            if (image instanceof this.$store.state.LSObjs.Content) {
-                x = image.embed_thumbnail; 
-                console.log(x);
-            } else if (image instanceof this.$store.state.LSObjs.Contact) {
-                x = image.avatar_url;
-            } else {
-                x = '/iris.jpg';
-                console.log("not a lifescopeObject");
-            }
+        //     if (image instanceof lifescopeObjects.Content) {
+        //         x = image.embed_thumbnail; 
+        //         console.log(x);
+        //     } else if (image instanceof lifescopeObjects.Contact) {
+        //         x = image.avatar_url;
+        //     } else {
+        //         x = '/iris.jpg';
+        //         console.log("not a lifescopeObject");
+        //     }
             
-           //x = y.embed_thumbnail;
-            x = "/photos" + x;
+        //    //x = y.embed_thumbnail;
+        //     x = "/photos" + x;
 
             //x = x.replace(/\.[^/.]+$/, "")  // remove extension
             //x = x.replace(/^\//g, '') // remove leading slash
