@@ -4,10 +4,10 @@
     "version": "1.0.0",
     "author": "mohrtw",
     "scripts": {
-        "dev-start": "webpack-dev-server",
-        "start": "node ./server.js",
         "build": "webpack",
-        "b-start": "babel-node ./server.js"
+        "start": "babel-node ./server.js",
+        "dev-start": "webpack-dev-server",
+        "old-start": "node ./server.js"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
@@ -41,6 +41,7 @@
         "aframe-layout-component": "^4.3.1",
         "axios": "^0.18.0",
         "babel-polyfill": "^6.26.0",
+        "config": "^1.30.0",
         "easyrtc": "^1.1.0",
         "express": "^4.16.3",
         "networked-aframe": "^0.6.1",
