@@ -8,14 +8,20 @@
             "type": "node",
             "request": "launch",
             "name": "xr",
-            "runtimeExecutable": "yarn",
+            "runtimeExecutable": "npm",
             "runtimeArgs": [
-                "debug"
+                "start"
             ],
-            "port": 3333,
+            "port": 7776,
             "env": {
                 "NODE_ENV":"dev"
             }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "naf xr",
+            "program": "${workspaceFolder}/server.js"
         }
     ]
 }

@@ -8,17 +8,8 @@
         </a-entity>
 
         <a-entity scale="2 2 1"
-                  :text="this.textString(image.embed_thumbnail)"
+                  :text="this.textString(image.name)"
                   position="0 -.2 0"/>
-        <a-entity scale="2 2 1"
-                  :text="this.textString('connection: ' + image.connection)"
-                  position="0 -.4 0"/>
-        <a-entity scale="2 2 1"
-                  :text="this.textString('updated: ' + image.updated)"
-                   position="0 -.6 0"/>
-        <a-entity scale="2 2 1"
-                  :text="this.textString('homepoint: ' + image.homepoint)"
-                   position="0 -.8 0"/>
     </a-entity>
     
 </template>

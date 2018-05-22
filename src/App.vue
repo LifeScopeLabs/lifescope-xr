@@ -61,7 +61,8 @@ export default {
     },
     data() {
       return {
-        LSObjs: []
+        LSObjs: [],
+        roomConfg: {},
       }
     },
 
@@ -88,11 +89,19 @@ export default {
       this.createAvatarTemplate();
       this.addAvatarTemplate();
 
-      
-      this.getObjs().then((res) => {
-          this.LSObjs = res.LSObjs;
+      this.getRoomConfig().then((res) => {
+          console.log("getRoomConfig().then")
+
+          this.roomConfg = res.roomConfg;
+
+          this.getObjs().then((res) => {
+            this.LSObjs = res.LSObjs;
+            }
+          );
         }
       );
+
+      
       this.$nextTick(function () {
           // Code that will run only after the
           // entire view has been rendered
@@ -110,17 +119,27 @@ export default {
 
 
     methods: {
+      getRoomConfig () {
+        console.log("getRoomConfig");
+        return axios.get("/roomconfig")
+        .then((res) => {
+          console.log(res.data);
+          return {roomConfg: res.data}
+        })
+      },
+
       getObjs () {
         console.log("getObjs");
-        //debugger; // eslint-disable-line
-
-        return axios.get("http://localhost:7070/static/test/content.json")
+        
+        var x = this.roomConfg.bucket_route + '/' + this.roomConfg.BUCKET_NAME + '/' + this.roomConfg.BUCKET_PATH;
+        console.log(x);
+        return axios.get(x)
         .then((res) => {
           var result = [];
           console.log(res.data);
           var someData = res.data.forEach(element => {
-          //var item = new context.store.state.LSObjs.Content(element);
-          result.push(element);
+            //var item = new context.store.state.LSObjs.Content(element);
+            result.push(element);
             //console.log(item instanceof context.app.LSObj.LSObj);
             //console.log(item)
           });

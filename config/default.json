@@ -2,7 +2,7 @@
   "address": "http://localhost:8081",
   "objectMaxLimit": 100,
   
-  "domain": "app.lifescope.io",
+  "domain": "xr.lifescope.io",
   "listenPort": 3002,
 
   "logging": {
@@ -25,5 +25,23 @@
     {"url":"stun:stun1.l.google.com:19302"},
     {"url":"stun:stun2.l.google.com:19302"},
     {"url":"stun:stun3.l.google.com:19302"}
-  ]
+  ],
+
+  "AWSCred": {
+    "AWSAccessKeyId": "1234",
+    "AWSSecretKey": "5678"
+  },
+
+  "ROOM_CONFIG": {
+    "bucket_route": "https://s3.amazonaws.com",
+    "BUCKET_NAME": "lifescope-static",
+    "BUCKET_PATH": "test/content/",
+    "floor": "",
+    "wall": "",
+    "sky": "",
+    "wallWidth": 400,
+    "wallHeight": 4,
+    "hallWidth": 8
+  }
+
 }

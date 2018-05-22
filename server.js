@@ -3,13 +3,60 @@ import http from "http";
 import easyRTC from "easyrtc";
 import express from 'express';
 import socketIO from "socket.io";
-
+import AWS from 'aws-sdk';
 
 const ICE_SERVERS = config.iceServers;
 const LISTEN_PORT = config.listenPort;
 const NAF_LISTEN_PORT = 7070;
 
+const AWSAccessKeyId = config.AWSCred.AWSAccessKeyId;
+const AWSSecretKey = config.AWSCred.AWSSecretKey;
+const BUCKET_NAME = config.ROOM_CONFIG.BUCKET_NAME;
+const BUCKET_PATH = config.ROOM_CONFIG.BUCKET_PATH;
+const ROOM_CONFIG = config.ROOM_CONFIG;
+
+var gallery_content = [];
+
 const server = express();
+
+const AWSConfig = {
+    "accessKeyId": AWSAccessKeyId,
+    "secretAccessKey": AWSSecretKey,
+    "region": 'us-east-1'
+};
+ 
+// Set aws config
+AWS.config.update(AWSConfig);
+
+// Create the parameters for calling createBucket
+var bucketParams = {
+   Bucket : BUCKET_NAME
+};                    
+                             
+var s3 = new AWS.S3({apiVersion: '2006-03-01'});
+
+s3.listObjects(bucketParams, function(err, data) {
+    if (err) {console.log(err, err.stack);}
+    else {
+        //debugger;
+        for (var content of data.Contents) {
+            var re_ext=/\.[0-9a-z]+$/i;
+            var re_name=/\/([0-9a-z\-\s]+)\.[0-9a-z]+$/i;
+
+            if (content.Key.startsWith(BUCKET_PATH) && !content.Key.endsWith('/')) {
+                
+                var result = {
+                    id: content.Key.match(re_name)[1].replace(new RegExp(' ', 'g'), '-'),
+                    route: content.Key,
+                    name: content.Key.match(re_name)[1].replace(new RegExp('-', 'g'), ' '),
+                    ext: content.Key.match(re_ext)[0]
+                };
+                //console.log(result);
+                gallery_content.push(result);
+            }
+        }
+    }
+});
 
 
 Promise.resolve()
@@ -23,7 +70,18 @@ Promise.resolve()
     server.use(express.static('.'));
     server.use('/static', express.static('static'));
     server.use(express.static('./dist'));
-    
+
+    // test content
+    server.get('/test/api/content', function(req, res) {
+        //debugger;
+        res.json(gallery_content);   
+    });
+
+    // room configuration
+    server.get('/roomconfig', function (req, res) {
+        res.json(ROOM_CONFIG);
+    });
+
     // start websockets for NAF
     // Start Express http server for NAF
     var NAFServer = http.createServer(server);
@@ -70,5 +128,7 @@ Promise.resolve()
     NAFServer.listen(NAF_LISTEN_PORT, function () {
         console.log('NAFServer listening on http://localhost:' + NAF_LISTEN_PORT);
     });
+
+    server.listen(LISTEN_PORT, () => console.log('LIFESCOPE XR config server listening on port:' + LISTEN_PORT));
 
   })

@@ -1,11 +1,12 @@
 {
-    "name": "naf-vue",
-    "description": "A Vue app using Networked Aframe",
+    "name": "lifescope-xr",
+    "description": "Lifescope Extened Reality Gallery",
     "version": "1.0.0",
-    "author": "mohrtw",
+    "author": "(https://lifescope.io)",
     "scripts": {
         "build": "webpack",
-        "start": "babel-node ./server.js",
+        "start": "NODE_ENV=dev babel-node ./server.js",
+        "debug": "NODE_ENV=dev babel-node ./server.js --inspect-brk=localhost:7776",
         "dev-start": "webpack-dev-server",
         "old-start": "node ./server.js"
     },
@@ -39,11 +40,13 @@
         "aframe": "^0.8.2",
         "aframe-geojson-component": "^1.2.4",
         "aframe-layout-component": "^4.3.1",
+        "aws-sdk": "^2.244.1",
         "axios": "^0.18.0",
         "babel-polyfill": "^6.26.0",
         "config": "^1.30.0",
         "easyrtc": "^1.1.0",
         "express": "^4.16.3",
+        "fs": "0.0.1-security",
         "networked-aframe": "^0.6.1",
         "socket.io": "^2.1.0",
         "three": "^0.92.0"
