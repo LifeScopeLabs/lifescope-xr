@@ -7,3 +7,6 @@ yarn-error.log
 yarn.lock
 dist/
 dev.json
+dev.config
+prod.json
+prod.config

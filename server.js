@@ -7,23 +7,25 @@ import AWS from 'aws-sdk';
 
 const ICE_SERVERS = config.iceServers;
 const LISTEN_PORT = config.listenPort;
-const NAF_LISTEN_PORT = 7070;
-
-const AWSAccessKeyId = config.AWSCred.AWSAccessKeyId;
-const AWSSecretKey = config.AWSCred.AWSSecretKey;
+const NAF_LISTEN_PORT = 3003;
 const BUCKET_NAME = config.ROOM_CONFIG.BUCKET_NAME;
 const BUCKET_PATH = config.ROOM_CONFIG.BUCKET_PATH;
 const ROOM_CONFIG = config.ROOM_CONFIG;
 
-var gallery_content = [];
 
-const server = express();
+const AWSAccessKeyId = config.AWSCred.AWSAccessKeyId;
+const AWSSecretKey = config.AWSCred.AWSSecretKey;
+
 
 const AWSConfig = {
     "accessKeyId": AWSAccessKeyId,
     "secretAccessKey": AWSSecretKey,
     "region": 'us-east-1'
 };
+
+
+var gallery_content = [];
+const server = express();
  
 // Set aws config
 AWS.config.update(AWSConfig);

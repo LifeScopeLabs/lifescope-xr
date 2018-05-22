@@ -1,12 +1,12 @@
 {
     "name": "lifescope-xr",
-    "description": "Lifescope Extened Reality Gallery",
+    "description": "Lifescope XR Gallery",
     "version": "1.0.0",
     "author": "(https://lifescope.io)",
     "scripts": {
         "build": "webpack",
-        "start": "NODE_ENV=dev babel-node ./server.js",
-        "debug": "NODE_ENV=dev babel-node ./server.js --inspect-brk=localhost:7776",
+        "start": "babel-node ./server.js",
+        "debug": "babel-node ./server.js --inspect-brk=localhost:8080",
         "dev-start": "webpack-dev-server",
         "old-start": "node ./server.js"
     },
@@ -47,6 +47,7 @@
         "easyrtc": "^1.1.0",
         "express": "^4.16.3",
         "fs": "0.0.1-security",
+        "jshint": "^2.9.5",
         "networked-aframe": "^0.6.1",
         "socket.io": "^2.1.0",
         "three": "^0.92.0"

@@ -1,7 +1,7 @@
 {
   "address": "http://localhost:8081",
   "objectMaxLimit": 100,
-  
+  "ebs_address": "http://lifescope-xr.us-east-1.elasticbeanstalk.com/",
   "domain": "xr.lifescope.io",
   "listenPort": 3002,
 

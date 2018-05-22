@@ -10,18 +10,13 @@
             "name": "xr",
             "runtimeExecutable": "npm",
             "runtimeArgs": [
-                "start"
+                "run-script",
+                "debug"
             ],
-            "port": 7776,
+            "port": 8080,
             "env": {
-                "NODE_ENV":"dev"
+                "NODE_ENV": "prod"
             }
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "naf xr",
-            "program": "${workspaceFolder}/server.js"
         }
     ]
 }
