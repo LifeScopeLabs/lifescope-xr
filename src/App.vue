@@ -1,12 +1,5 @@
 <template>
-  <a-scene networked-scene="
-      app: myApp;
-      room: room1;
-      debug: true;
-      audio: true;
-      adapter: easyrtc;
-      connectOnLoad: true;
-    ">
+  <a-scene networked-scene="app: myApp; room: roomName; debug: true; audio: true; adapter: easyrtc; connectOnLoad: true;">
     <!-- Load assets -->
     <a-assets class="assets-sky">
       <img id="sky" src="../static/images/nightsky.jpg">
@@ -26,7 +19,7 @@
 
     <!-- Load assets with imageLoader -->
     <!-- https://www.pexels.com/search/travel/ -->
-    <imageLoader :LSObjs='LSObjs' />
+    <imageLoader :LSObjs='LSObjs' :roomConfig='roomConfig' />
 
     <!-- Avatar Template -->
     <a-assets class="assets-avatar" v-pre>
@@ -62,7 +55,8 @@ export default {
     data() {
       return {
         LSObjs: [],
-        roomConfg: {},
+        roomConfig: {},
+        roomName: 'room1'
       }
     },
 
@@ -81,9 +75,12 @@ export default {
     mounted () {
       console.log("mounted");
 
+
+
       document.body.addEventListener('connected', function (evt) {
         console.log('connected event. clientId =', evt.detail.clientId);
         document.getElementById('player').setAttribute('visible', 'false');
+        console.log(this.roomName);
       });
       
       this.createAvatarTemplate();
@@ -92,7 +89,8 @@ export default {
       this.getRoomConfig().then((res) => {
           console.log("getRoomConfig().then")
 
-          this.roomConfg = res.roomConfg;
+          this.roomConfig = res.roomConfig;
+          this.roomName = res.roomConfig.ROOM_NAME;
 
           this.getObjs().then((res) => {
             this.LSObjs = res.LSObjs;
@@ -124,24 +122,29 @@ export default {
         return axios.get("/roomconfig")
         .then((res) => {
           console.log(res.data);
-          return {roomConfg: res.data}
+          return {roomConfig: res.data}
         })
       },
 
       getObjs () {
         console.log("getObjs");
         
-        var x = this.roomConfg.bucket_route + '/' + this.roomConfg.BUCKET_NAME + '/' + this.roomConfg.BUCKET_PATH;
+        var x = '/' + this.roomConfig.BUCKET_PATH;
+
+        // if (!this.$route.query.test){
+        //   this.$route.query.test = 'ls-room';
+        // }
+
+        // room = this.$route.query.test || 'ls-room';
+
         console.log(x);
         return axios.get(x)
         .then((res) => {
+          //console.log("getObjs: axios.get.then");
           var result = [];
           console.log(res.data);
-          var someData = res.data.forEach(element => {
-            //var item = new context.store.state.LSObjs.Content(element);
+          var someData = res.data[this.roomName].forEach(element => {
             result.push(element);
-            //console.log(item instanceof context.app.LSObj.LSObj);
-            //console.log(item)
           });
           return { LSObjs: result }
         })

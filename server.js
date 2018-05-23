@@ -7,7 +7,7 @@ import AWS from 'aws-sdk';
 
 const ICE_SERVERS = config.iceServers;
 const LISTEN_PORT = config.listenPort;
-const NAF_LISTEN_PORT = 3003;
+const NAF_LISTEN_PORT = 7070;
 const BUCKET_NAME = config.ROOM_CONFIG.BUCKET_NAME;
 const BUCKET_PATH = config.ROOM_CONFIG.BUCKET_PATH;
 const ROOM_CONFIG = config.ROOM_CONFIG;
@@ -24,7 +24,7 @@ const AWSConfig = {
 };
 
 
-var gallery_content = [];
+var gallery_content = {};
 const server = express();
  
 // Set aws config
@@ -41,12 +41,22 @@ s3.listObjects(bucketParams, function(err, data) {
     if (err) {console.log(err, err.stack);}
     else {
         //debugger;
+
         for (var content of data.Contents) {
             var re_ext=/\.[0-9a-z]+$/i;
             var re_name=/\/([0-9a-z\-\s]+)\.[0-9a-z]+$/i;
+            var re_room=/^test\/content\/([0-9a-z\-]+\/)+/i;
+            var room_name = "";
 
             if (content.Key.startsWith(BUCKET_PATH) && !content.Key.endsWith('/')) {
-                
+
+                room_name = content.Key.slice(BUCKET_PATH.length).split('/')[0];
+
+                    if (!gallery_content[room_name]) {
+                        gallery_content[room_name] = [];
+                    }
+            
+
                 var result = {
                     id: content.Key.match(re_name)[1].replace(new RegExp(' ', 'g'), '-'),
                     route: content.Key,
@@ -54,7 +64,7 @@ s3.listObjects(bucketParams, function(err, data) {
                     ext: content.Key.match(re_ext)[0]
                 };
                 //console.log(result);
-                gallery_content.push(result);
+                gallery_content[room_name].push(result);
             }
         }
     }
@@ -68,15 +78,23 @@ Promise.resolve()
         iceServers: ICE_SERVERS
     };
 
+
+    // CORS
+    server.use(function(req, res, next) {
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+      });
+
     // serve static files
     server.use(express.static('.'));
     server.use('/static', express.static('static'));
     server.use(express.static('./dist'));
 
     // test content
-    server.get('/test/api/content', function(req, res) {
-        //debugger;
-        res.json(gallery_content);   
+    server.get('/test/content/', function(req, res) {
+        // //debugger;
+        res.json(gallery_content);
     });
 
     // room configuration
