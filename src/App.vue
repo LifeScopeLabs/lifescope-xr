@@ -1,5 +1,8 @@
 <template>
   <a-scene :networked-scene="'app: myApp; room: ' + roomName + '; debug: true; audio: true; adapter: easyrtc; connectOnLoad: true;'">
+    <!-- Register Aframe components -->
+    <fitTexture/>
+    
     <!-- Load assets -->
     <a-assets class="assets-sky">
       <img id="sky" src="../static/images/nightsky.jpg">
@@ -44,13 +47,14 @@ import axios from 'axios';
 
 import gallery from "./components/gallery.vue";
 import imageLoader from "./components/util/image-loader.vue";
-
+import fitTexture from "./components/aframe/fit-texture-component.vue";
 
 console.log("from App.vue <script>")
 export default {
     components: {
         gallery,
-        imageLoader
+        imageLoader,
+        fitTexture
     },
     data() {
       return {

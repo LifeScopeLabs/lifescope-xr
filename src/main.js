@@ -7,7 +7,6 @@ import App from './App.vue';
 import 'aframe';
 import 'aframe-layout-component';
 import 'networked-aframe';
-//import 'easyrtc';
 
 import 'three';
 
