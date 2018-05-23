@@ -1,5 +1,5 @@
 <template>
-  <a-scene networked-scene="app: myApp; room: roomName; debug: true; audio: true; adapter: easyrtc; connectOnLoad: true;">
+  <a-scene :networked-scene="'app: myApp; room: ' + roomName + '; debug: true; audio: true; adapter: easyrtc; connectOnLoad: true;'">
     <!-- Load assets -->
     <a-assets class="assets-sky">
       <img id="sky" src="../static/images/nightsky.jpg">
@@ -56,7 +56,7 @@ export default {
       return {
         LSObjs: [],
         roomConfig: {},
-        roomName: 'room1'
+        roomName: 'ls-room'
       }
     },
 
@@ -75,6 +75,9 @@ export default {
     mounted () {
       console.log("mounted");
 
+      //debugger;
+      console.log("query data:" + this.$route.query.roomName);
+
 
 
       document.body.addEventListener('connected', function (evt) {
@@ -90,7 +93,7 @@ export default {
           console.log("getRoomConfig().then")
 
           this.roomConfig = res.roomConfig;
-          this.roomName = res.roomConfig.ROOM_NAME;
+          //this.roomName = res.roomConfig.ROOM_NAME;
 
           this.getObjs().then((res) => {
             this.LSObjs = res.LSObjs;
@@ -131,11 +134,11 @@ export default {
         
         var x = '/' + this.roomConfig.BUCKET_PATH;
 
-        // if (!this.$route.query.test){
-        //   this.$route.query.test = 'ls-room';
-        // }
+        if (!this.$route.query.room){
+          this.$route.query.room = 'ls-room';
+        }
 
-        // room = this.$route.query.test || 'ls-room';
+        this.roomName = this.$route.query.room || 'ls-room';
 
         console.log(x);
         return axios.get(x)
