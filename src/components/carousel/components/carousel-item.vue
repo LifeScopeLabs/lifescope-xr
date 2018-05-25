@@ -5,7 +5,8 @@
             :material="this.imageMaterial"
             rotation="0 0 0"
             position="0 1 0"
-            fit-texture>
+            src-fit 
+            >
         </a-entity>
 
         <a-entity scale="2 2 1"
@@ -17,6 +18,8 @@
 
 <script>
 //            geometry="primitive: plane; width: 3; height: 2"
+// fit-texture
+// 
 
 console.log("from carousel-item.vue <script>")
 export default {

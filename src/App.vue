@@ -1,19 +1,25 @@
 <template>
   <a-scene :networked-scene="'app: myApp; room: ' + roomName + '; debug: true; audio: true; adapter: easyrtc; connectOnLoad: true;'">
     <!-- Register Aframe components -->
-    <fitTexture/>
-    
+    <!-- <fitTexture/> -->
+
     <!-- Load assets -->
     <a-assets class="assets-sky">
-      <img id="sky" src="../static/images/nightsky.jpg">
+      <img id="sky" src="https://s3.amazonaws.com/lifescope-static/xr/gallery/skybox/nightsky.jpg">
     </a-assets>
 
     <a-assets class="assets-floor">
-      <img id="floor" src="../static/images/floor.jpg">
+      <img id="floor" src="https://s3.amazonaws.com/lifescope-static/xr/gallery/floor/wood-panel.jpg">
     </a-assets>
 
     <a-assets class="assets-earth">
-      <img id="earth" src="../static/earth/Albedo.jpg">
+      <img id="earth" src="https://s3.amazonaws.com/lifescope-static/xr/components/globe/Albedo.jpg">
+    </a-assets>
+
+    <!-- gltf -->
+    <a-assets class="assets-gltf">
+      <a-gltf-model id="bear" src="../static/bear_on_balloons/scene.gltf">
+        </a-gltf-model>
     </a-assets>
 
     <!-- Geojson -->
@@ -47,14 +53,14 @@ import axios from 'axios';
 
 import gallery from "./components/gallery.vue";
 import imageLoader from "./components/util/image-loader.vue";
-import fitTexture from "./components/aframe/fit-texture-component.vue";
+// import fitTexture from "./components/aframe/fit-texture-component.vue";
 
 console.log("from App.vue <script>")
 export default {
     components: {
         gallery,
-        imageLoader,
-        fitTexture
+        imageLoader
+        // fitTexture
     },
     data() {
       return {
