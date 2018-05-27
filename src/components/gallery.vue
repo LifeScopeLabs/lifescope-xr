@@ -29,23 +29,16 @@
       <gallery-carousel v-bind:LSObjs='LSObjs'/>
       
 
-      <!-- gltf objects -->
-      <!-- Bear on Ballons -->
-    <a-entity position="2 5 -20"
-              rotation="0 77 35">
-      <a-gltf-model src="#bear">
-        </a-gltf-model>
-    </a-entity>>
 
       <!-- Earth -->
       <a-sphere id="Earth" position="0 1.2 -4" radius=".99" 
-                material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;">
-                <!-- animation="attribute=rotation;
+                material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;"
+                animation="attribute=rotation;
                  easing=linear;
                  dur=150000;
                  fill=forwards;
                  to=0 360 0;
-                 repeat=indefinite;"> -->
+                 repeat=indefinite;">
           <!-- <a-animation attribute="rotation"
                  easing="linear" 
                  dur="150000"
@@ -53,6 +46,20 @@
                  to="0 360 0"
                  repeat="indefinite"></a-animation> -->
       </a-sphere>
+
+    <a-entity id="Logo" position="0 2.5 -4"
+              rotation="0 0 0">
+      <a-gltf-model src="#logo" scale="0.05 0.05 0.05">
+        </a-gltf-model>
+        <a-animation attribute="rotation"
+                 easing="linear" 
+                 dur="2700"
+                 fill="forwards"
+                 to="0 360 0"
+                 repeat="indefinite"></a-animation>
+    </a-entity>>
+
+
   </a-entity>
 </template>
 

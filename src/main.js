@@ -8,10 +8,7 @@ import 'aframe';
 import 'aframe-layout-component';
 import 'networked-aframe';
 import 'aframe-animation-component';
-// import 'aframe-fit-texture-component';
-// import 'aframe-src-fit-component';
-// require("@mohrtw/aframe-src-fit-component");
-import './components/util/src-fit-build';
+import 'aframe-src-fit-component';
 
 import 'three';
 

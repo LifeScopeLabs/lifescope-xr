@@ -5,21 +5,26 @@
 
     <!-- Load assets -->
     <a-assets class="assets-sky">
-      <img id="sky" src="https://s3.amazonaws.com/lifescope-static/xr/gallery/skybox/nightsky.jpg">
+      <img id="sky" src="https://s3.amazonaws.com/lifescope-static/xr/gallery/skybox/nightsky.jpg"
+      crossorigin="anonymous">
     </a-assets>
 
     <a-assets class="assets-floor">
-      <img id="floor" src="https://s3.amazonaws.com/lifescope-static/xr/gallery/floor/wood-panel.jpg">
+      <img id="floor" src="https://s3.amazonaws.com/lifescope-static/xr/gallery/floor/wood-panel.jpg"
+      crossorigin="anonymous">
     </a-assets>
 
     <a-assets class="assets-earth">
-      <img id="earth" src="https://s3.amazonaws.com/lifescope-static/xr/components/globe/Albedo.jpg">
+      <img id="earth" src="https://s3.amazonaws.com/lifescope-static/xr/components/globe/Albedo.jpg"
+      crossorigin="anonymous">
     </a-assets>
 
     <!-- gltf -->
     <a-assets class="assets-gltf">
-      <a-gltf-model id="bear" src="../static/bear_on_balloons/scene.gltf">
-        </a-gltf-model>
+      <!-- logo -->
+      <a-gltf-model id="logo" src="https://s3.amazonaws.com/lifescope-static/xr/logo/logo.gltf"
+                    crossorigin="anonymous">
+      </a-gltf-model>
     </a-assets>
 
     <!-- Geojson -->
