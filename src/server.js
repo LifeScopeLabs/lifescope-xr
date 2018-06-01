@@ -87,9 +87,9 @@ Promise.resolve()
       });
 
     // serve static files
-    server.use(express.static('.'));
     server.use('/static', express.static('static'));
     server.use(express.static('./dist'));
+    server.use('/dist', express.static('./dist'));
 
     // test content
     server.get('/test/content/', function(req, res) {
