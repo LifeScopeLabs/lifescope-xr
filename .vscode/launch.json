@@ -16,7 +16,8 @@
             "port": 8080,
             "env": {
                 "NODE_ENV": "prod"
-            }
+            },
+            "useWSL": true
         }
     ]
 }
