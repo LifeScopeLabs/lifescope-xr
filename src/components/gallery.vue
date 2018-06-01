@@ -32,19 +32,19 @@
 
       <!-- Earth -->
       <a-sphere id="Earth" position="0 1.2 -4" radius=".99" 
-                material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;"
-                animation="attribute=rotation;
+                material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;">
+                <!-- animation="attribute=rotation;
                  easing=linear;
                  dur=150000;
                  fill=forwards;
                  to=0 360 0;
-                 repeat=indefinite;">
-          <!-- <a-animation attribute="rotation"
+                 repeat=indefinite;"> -->
+          <a-animation attribute="rotation"
                  easing="linear" 
                  dur="150000"
                  fill="forwards"
                  to="0 360 0"
-                 repeat="indefinite"></a-animation> -->
+                 repeat="indefinite"></a-animation>
       </a-sphere>
 
     <a-entity id="Logo" position="0 2.5 -4"

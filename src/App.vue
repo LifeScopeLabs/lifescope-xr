@@ -40,7 +40,11 @@
     </a-assets>
 
     <!-- Player -->
-    <a-entity id="player" camera position="0 1.3 0" wasd-controls look-controls networked="template:#avatar-template;attachTemplateToLocal:true;">
+    <a-entity id="player-rig"
+          movement-controls="speed:0.05"
+          position="0 0 0">
+      <a-entity id="player" camera position="0 1.3 0" wasd-controls="reverseMouseDrag:true" look-controls touch-controls="reverseMouseDrag:true" networked="template:#avatar-template;attachTemplateToLocal:true;">
+      </a-entity>
     </a-entity>
 
     <!-- gallery -->
@@ -58,7 +62,6 @@ import axios from 'axios';
 
 import gallery from "./components/gallery.vue";
 import imageLoader from "./components/util/image-loader.vue";
-// import fitTexture from "./components/aframe/fit-texture-component.vue";
 
 console.log("from App.vue <script>")
 export default {

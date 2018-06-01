@@ -9,6 +9,8 @@ import 'aframe-layout-component';
 import 'networked-aframe';
 import 'aframe-animation-component';
 import 'aframe-src-fit-component';
+import 'aframe-input-mapping-component';
+import 'aframe-extras';
 
 import 'three';
 

@@ -1,5 +1,7 @@
 # How to run
 
+You need to put the aws credentials in config/
+
 ## install dependencies
 
 npm install
@@ -8,6 +10,6 @@ npm install
 
 npm run build
 
-## start server
+## start server w/ dev credentials
 
-npm run start
+NODE_ENV=dev npm run start
