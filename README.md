@@ -46,6 +46,8 @@ npm install --production
 
 npm run start
 
-### zip dist/, static/, and package.json
+### zip config/, dist/, static/, and package.json
 
-### deploy
+zip -r xr config/ dist/ package.json static/
+
+### upload xr.zip to elastic beanstalk

@@ -3,7 +3,8 @@
   "objectMaxLimit": 100,
   "ebs_address": "http://lifescope-xr.us-east-1.elasticbeanstalk.com/",
   "domain": "xr.lifescope.io",
-  "listenPort": 3002,
+  "listenPort": 3003,
+  "NAFListenPort": 3004,
 
   "logging": {
     "severity": "trace",

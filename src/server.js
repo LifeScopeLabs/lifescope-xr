@@ -7,7 +7,7 @@ import AWS from 'aws-sdk';
 
 const ICE_SERVERS = config.iceServers;
 const LISTEN_PORT = config.listenPort;
-const NAF_LISTEN_PORT = 7070;
+const NAF_LISTEN_PORT = config.NAFListenPort;
 const BUCKET_NAME = config.ROOM_CONFIG.BUCKET_NAME;
 const BUCKET_PATH = config.ROOM_CONFIG.BUCKET_PATH;
 const ROOM_CONFIG = config.ROOM_CONFIG;
