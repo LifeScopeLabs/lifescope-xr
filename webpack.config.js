@@ -47,13 +47,20 @@ module.exports = {
             },
           },
         ],
+      },
+      // easyrtc
+      {
+        test: require.resolve('./static/easyrtc/easyrtc.js'),
+        use: [{
+          loader: 'expose-loader',
+          options: 'easyrtc'
+        }]
       }
     ]
   },
   devServer: {
          port: 3000
   },
-  externals: ['socket.io', 'easyrtc'],
   plugins: [
     new VueLoaderPlugin(),
     new HtmlWebpackPlugin({

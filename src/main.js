@@ -3,6 +3,9 @@ import VueRouter from 'vue-router';
 
 import App from './App.vue';
 
+// import socketIO from 'socket.io-client';
+// import easyrtc from 'easyrtc';
+
 // must import aframe here to load components
 import 'aframe';
 import 'aframe-layout-component';
