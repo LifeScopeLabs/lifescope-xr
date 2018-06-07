@@ -48,10 +48,9 @@ NODE_ENV=prod npm run start
 
 ### zip config/, dist/, static/, and package.json
 
-zip -r xr config/ dist/ package.json static/
+zip -r xr .extensions/ .npmrc config/ dist/ package.json static/
 
 ### upload xr.zip to elastic beanstalk
-
 # [LifeScope-XR](https://github.com/LifeScopeLabs/lifescope-xr)
 
 ## [Repository](https://github.com/LifeScopeLabs/lifescope-xr)
