@@ -3,39 +3,29 @@
     <!-- Register Aframe components -->
 
     <!-- Load assets -->
-    <a-assets class="assets-sky">
+    <a-assets class="aframe-assets">
       <img id="sky" src="https://s3.amazonaws.com/lifescope-static/xr/gallery/skybox/nightsky.jpg"
       crossorigin="anonymous">
-    </a-assets>
 
-    <a-assets class="assets-floor">
       <img id="floor" src="https://s3.amazonaws.com/lifescope-static/xr/gallery/floor/wood-panel.jpg"
       crossorigin="anonymous">
-    </a-assets>
 
-    <a-assets class="assets-earth">
       <img id="earth" src="https://s3.amazonaws.com/lifescope-static/xr/components/globe/Albedo.jpg"
       crossorigin="anonymous">
-    </a-assets>
 
-    <!-- gltf -->
-    <a-assets class="assets-gltf">
+      <!-- gltf -->
       <!-- logo -->
       <a-gltf-model id="logo" src="https://s3.amazonaws.com/lifescope-static/xr/logo/logo.gltf"
                     crossorigin="anonymous">
       </a-gltf-model>
-    </a-assets>
 
-    <!-- Geojson -->
-    <a-assets class="assets-geo" id="geo-assets">
-    </a-assets>
+      <!-- Load assets with imageLoader -->
+      <imageLoader v-for="content in LSObjs"
+                :key="'image-loader-' + content.id"
+                :lsobj="content"
+                :roomConfig='roomConfig'
+      />
 
-    <!-- Load assets with imageLoader -->
-    <!-- https://www.pexels.com/search/travel/ -->
-    <imageLoader :LSObjs='LSObjs' :roomConfig='roomConfig' />
-
-    <!-- Avatar Template -->
-    <a-assets class="assets-avatar" v-pre>
     </a-assets>
 
     <!-- Player -->
@@ -211,7 +201,7 @@ export default {
         </template> 
         `);
 
-        document.getElementsByClassName('assets-avatar')[0].appendChild(frag);
+        document.getElementsByClassName('aframe-assets')[0].appendChild(frag);
 
       },
 

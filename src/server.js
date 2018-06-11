@@ -44,11 +44,12 @@ s3.listObjects(bucketParams, function(err, data) {
 
         for (var content of data.Contents) {
             var re_ext=/\.[0-9a-z]+$/i;
-            var re_name=/\/([0-9a-z\-\s]+)\.[0-9a-z]+$/i;
+            var re_name = /\/([0-9a-zA-Z\-\s]+)\.[0-9a-zA-Z]+$/i; //\/([0-9a-z\-\s]+)\.[0-9a-z]+
             var re_room=/^test\/content\/([0-9a-z\-]+\/)+/i;
             var room_name = "";
 
             if (content.Key.startsWith(BUCKET_PATH) && !content.Key.endsWith('/')) {
+                //console.log(content);
 
                 room_name = content.Key.slice(BUCKET_PATH.length).split('/')[0];
 

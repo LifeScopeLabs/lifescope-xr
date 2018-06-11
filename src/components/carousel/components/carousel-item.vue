@@ -17,9 +17,7 @@
 </template>
 
 <script>
-//            geometry="primitive: plane; width: 3; height: 2"
-// fit-texture
-// 
+
 
 console.log("from carousel-item.vue <script>")
 export default {

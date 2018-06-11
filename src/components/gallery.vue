@@ -26,7 +26,7 @@
       </a-entity>
 
       <!-- Carousel -->
-      <gallery-carousel v-bind:LSObjs='LSObjs'/>
+      <gallery-carousel :LSObjs='LSObjs'/>
       
 
 
@@ -53,7 +53,7 @@
         </a-gltf-model>
         <a-animation attribute="rotation"
                  easing="linear" 
-                 dur="2700"
+                 dur="4200"
                  fill="forwards"
                  to="0 360 0"
                  repeat="indefinite"></a-animation>
