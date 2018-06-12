@@ -26,7 +26,9 @@ export default {
     computed: {
         imageMaterial: function () {
             //console.log("id: " + this.image.id)
-            // debugger;
+            //debugger;
+            //console.log("crossorigin: " + this.image.crossorigin);
+            
             return 'src: #image-' + this.image.id + '; side: double'
         }
     },

@@ -4,25 +4,25 @@
 
     <!-- Load assets -->
     <a-assets class="aframe-assets">
-      <img id="sky" src="https://s3.amazonaws.com/lifescope-static/xr/gallery/skybox/nightsky.jpg"
+      <img id="sky" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/skybox/nightsky.jpg"
       crossorigin="anonymous">
 
-      <img id="floor" src="https://s3.amazonaws.com/lifescope-static/xr/gallery/floor/wood-panel.jpg"
+      <img id="floor" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/floor/wood-panel.jpg"
       crossorigin="anonymous">
 
-      <img id="earth" src="https://s3.amazonaws.com/lifescope-static/xr/components/globe/Albedo.jpg"
+      <img id="earth" src="https://s3.amazonaws.com/lifescope-static/static/xr/components/globe/Albedo.jpg"
       crossorigin="anonymous">
 
       <!-- gltf -->
       <!-- logo -->
-      <a-gltf-model id="logo" src="https://s3.amazonaws.com/lifescope-static/xr/logo/logo.gltf"
+      <a-gltf-model id="logo" src="https://s3.amazonaws.com/lifescope-static/static/xr/logo/logo.gltf"
                     crossorigin="anonymous">
       </a-gltf-model>
 
-      <!-- Load assets with imageLoader -->
-      <imageLoader v-for="content in LSObjs"
-                :key="'image-loader-' + content.id"
-                :lsobj="content"
+      <!-- Load assets with objectLoader -->
+      <objectLoader v-for="obj in LSObjs"
+                :key="'obj-loader-' + obj.id"
+                :obj="obj"
                 :roomConfig='roomConfig'
       />
 
@@ -30,9 +30,8 @@
 
     <!-- Player -->
     <a-entity id="player-rig"
-          movement-controls="speed:0.05"
           position="0 0 0">
-      <a-entity id="player" camera position="0 1.3 0" wasd-controls="reverseMouseDrag:true" look-controls touch-controls="reverseMouseDrag:true" networked="template:#avatar-template;attachTemplateToLocal:true;">
+      <a-entity id="player" camera position="0 1.3 0" wasd-controls="reverseMouseDrag:true" look-controls networked="template:#avatar-template;attachTemplateToLocal:true;">
       </a-entity>
     </a-entity>
 
@@ -53,15 +52,14 @@ import socketIO from 'socket.io-client';
 import easyrtc from '../static/easyrtc/easyrtc.js';
 
 import gallery from "./components/gallery.vue";
-import imageLoader from "./components/util/image-loader.vue";
+import objectLoader from "./components/util/object-loader.vue";
 
 
 console.log("from App.vue <script>")
 export default {
     components: {
         gallery,
-        imageLoader
-        // fitTexture
+        objectLoader
     },
     data() {
       return {
@@ -71,30 +69,14 @@ export default {
       }
     },
 
-    beforeCreate () {
-      console.log("beforeCreate")
-    },
-
-    created () {
-      console.log("created");
-    },
-
-    beforeMount () {
-      console.log("beforeMount");
-    },
 
     mounted () {
-      console.log("mounted");
 
-      //debugger;
-      console.log("query data:" + this.$route.query.roomName);
-
-
-
+      // Set eyes to invisible when room connects
       document.body.addEventListener('connected', function (evt) {
         console.log('connected event. clientId =', evt.detail.clientId);
         document.getElementById('player').setAttribute('visible', 'false');
-        console.log(this.roomName);
+        console.log('roomName: ' + this.roomName);
       });
       
       this.createAvatarTemplate();

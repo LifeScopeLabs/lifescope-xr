@@ -37,16 +37,29 @@ var bucketParams = {
                              
 var s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
+const contentTypes = {
+    'gltf': '3d',
+    'jpg': 'image',
+    'jpeg': 'image',
+    'png': 'image',
+    'mp4': 'sound',
+    'obj': '3d',
+    'webm': 'video',
+    'webp': 'image'
+};
+
 s3.listObjects(bucketParams, function(err, data) {
     if (err) {console.log(err, err.stack);}
     else {
         //debugger;
 
         for (var content of data.Contents) {
-            var re_ext=/\.[0-9a-z]+$/i;
-            var re_name = /\/([0-9a-zA-Z\-\s]+)\.[0-9a-zA-Z]+$/i; //\/([0-9a-z\-\s]+)\.[0-9a-z]+
-            var re_room=/^test\/content\/([0-9a-z\-]+\/)+/i;
+            var re_ext=/\.([0-9a-z]+)$/i;
+            //var re_name = /\/([0-9a-zA-Z\-\s]+)\.[0-9a-zA-Z]+$/i; 
+            //var re_room=/^test\/content\/([0-9a-z\-]+\/)+/i;
             var room_name = "";
+
+            var re = /\/([0-9a-zA-Z\-\s]+)\.(.*)/i;
 
             if (content.Key.startsWith(BUCKET_PATH) && !content.Key.endsWith('/')) {
                 //console.log(content);
@@ -56,13 +69,15 @@ s3.listObjects(bucketParams, function(err, data) {
                     if (!gallery_content[room_name]) {
                         gallery_content[room_name] = [];
                     }
-            
+                
+                //console.log(content.Key.match(re));
 
                 var result = {
-                    id: content.Key.match(re_name)[1].replace(new RegExp(' ', 'g'), '-'),
+                    id: content.Key.match(re)[1].replace(new RegExp(' ', 'g'), '-'),
                     route: content.Key,
-                    name: content.Key.match(re_name)[1].replace(new RegExp('-', 'g'), ' '),
-                    ext: content.Key.match(re_ext)[0]
+                    name: content.Key.match(re)[1].replace(new RegExp('-', 'g'), ' '),
+                    ext: content.Key.match(re)[2],
+                    type: contentTypes[content.Key.match(re)[2]]
                 };
                 //console.log(result);
                 gallery_content[room_name].push(result);

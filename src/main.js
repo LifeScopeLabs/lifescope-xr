@@ -3,8 +3,6 @@ import VueRouter from 'vue-router';
 
 import App from './App.vue';
 
-// import socketIO from 'socket.io-client';
-// import easyrtc from 'easyrtc';
 
 // must import aframe here to load components
 import 'aframe';
@@ -12,13 +10,8 @@ import 'aframe-layout-component';
 import 'networked-aframe';
 import 'aframe-animation-component';
 import 'aframe-src-fit-component';
-import 'aframe-input-mapping-component';
-import 'aframe-extras';
-
-import 'three';
-
-require("babel-core/register");
-require("babel-polyfill");
+//import 'aframe-input-mapping-component';
+//import 'aframe-extras';
 
 
 // router
