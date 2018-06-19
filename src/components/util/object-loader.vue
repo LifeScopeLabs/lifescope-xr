@@ -1,5 +1,6 @@
 <template>
     <img v-if="obj.type == 'image'"
+        :onload="loadedCB()"
         :id="'image-' + obj.id"
         :src="objSrc(obj.route)"
         crossorigin="anonymous"/>
@@ -26,8 +27,28 @@ export default {
     methods: {
         objSrc: function (route)  {
             return this.roomConfig.bucket_route + '/' + this.roomConfig.BUCKET_NAME + '/' + route;
+        },
+
+        loadedCB: function () {
+            console.log("img onload");
+            console.log("obj.id: " + this.obj.id);
+            console.log("image-" + this.obj.id);
+            console.log(document.getElementById("image-" + this.obj.id));
+
         }
     },
+
+    mounted () {
+        console.log("object-loader mounted()");
+        console.log("obj.id: " + this.obj.id);
+        console.log("image-" + this.obj.id);
+        console.log(document.getElementById("image-" + this.obj.id));
+        console.log(this.$el);
+        console.log("this.$el.width: " + this.$el.width);
+        console.log("this.$el.height: " + this.$el.height);
+        console.log("this.$el.naturalHeight: " + this.$el.naturalHeight);
+        console.log("this.$el.natrualWidth: " + this.$el.naturalWidth);
+    }
 
 }
 </script>

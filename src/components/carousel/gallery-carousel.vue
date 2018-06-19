@@ -8,7 +8,8 @@
                 <carouselItem v-for="wimage of itemsLeft"
                             :key="wimage.id"
                             :image='wimage'
-                            rotation="0 0 0">
+                            rotation="0 0 0"
+                            :roomConfig='roomConfig'>
                 </carouselItem>
         </a-entity>
         <!-- Carousel right -->
@@ -19,7 +20,8 @@
                 <carouselItem v-for="wimage of itemsRight"
                             :key="wimage.id"
                             :image='wimage'
-                            rotation="180 0 180">
+                            rotation="180 0 180"
+                            :roomConfig='roomConfig'>
                 </carouselItem>
         </a-entity> 
     </a-entity>
@@ -34,7 +36,8 @@ import Vue from 'vue'
 console.log("from carousel.vue <script>")
 export default {
     props: {'LSObjs': {
-            default: []}
+                default: []},
+            'roomConfig': {}
     },
     components: {
         carouselItem

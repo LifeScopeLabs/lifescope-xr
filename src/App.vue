@@ -1,8 +1,10 @@
 <template>
   <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ' + roomName + '; audio: true; debug: true; adapter: easyrtc; connectOnLoad: true;'">
+
     <!-- Register Aframe components -->
 
     <!-- Load assets -->
+    <!-- <a-assets/> -->
     <a-assets class="aframe-assets">
       <img id="sky" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/skybox/nightsky.jpg"
       crossorigin="anonymous">
@@ -19,27 +21,20 @@
                     crossorigin="anonymous">
       </a-gltf-model>
 
-      <!-- Load assets with objectLoader -->
-      <objectLoader v-for="obj in LSObjs"
-                :key="'obj-loader-' + obj.id"
-                :obj="obj"
-                :roomConfig='roomConfig'
-      />
-
     </a-assets>
 
     <!-- Player -->
-    <a-entity id="player-rig"
+    <!-- <a-entity id="player-rig"
           position="0 0 0">
       <a-entity id="player" camera position="0 1.3 0" wasd-controls="reverseMouseDrag:true" look-controls networked="template:#avatar-template;attachTemplateToLocal:true;">
       </a-entity>
-    </a-entity>
+    </a-entity> -->
 
     <!-- gallery -->
-    <gallery :LSObjs='LSObjs'/>
+    <gallery :LSObjs='LSObjs' :roomConfig='roomConfig'/>
 
-    <!-- Sky -->
-    <a-sky id="Sky" src="#sky" rotation="90 0 90">
+    <!-- Sky id="Sky" -->
+    <a-sky src="#sky" rotation="90 0 90">
     </a-sky>
 
   </a-scene>
@@ -79,8 +74,6 @@ export default {
         console.log('roomName: ' + this.roomName);
       });
       
-      this.createAvatarTemplate();
-      this.addAvatarTemplate();
 
       this.getRoomConfig().then((res) => {
           console.log("getRoomConfig().then")
@@ -90,12 +83,16 @@ export default {
 
           this.getObjs().then((res) => {
             this.LSObjs = res.LSObjs;
+            this.createAvatarTemplate();
+            this.addAvatarTemplate();
+            this.createPlayer();
             }
           );
         }
       );
 
-      
+
+
       this.$nextTick(function () {
           // Code that will run only after the
           // entire view has been rendered
@@ -145,6 +142,7 @@ export default {
           return { LSObjs: result }
         })
       },
+
       createAvatarTemplate() {
         var frag = this.fragmentFromString(`
         <template id="avatar-template" v-pre>
@@ -201,6 +199,16 @@ export default {
             }
           ]
        });
+      },
+
+      createPlayer() {
+        var frag = this.fragmentFromString(`
+        <a-entity id="player-rig"
+          position="0 0 0">
+          <a-entity id="player" camera position="0 1.3 0" wasd-controls="reverseMouseDrag:true" look-controls networked="template:#avatar-template;attachTemplateToLocal:true;">
+          </a-entity>
+        </a-entity>`);
+        document.getElementsByTagName('a-scene')[0].appendChild(frag);
       },
 
       fragmentFromString(strHTML) {

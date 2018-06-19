@@ -2,10 +2,10 @@
     <a-entity class="carousel-item carousel-content-item">
         <a-entity
             geometry="primitive: plane; width: 3;"
-            :material="this.imageMaterial"
             rotation="0 0 0"
             position="0 1 0"
-            src-fit 
+            :material="this.imageMaterial"
+            src-fit="orientation: width"
             >
         </a-entity>
 
@@ -21,15 +21,11 @@
 
 console.log("from carousel-item.vue <script>")
 export default {
-    props: ['image'],
+    props: ['image', 'roomConfig'],
 
     computed: {
         imageMaterial: function () {
-            //console.log("id: " + this.image.id)
-            //debugger;
-            //console.log("crossorigin: " + this.image.crossorigin);
-            
-            return 'src: #image-' + this.image.id + '; side: double'
+            return 'src: ' + this.roomConfig.bucket_route + '/' + this.roomConfig.BUCKET_NAME + '/' + this.image.route;
         }
     },
 
@@ -37,10 +33,6 @@ export default {
         textString: function (value) {
             return 'width: 1.5; color: white; value: ' + value
         }
-    },
-
-    mounted () {
-        //console.log(this.image.id)
     }
   }
 </script>

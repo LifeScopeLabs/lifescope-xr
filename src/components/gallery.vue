@@ -26,7 +26,7 @@
       </a-entity>
 
       <!-- Carousel -->
-      <gallery-carousel :LSObjs='LSObjs'/>
+      <gallery-carousel :LSObjs='LSObjs' :roomConfig='roomConfig'/>
       
 
 
@@ -83,7 +83,7 @@ export default {
         galleryCarousel
     },
 
-    props: ['LSObjs'],
+    props: ['LSObjs', 'roomConfig'],
     
     
     // Lifecycle hooks
