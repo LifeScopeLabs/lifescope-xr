@@ -5,13 +5,13 @@
             rotation="0 0 0"
             position="0 1 0"
             :material="this.imageMaterial"
-            src-fit="orientation: width"
+            src-fit="orientation: width; maxDimension: 3;"
             >
         </a-entity>
 
-        <a-entity scale="2 2 1"
+        <!-- <a-entity scale="2 2 1"
                   :text="this.textString(image.name)"
-                  position="0 -.2 0"/>
+                  position="0 -.2 0"/> -->
     </a-entity>
     
 </template>
