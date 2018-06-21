@@ -2,7 +2,7 @@
   <a-entity class="gallery">
       <!-- Create scene -->
       <!-- Floor -->
-      <a-entity id="floor"
+      <a-entity id="floor" class="boundry"
                 geometry="primitive: plane; width: 8; height: 400"
                 material="src:#floor; repeat: 4 200"
                 rotation="-90 0 0"
@@ -10,7 +10,7 @@
       </a-entity>
       
       <!-- Wall left -->
-      <a-entity id="wall-left"
+      <a-entity id="wall-left" class="boundry"
                 :geometry="'primitive: plane; width:' + wallWidth + '; height: ' + wallHeight"
                 material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
                 rotation="0 90 0"
@@ -18,7 +18,7 @@
       </a-entity>
       
       <!-- Wall right repeat: 4 200" -->
-      <a-entity id="wall-right"
+      <a-entity id="wall-right" class="boundry"
                 :geometry="'primitive: plane; width:' + wallWidth + '; height: ' + wallHeight"
                 material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;"
                 rotation="180 90 0"
@@ -31,7 +31,8 @@
 
 
       <!-- Earth -->
-      <a-sphere id="Earth" position="0 1.2 -4" radius=".99" 
+      <a-sphere id="Earth" class="boundry"
+                position="0 1.2 -4" radius=".99" 
                 material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;">
                 <!-- animation="attribute=rotation;
                  easing=linear;

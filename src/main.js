@@ -11,9 +11,16 @@ import 'networked-aframe';
 import 'aframe-animation-component';
 import 'aframe-src-fit-component';
 import 'aframe-asset-on-demand-component';
-//import 'aframe-input-mapping-component';
-//import 'aframe-extras';
+import 'aframe-input-mapping-component';
+import 'aframe-teleport-controls';
+import 'aframe-extras';
 
+// controls
+//import {mappings, inputActions} from './controls/input-mappings';
+//console.log(mappings);
+//console.log(inputActions);
+//AFRAME.registerInputActions(inputActions);
+//AFRAME.registerInputMappings(mappings);
 
 // router
 Vue.use(VueRouter);

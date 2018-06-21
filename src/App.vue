@@ -21,14 +21,8 @@
                     crossorigin="anonymous">
       </a-gltf-model>
 
-    </a-assets>
 
-    <!-- Player -->
-    <!-- <a-entity id="player-rig"
-          position="0 0 0">
-      <a-entity id="player" camera position="0 1.3 0" wasd-controls="reverseMouseDrag:true" look-controls networked="template:#avatar-template;attachTemplateToLocal:true;">
-      </a-entity>
-    </a-entity> -->
+    </a-assets>
 
     <!-- gallery -->
     <gallery :LSObjs='LSObjs' :roomConfig='roomConfig'/>
@@ -66,6 +60,33 @@ export default {
 
 
     mounted () {
+      // Add hand when user enters vr mode
+      var self = this;
+      document.body.addEventListener('enter-vr', function (evt) {
+        console.log('entered vr');
+        console.log('adding hand...');
+        self.createRightHand();
+        self.createRightHand2();
+      });
+
+      // // dev
+      // // beep on certain events
+      // document.body.addEventListener('teleportstart', function (evt) {
+      //   console.log('teleportstart');
+      //   self.toggleEarthOff();
+      // });
+      // document.body.addEventListener('teleportend', function (evt) {
+      //   console.log('teleportend');
+      //   self.toggleEarthOn();
+      // });
+      // document.body.addEventListener('trackpaddown', function (evt) {
+      //   console.log('trackpaddown');
+      //   //self.toggleEarthOff();
+      // });
+      // document.body.addEventListener('trackpadup', function (evt) {
+      //   console.log('trackpadup');
+      //   //self.toggleEarthOn();
+      // });
 
       // Set eyes to invisible when room connects
       document.body.addEventListener('connected', function (evt) {
@@ -211,9 +232,35 @@ export default {
         document.getElementsByTagName('a-scene')[0].appendChild(frag);
       },
 
+      //  startEvents: teleportstart; endEvents: teleportend;
+      createRightHand() {
+        var frag = this.fragmentFromString(`
+        <a-entity id="rightHand"
+            teleport-controls="cameraRig: #player-rig; teleportOrigin: #player; maxLength: 50;"
+            daydream-controls="hand: right">
+         </a-entity>`);
+        document.getElementById('player-rig').appendChild(frag);
+      },
+      createRightHand2() {
+        var frag = this.fragmentFromString(`
+        <a-entity id="rightHand"
+            teleport-controls="cameraRig: #player-rig; teleportOrigin: #player; maxLength: 50; button: trigger;"
+            oculus-touch-controls="hand: right">
+         </a-entity>`);
+        document.getElementById('player-rig').appendChild(frag);
+      },
+
       fragmentFromString(strHTML) {
             return document.createRange().createContextualFragment(strHTML);
+      },
+
+      toggleEarthOn() {
+        document.getElementById('Earth').setAttribute('visible', 'true');
+      },
+      toggleEarthOff() {
+        document.getElementById('Earth').setAttribute('visible', 'false');
       }
+
     }
   }
 </script>
