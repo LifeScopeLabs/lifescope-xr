@@ -31,6 +31,18 @@
     <a-sky src="#sky" rotation="90 0 90">
     </a-sky>
 
+    <!-- Log text -->
+    <!-- <a-entity id="wall-log" class="boundry"
+                :geometry="'primitive: plane; width: 8; height: 4'"
+                material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
+                rotation="0 180 0"
+                :position="'0 2 4'">
+    </a-entity>
+    <a-entity id="log-text" scale="2 2 1"
+                rotation="0 180 0"
+                :text="this.textString('Empty Log')"
+                position="0 2 3.9"/> -->
+
   </a-scene>
 </template>
 
@@ -66,11 +78,9 @@ export default {
         console.log('entered vr');
         console.log('adding hand...');
         self.createRightHand();
-        self.createRightHand2();
       });
 
-      // // dev
-      // // beep on certain events
+
       // document.body.addEventListener('teleportstart', function (evt) {
       //   console.log('teleportstart');
       //   self.toggleEarthOff();
@@ -131,6 +141,14 @@ export default {
 
 
     methods: {
+      textString: function (value) {
+            return 'width: 1.5; color: white; value: ' + value
+      },
+      logText: function (value) {
+        var logtext = document.getElementById('log-text');
+        logtext.setAttribute('text', this.textString(value));
+      },
+      
       getRoomConfig () {
         console.log("getRoomConfig");
         return axios.get("/roomconfig")
@@ -222,32 +240,32 @@ export default {
        });
       },
 
+      
+      // 
       createPlayer() {
         var frag = this.fragmentFromString(`
-        <a-entity id="player-rig"
-          position="0 0 0">
+        <a-entity id="playerRig"
+          position="0 0 0"
+          >
           <a-entity id="player" camera position="0 1.3 0" wasd-controls="reverseMouseDrag:true" look-controls networked="template:#avatar-template;attachTemplateToLocal:true;">
           </a-entity>
         </a-entity>`);
         document.getElementsByTagName('a-scene')[0].appendChild(frag);
       },
 
-      //  startEvents: teleportstart; endEvents: teleportend;
+      //  
       createRightHand() {
         var frag = this.fragmentFromString(`
         <a-entity id="rightHand"
-            teleport-controls="cameraRig: #player-rig; teleportOrigin: #player; maxLength: 50;"
-            daydream-controls="hand: right">
+            teleport-controls="cameraRig: #playerRig; teleportOrigin: #player; startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"
+            daydream-controls="hand: right;"
+            oculus-touch-controls="hand: right"
+            vive-controls="hand: right"
+            windows-motion-controls="hand: right"
+            gearvr-controls="hand: right"
+            oculus-go-controls="hand: right">
          </a-entity>`);
-        document.getElementById('player-rig').appendChild(frag);
-      },
-      createRightHand2() {
-        var frag = this.fragmentFromString(`
-        <a-entity id="rightHand"
-            teleport-controls="cameraRig: #player-rig; teleportOrigin: #player; maxLength: 50; button: trigger;"
-            oculus-touch-controls="hand: right">
-         </a-entity>`);
-        document.getElementById('player-rig').appendChild(frag);
+        document.getElementById('playerRig').appendChild(frag);
       },
 
       fragmentFromString(strHTML) {
