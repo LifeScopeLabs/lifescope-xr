@@ -17,6 +17,7 @@ import 'aframe-extras';
 
 // controls
 import {mappings, inputActions} from './controls/input-mappings';
+import { runInThisContext } from 'vm';
 //console.log(mappings);
 //console.log(inputActions);
 AFRAME.registerInputActions(inputActions, 'default');
@@ -33,12 +34,18 @@ AFRAME.registerComponent('play-gaze', {
   init: function () {
 
     this.el.addEventListener('mouseenter', function (evt) {
-      this.play();
+      var video = this.components.material.material.map.image;
+      if (!video) { return; }
+      video.play();
+      //this.play();
       console.log('mouseenter: ', evt.detail);
     });
 
     this.el.addEventListener('mouseleave', function (evt) {
-      this.pause();
+      var video = this.components.material.material.map.image;
+      if (!video) { return; }
+      video.pause();
+      //this.pause();
       console.log('mouseleave: ', evt.detail);
     });
   }
