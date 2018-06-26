@@ -42,7 +42,7 @@ const contentTypes = {
     'jpg': 'image',
     'jpeg': 'image',
     'png': 'image',
-    'mp4': 'sound',
+    'mp4': 'video',
     'obj': '3d',
     'webm': 'video',
     'webp': 'image'

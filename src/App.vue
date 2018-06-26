@@ -21,7 +21,6 @@
                     crossorigin="anonymous">
       </a-gltf-model>
 
-
     </a-assets>
 
     <!-- gallery -->
@@ -31,17 +30,33 @@
     <a-sky src="#sky" rotation="90 0 90">
     </a-sky>
 
-    <!-- Log text -->
-    <!-- <a-entity id="wall-log" class="boundry"
+    <!-- Log wall -->
+    <a-entity id="wall-log" class="boundry"
                 :geometry="'primitive: plane; width: 8; height: 4'"
                 material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
                 rotation="0 180 0"
                 :position="'0 2 4'">
     </a-entity>
-    <a-entity id="log-text" scale="2 2 1"
+
+    <!-- Log text -->
+    <!-- <a-entity id="log-text" scale="2 2 1"
                 rotation="0 180 0"
                 :text="this.textString('Empty Log')"
                 position="0 2 3.9"/> -->
+    <!-- Test Video "../static/video/VideoOfWomenModelling.mp4" -->
+    <!-- <a-video
+            src="https://s3.amazonaws.com/lifescope-static/test/content/video/GirlSittingNearTheWindow.mp4"
+            rotation="0 180 0"
+            position="0 2 3.9"
+            width="3"
+            src-fit>
+    </a-video> -->
+    <!-- <a-entity
+            rotation="0 180 0"
+            position="0 2 3.9"
+            src="../static/video/VideoOfWomenModelling.mp4">
+    </a-entity> -->
+    <!-- src="../static/video/VideoOfWomenModelling.mp4" -->
 
   </a-scene>
 </template>
@@ -102,6 +117,7 @@ export default {
       document.body.addEventListener('connected', function (evt) {
         console.log('connected event. clientId =', evt.detail.clientId);
         document.getElementById('player').setAttribute('visible', 'false');
+        document.getElementById('cursor').setAttribute('visible', 'true');
         console.log('roomName: ' + this.roomName);
       });
       
@@ -248,6 +264,12 @@ export default {
           position="0 0 0"
           >
           <a-entity id="player" camera position="0 1.3 0" wasd-controls="reverseMouseDrag:true" look-controls networked="template:#avatar-template;attachTemplateToLocal:true;">
+            <a-entity id="cursor"
+              cursor="fuse: true; fuseTimeout: 500"
+              position="0 0 -1"
+              geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+              material="color: black; shader: flat">
+            </a-entity>
           </a-entity>
         </a-entity>`);
         document.getElementsByTagName('a-scene')[0].appendChild(frag);
