@@ -11,20 +11,32 @@
             >
         </a-entity>
 
-        <a-video v-else-if="this.image.type === 'video'"
-            :src="this.videoSrc"
-            rotation="0 0 0"
-            position="0 1 0"
-            width="3"
-            src-fit
-            autoplay="false"
-            play-gaze>
-          </a-video>
+        <a-entity v-else-if="this.image.type === 'video'">
+            <a-video
+                :src="this.videoSrc"
+                rotation="0 0 0"
+                position="0 1 0"
+                width="3"
+                src-fit
+                autoplay="false"
+                play-gaze="button: true;">
+            </a-video>
 
-        <!-- <a-entity scale="2 2 1"
-                  :text="this.textString(image.name)"
-                  position="0 -.2 0"/> -->
+            <!-- 
+            <a-entity scale="2 2 1"
+                    :text="this.textString(image.name)"
+                    position="0 -.2 0"/>
+            
+            <a-entity 
+                geometry="primitive: plane; width: 1;"
+                rotation="0 0 0"
+                position="0 -.4 0"
+                material="src:#video-play"
+                src-fit="orientation: width; maxDimension: 1;"
+                /> -->
+        </a-entity>
     </a-entity>
+
     
 </template>
 

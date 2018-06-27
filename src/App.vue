@@ -7,13 +7,19 @@
     <!-- <a-assets/> -->
     <a-assets class="aframe-assets">
       <img id="sky" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/skybox/nightsky.jpg"
-      crossorigin="anonymous">
+        crossorigin="anonymous">
 
       <img id="floor" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/floor/wood-panel.jpg"
-      crossorigin="anonymous">
+        crossorigin="anonymous">
 
       <img id="earth" src="https://s3.amazonaws.com/lifescope-static/static/xr/components/globe/Albedo.jpg"
-      crossorigin="anonymous">
+        crossorigin="anonymous">
+
+      <!-- video controls -->
+      <img id="video-play" src="https://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_10/v1471016296/play_wvmogo.png"
+        crossorigin="anonymous">
+      <img id="video-pause" src="https://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_25/v1471016296/pause_ndega5.png"
+        crossorigin="anonymous">
 
       <!-- gltf -->
       <!-- logo -->

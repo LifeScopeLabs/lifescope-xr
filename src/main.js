@@ -14,6 +14,7 @@ import 'aframe-asset-on-demand-component';
 import 'aframe-input-mapping-component';
 import 'aframe-teleport-controls';
 import 'aframe-extras';
+import './components/aframe/play-gaze.js';
 
 // controls
 import {mappings, inputActions} from './controls/input-mappings';
@@ -30,26 +31,26 @@ var router = new VueRouter({
   routes: []
 });
 
-AFRAME.registerComponent('play-gaze', {
-  init: function () {
+// AFRAME.registerComponent('play-gaze', {
+//   init: function () {
 
-    this.el.addEventListener('mouseenter', function (evt) {
-      var video = this.components.material.material.map.image;
-      if (!video) { return; }
-      video.play();
-      //this.play();
-      console.log('mouseenter: ', evt.detail);
-    });
+//     this.el.addEventListener('mouseenter', function (evt) {
+//       var video = this.components.material.material.map.image;
+//       if (!video) { return; }
+//       video.play();
+//       //this.play();
+//       console.log('mouseenter: ', evt.detail);
+//     });
 
-    this.el.addEventListener('mouseleave', function (evt) {
-      var video = this.components.material.material.map.image;
-      if (!video) { return; }
-      video.pause();
-      //this.pause();
-      console.log('mouseleave: ', evt.detail);
-    });
-  }
-});
+//     this.el.addEventListener('mouseleave', function (evt) {
+//       var video = this.components.material.material.map.image;
+//       if (!video) { return; }
+//       video.pause();
+//       //this.pause();
+//       console.log('mouseleave: ', evt.detail);
+//     });
+//   }
+// });
 
 //var app = new Vue(Vue.util.extend({ router }, App)).$mount('#app');
 var app = new Vue({
