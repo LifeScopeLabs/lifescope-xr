@@ -8,6 +8,8 @@ else {
 AFRAME.registerComponent('play-gaze', {
   schema: {
     button: {default: false},
+    position: {default: "0 0 0"},
+    rig: {default: 'self'},
     play_image_src: {default: "#video-play"},
     pause_image_src: {default: "#video-pause"}
   },
@@ -21,7 +23,7 @@ AFRAME.registerComponent('play-gaze', {
       // play when looking at video
       this.el.addEventListener('mouseenter', function (evt) {
         var video = this.components.material.material.map.image;
-        if (!video) { return; }
+        if (!video || self.buttonActive) { return; }
         video.play();
         console.log('mouseenter: ', evt.detail);
       });
@@ -29,27 +31,29 @@ AFRAME.registerComponent('play-gaze', {
       // pause when looking away from video
       this.el.addEventListener('mouseleave', function (evt) {
         var video = this.components.material.material.map.image;
-        if (!video) { return; }
+        if (!video || self.buttonActive) { return; }
         video.pause();
         console.log('mouseleave: ', evt.detail);
       });
 
       // add play/pause button
-      if (false && self.data.button) {
+      if (self.data.button) {
         console.log("generating play button...");
         // Create icon image (play/pause), different image whether video is playing.
 
         this.play_image = document.createElement("a-image");
-        this.play_image.setAttribute('position', "-1 -1.4 0");
-
+        this.play_image.setAttribute('position', this.data.position);
+        
         if (!this.video_el.isPlaying) {
-          console.log("this.video_el.paused");
-          console.log(self.data.play_image_src);
+          //console.log("this.video_el.paused");
+          //console.log(self.data.play_image_src);
           this.play_image.setAttribute("src", self.data.play_image_src);
+          self.buttonActive = false;
         } else {
-          console.log("this.video_el.play");
-          console.log(self.data.pause_image_src);
+          //console.log("this.video_el.play");
+          //console.log(self.data.pause_image_src);
           this.play_image.setAttribute("src", self.data.pause_image_src);
+          self.buttonActive = true;
         }
 
         // Change icon to 'play' on end
@@ -81,17 +85,17 @@ AFRAME.registerComponent('play-gaze', {
           console.log("click");
           var video = self.el.components.material.material.map.image;
 
-          if(self.video_el.isPlaying){
+          if(!video.paused){
               this.setAttribute("src", self.data.play_image_src);
   
               video.pause();
-  
+              self.buttonActive = false;
           }
           else {
               this.setAttribute("src", self.data.pause_image_src);
   
               video.play();
-  
+              self.buttonActive = true;
           }
   
           // Prevent propagation upwards (e.g: canvas click)
@@ -102,7 +106,13 @@ AFRAME.registerComponent('play-gaze', {
   
         });
 
-        self.el.appendChild(this.play_image);
+        if (self.data.rig === 'self') {
+          self.el.appendChild(this.play_image);
+        }
+        else {
+          var videoRig = document.getElementById(self.data.rig);
+          videoRig.appendChild(this.play_image);
+        }
 
       }
 

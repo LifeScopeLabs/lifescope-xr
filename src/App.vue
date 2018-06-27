@@ -122,7 +122,8 @@ export default {
       // Set eyes to invisible when room connects
       document.body.addEventListener('connected', function (evt) {
         console.log('connected event. clientId =', evt.detail.clientId);
-        document.getElementById('player').setAttribute('visible', 'false');
+        document.getElementById('face').setAttribute('visible', 'false');
+        document.getElementById('head').setAttribute('visible', 'false');
         document.getElementById('cursor').setAttribute('visible', 'true');
         console.log('roomName: ' + this.roomName);
       });
@@ -208,11 +209,11 @@ export default {
         var frag = this.fragmentFromString(`
         <template id="avatar-template" v-pre>
           <a-entity class="avatar" networked-audio-source>
-            <a-sphere class="head"
+            <a-sphere id="head"
               color="#5985ff"
               scale="0.45 0.5 0.4"
             ></a-sphere>
-            <a-entity class="face"
+            <a-entity id="face"
               position="0 0.05 0"
             >
               <a-sphere class="eye"
@@ -271,11 +272,11 @@ export default {
           >
           <a-entity id="player" camera position="0 1.3 0" wasd-controls="reverseMouseDrag:true" look-controls networked="template:#avatar-template;attachTemplateToLocal:true;">
             <a-entity id="cursor"
-              cursor="fuse: true; fuseTimeout: 500"
-              position="0 0 -1"
-              geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-              material="color: black; shader: flat">
-            </a-entity>
+                cursor="fuse: true; fuseTimeout: 500"
+                position="0 0 -1"
+                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                material="color: black; shader: flat">
+              </a-entity>
           </a-entity>
         </a-entity>`);
         document.getElementsByTagName('a-scene')[0].appendChild(frag);

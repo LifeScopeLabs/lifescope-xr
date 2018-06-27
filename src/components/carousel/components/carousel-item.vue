@@ -11,7 +11,8 @@
             >
         </a-entity>
 
-        <a-entity v-else-if="this.image.type === 'video'">
+        <a-entity v-else-if="this.image.type === 'video'"
+            :id="'video-rig-' + this.image.id">
             <a-video
                 :src="this.videoSrc"
                 rotation="0 0 0"
@@ -19,7 +20,7 @@
                 width="3"
                 src-fit
                 autoplay="false"
-                play-gaze="button: true;">
+                :play-gaze="'button: true; rig: video-rig-' + this.image.id + '; position: -1 -0.35 0;'">
             </a-video>
 
             <!-- 
