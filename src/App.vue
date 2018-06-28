@@ -37,12 +37,18 @@
     </a-sky>
 
     <!-- Log wall -->
-    <a-entity id="wall-log" class="boundry"
+    <!-- <a-entity id="wall-log" class="boundry"
                 :geometry="'primitive: plane; width: 8; height: 4'"
                 material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
                 rotation="0 180 0"
                 :position="'0 2 4'">
-    </a-entity>
+    </a-entity> -->
+
+    <!-- test Portal -->
+    <!-- <a-entity link="href: ?room=video; title: My Homepage;"
+      position="0 2 3.9"
+      rotation="0 180 0"
+    ></a-entity> -->
 
     <!-- Log text -->
     <!-- <a-entity id="log-text" scale="2 2 1"

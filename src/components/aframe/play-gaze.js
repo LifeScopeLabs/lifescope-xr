@@ -38,12 +38,12 @@ AFRAME.registerComponent('play-gaze', {
 
       // add play/pause button
       if (self.data.button) {
-        console.log("generating play button...");
         // Create icon image (play/pause), different image whether video is playing.
 
         this.play_image = document.createElement("a-image");
         this.play_image.setAttribute('position', this.data.position);
-        
+        this.play_image.setAttribute("src", self.data.play_image_src);
+
         if (!this.video_el.isPlaying) {
           //console.log("this.video_el.paused");
           //console.log(self.data.play_image_src);

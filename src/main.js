@@ -15,6 +15,7 @@ import 'aframe-input-mapping-component';
 import 'aframe-teleport-controls';
 import 'aframe-extras';
 import './components/aframe/play-gaze.js';
+import './components/aframe/dynamic-autoplay.js';
 
 // controls
 import {mappings, inputActions} from './controls/input-mappings';

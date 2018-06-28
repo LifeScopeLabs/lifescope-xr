@@ -28,7 +28,48 @@
       <!-- Carousel -->
       <gallery-carousel :LSObjs='LSObjs' :roomConfig='roomConfig'/>
       
+      <!-- portals -->
+        <a-entity class="portal-left"
+                    layout="type: line; margin: 4"
+                    rotation="0 270 0"
+                    position="-3.8 1.5 12">
 
+                    <a-entity link="href: ?room=sports; title: Sports;"
+                    position="0 2 3.9"
+                    rotation="0 0 0"
+                    />
+                <a-entity link="href: ?room=vacation; title: Vacatioin;"
+                    position="0 2 3.9"
+                    rotation="0 0 0"
+                    />
+                <a-entity link="href: ?room=video; title: Video;"
+                    position="0 2 3.9"
+                    rotation="0 0 0"
+                    />
+        </a-entity>
+      <a-entity class="portal-right"
+                    layout="type: line; margin: 4"
+                    rotation="0 270 0"
+                    position="3.8 1.5 12">
+                <a-entity link="href: ?room=gaming; title: Gaming;"
+                    position="0 2 3.9"
+                    rotation="180 0 180"
+                    />
+                <a-entity link="href: ?room=ls-room; title: Home;"
+                    position="0 2 3.9"
+                    rotation="180 0 180"
+                   />
+                    
+                <a-entity link="href: ?room=memes; title: Memes;"
+                    position="0 2 3.9"
+                    rotation="180 0 180"
+                    />
+                    
+                <a-entity link="href: ?room=office; title: Office;"
+                    position="0 2 3.9"
+                    rotation="180 0 180"
+                    />
+        </a-entity> 
 
       <!-- Earth -->
       <a-sphere id="Earth" class="boundry"
