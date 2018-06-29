@@ -30,7 +30,7 @@
     </a-assets>
 
     <!-- gallery -->
-    <gallery :LSObjs='LSObjs' :roomConfig='roomConfig'/>
+    <gallery :LSObjs='LSObjs' :rooms='rooms' :roomConfig='roomConfig'/>
 
     <!-- Sky id="Sky" -->
     <a-sky src="#sky" rotation="90 0 90">
@@ -92,6 +92,7 @@ export default {
     data() {
       return {
         LSObjs: [],
+        rooms: [],
         roomConfig: {},
         roomName: 'ls-room'
       }
@@ -143,6 +144,7 @@ export default {
 
           this.getObjs().then((res) => {
             this.LSObjs = res.LSObjs;
+            this.rooms = res.rooms;
             this.createAvatarTemplate();
             this.addAvatarTemplate();
             this.createPlayer();
@@ -203,11 +205,13 @@ export default {
         .then((res) => {
           //console.log("getObjs: axios.get.then");
           var result = [];
-          console.log(res.data);
+          //console.log(res.data);
+          var rooms = Object.keys(res.data);
+          //console.log(rooms);
           var someData = res.data[this.roomName].forEach(element => {
             result.push(element);
           });
-          return { LSObjs: result }
+          return { LSObjs: result, rooms: rooms }
         })
       },
 

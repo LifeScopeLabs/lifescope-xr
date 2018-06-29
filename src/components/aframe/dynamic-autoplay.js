@@ -14,7 +14,6 @@ AFRAME.registerComponent('dynamic-autoplay', {
       var self = this;
       this.video_el = self.el;
 
-      // play when looking at video
       this.el.addEventListener('materialvideoloadeddata', function (evt) {
         console.log("materialvideoloadeddata");
         var video = this.components.material.material.map.image;

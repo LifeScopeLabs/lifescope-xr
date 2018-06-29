@@ -1,3 +1,4 @@
+
 <template>
     <a-entity class="carousel-item carousel-content-item">
 

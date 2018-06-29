@@ -31,45 +31,32 @@
       <!-- portals -->
         <a-entity class="portal-left"
                     layout="type: line; margin: 4"
-                    rotation="0 270 0"
-                    position="-3.8 1.5 12">
+                    rotation="0 90 0"
+                    position="-3.8 1.5 16">
 
-                    <a-entity link="href: ?room=sports; title: Sports;"
-                    position="0 2 3.9"
-                    rotation="0 0 0"
-                    />
-                <a-entity link="href: ?room=vacation; title: Vacatioin;"
-                    position="0 2 3.9"
-                    rotation="0 0 0"
-                    />
-                <a-entity link="href: ?room=video; title: Video;"
-                    position="0 2 3.9"
-                    rotation="0 0 0"
-                    />
+                <carouselLink v-for="room of roomsLeft"
+                        :key="room"
+                        :room="room"
+                        rotation="0 180 0">
+                </carouselLink>
+
         </a-entity>
       <a-entity class="portal-right"
                     layout="type: line; margin: 4"
                     rotation="0 270 0"
-                    position="3.8 1.5 12">
-                <a-entity link="href: ?room=gaming; title: Gaming;"
-                    position="0 2 3.9"
-                    rotation="180 0 180"
-                    />
-                <a-entity link="href: ?room=ls-room; title: Home;"
-                    position="0 2 3.9"
-                    rotation="180 0 180"
-                   />
-                    
-                <a-entity link="href: ?room=memes; title: Memes;"
-                    position="0 2 3.9"
-                    rotation="180 0 180"
-                    />
-                    
-                <a-entity link="href: ?room=office; title: Office;"
-                    position="0 2 3.9"
-                    rotation="180 0 180"
-                    />
+                    position="3.8 1.5 16">
+                <carouselLink v-for="room of roomsRight"
+                        :key="room"
+                        :room="room"
+                        rotation="180 0 180">
+                </carouselLink>
         </a-entity> 
+
+        <!-- // <carouselLink
+        //             rotation="0 270 0"
+        //             position="3.8 1.5 16"
+        //             :room="'video'">
+        // </carouselLink> -->
 
       <!-- Earth -->
       <a-sphere id="Earth" class="boundry"
@@ -107,6 +94,7 @@
 
 <script>
 import galleryCarousel from "./carousel/gallery-carousel.vue";
+import carouselLink from "./carousel/components/carousel-link.vue";
 
 import Vue from 'vue';
 
@@ -122,11 +110,33 @@ export default {
         }
     },
     components: {
-        galleryCarousel
+        galleryCarousel,
+        carouselLink
     },
 
-    props: ['LSObjs', 'roomConfig'],
+    props: ['LSObjs', 'rooms', 'roomConfig'],
     
+    computed: {
+        sortedRooms() {
+            var sorted = this.rooms;
+            sorted.sort(function (a, b) {
+                return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
+            });
+            return sorted;
+        },
+        roomsLeft() {
+            return this.sortedRooms.slice(0, this.rooms.length/2);
+        },
+        roomsRight() {
+            var reversed = this.sortedRooms.slice(this.rooms.length/2, this.rooms.length);
+            reversed.reverse();
+            return reversed;
+        },
+        aRoom() {
+            console.log(this.roomsRight[0]);
+            return this.roomsRight[0];
+        }
+    },
     
     // Lifecycle hooks
     // https://vuejs.org/v2/api/#Options-Lifecycle-Hooks
