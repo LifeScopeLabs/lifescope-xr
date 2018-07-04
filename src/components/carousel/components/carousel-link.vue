@@ -6,7 +6,7 @@
         <!-- <a-entity scale="2 2 1"
                 rotation="0 0 0"
                 :text="this.textString(this.title)"
-                position="-0.2 0 0"/> -->
+                position="0.2 0 0"/> -->
     </a-entity>
 
     
@@ -34,15 +34,15 @@ export default {
 
     methods: {
         textString: function (value) {
-            return 'width: 1.5; color: white; value: ' + value
+            return 'width: 1.5; color: white; value: ' + value;
         }
     },
 
     created () {
-        console.log(this.room);
+        //console.log(this.room);
     },
     mounted () {
-        console.log(this.room);
+        //console.log(this.room);
     }
   }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ' + roomName + '; audio: true; debug: true; adapter: easyrtc; connectOnLoad: true;'">
+  <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; debug: true; adapter: easyrtc; connectOnLoad: true;'">
 
     <!-- Register Aframe components -->
 
@@ -105,7 +105,8 @@ export default {
       document.body.addEventListener('enter-vr', function (evt) {
         console.log('entered vr');
         console.log('adding hand...');
-        self.createRightHand();
+        // self.createRightHand();
+        self.createRightHandNetworked();
       });
 
 
@@ -129,10 +130,10 @@ export default {
       // Set eyes to invisible when room connects
       document.body.addEventListener('connected', function (evt) {
         console.log('connected event. clientId =', evt.detail.clientId);
-        document.getElementById('face').setAttribute('visible', 'false');
-        document.getElementById('head').setAttribute('visible', 'false');
+        //document.getElementById('player').getElementsByClassName('face')[0].setAttribute('visible', 'false');
+        //document.getElementById('player').getElementsByClassName('head')[0].setAttribute('visible', 'false');
         document.getElementById('cursor').setAttribute('visible', 'true');
-        console.log('roomName: ' + this.roomName);
+        console.log('roomName: ' + self.roomName);
       });
       
 
@@ -145,9 +146,14 @@ export default {
           this.getObjs().then((res) => {
             this.LSObjs = res.LSObjs;
             this.rooms = res.rooms;
-            this.createAvatarTemplate();
-            this.addAvatarTemplate();
-            this.createPlayer();
+
+            // this.createAvatarTemplate();
+            // this.addAvatarTemplate();
+            // this.createPlayer();
+
+            this.createAvatarRigTemplate();
+            this.addRigAvatarTemplate();
+            this.createNetworkedPlayer();
             }
           );
         }
@@ -184,7 +190,7 @@ export default {
         console.log("getRoomConfig");
         return axios.get("/roomconfig")
         .then((res) => {
-          console.log(res.data);
+          //console.log(res.data);
           return {roomConfig: res.data}
         })
       },
@@ -219,11 +225,11 @@ export default {
         var frag = this.fragmentFromString(`
         <template id="avatar-template" v-pre>
           <a-entity class="avatar" networked-audio-source>
-            <a-sphere id="head"
+            <a-sphere class="head"
               color="#5985ff"
               scale="0.45 0.5 0.4"
             ></a-sphere>
-            <a-entity id="face"
+            <a-entity class="face"
               position="0 0.05 0"
             >
               <a-sphere class="eye"
@@ -257,18 +263,120 @@ export default {
 
       },
 
+      createAvatarRigTemplate() {
+        var frag = this.fragmentFromString(`
+        <template id="avatar-rig-template" v-pre>
+          <a-entity class="player" >
+
+            <a-entity class="avatar" networked-audio-source>
+              <a-sphere class="head"
+                color="#5985ff"
+                scale="0.45 0.5 0.4"
+              ></a-sphere>
+              <a-entity class="face"
+                position="0 0.05 0"
+              >
+                <a-sphere class="eye"
+                  color="#efefef"
+                  position="0.16 0.1 -0.35"
+                  scale="0.12 0.12 0.12"
+                >
+                  <a-sphere class="pupil"
+                    color="#000"
+                    position="0 0 -1"
+                    scale="0.2 0.2 0.2"
+                  ></a-sphere>
+                </a-sphere>
+                <a-sphere class="eye"
+                  color="#efefef"
+                  position="-0.16 0.1 -0.35"
+                  scale="0.12 0.12 0.12"
+                >
+                  <a-sphere class="pupil"
+                    color="#000"
+                    position="0 0 -1"
+                    scale="0.2 0.2 0.2"
+                  ></a-sphere>
+                </a-sphere>
+              </a-entity>
+            </a-entity>
+
+          </a-entity>
+        </template> 
+        `);
+
+        document.getElementsByClassName('aframe-assets')[0].appendChild(frag);
+
+      },
+
       addAvatarTemplate() {
         console.log("addAvatarTemplate");
         NAF.schemas.add({
           template: '#avatar-template',
           components: [
-            'position',
-            'rotation',
+            {
+              component: 'position'
+            },
+            {
+              component: 'rotation'
+            },
             {
               selector: '.head',
               component: 'material',
               property: 'color'
+            },
+            {
+              selector: '.face',
+              component: 'position'
             }
+            // {
+            //   selector: '.head',
+            //   component: 'position'
+            // }
+            // {
+            //   selector: '.head',
+            //   component: 'rotation'
+            // }
+          ]
+       });
+      },
+
+      addRigAvatarTemplate() {
+        console.log("addRigAvatarTemplate");
+        NAF.schemas.add({
+          template: '#avatar-rig-template',
+          components: [
+            {
+              component: 'position'
+            },
+            {
+              component: 'rotation'
+            },
+            // {
+            //   selector: ".camera",
+            //   component: "position"
+            // },
+            // {
+            //   selector: ".camera",
+            //   component: "rotation"
+            // },
+            {
+              selector: '.head',
+              component: 'material',
+              property: 'color'
+            },
+            {
+              selector: '.face',
+              component: 'position'
+            }
+            // {
+            //   selector: '.head',
+            //   component: 'position'
+            // }
+            // {
+            //   selector: '.head',
+            //   component: 'rotation'
+            // }
           ]
        });
       },
@@ -292,11 +400,34 @@ export default {
         document.getElementsByTagName('a-scene')[0].appendChild(frag);
       },
 
-      //  
+
+      createNetworkedPlayer() {
+        var frag = this.fragmentFromString(`
+        <a-entity id="playerRig"
+          position="0 1.3 0"
+          wasd-controls
+          look-controls="reverseMouseDrag:true"
+          networked="template:#avatar-rig-template;attachTemplateToLocal:true;"
+          >
+          <a-entity
+                id="player-camera"
+                class="camera"
+                camera
+            />
+          <a-entity id="rightHandRig"
+            class="hand"
+          />
+        </a-entity>`);
+        document.getElementsByTagName('a-scene')[0].appendChild(frag);
+      },
+
+      
+
+      //   teleportOrigin: #player; 
       createRightHand() {
         var frag = this.fragmentFromString(`
         <a-entity id="rightHand"
-            teleport-controls="cameraRig: #playerRig; teleportOrigin: #player; startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"
+            teleport-controls="cameraRig: #playerRig; startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"
             daydream-controls="hand: right;"
             oculus-touch-controls="hand: right"
             vive-controls="hand: right"
@@ -305,6 +436,21 @@ export default {
             oculus-go-controls="hand: right">
          </a-entity>`);
         document.getElementById('playerRig').appendChild(frag);
+      },
+
+      //
+      createRightHandNetworked() {
+        var frag = this.fragmentFromString(`
+        <a-entity id="rightHand"
+            teleport-controls="cameraRig: #playerRig; teleportOrigin: #player-camera; startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"
+            daydream-controls="hand: right;"
+            oculus-touch-controls="hand: right"
+            vive-controls="hand: right"
+            windows-motion-controls="hand: right"
+            gearvr-controls="hand: right"
+            oculus-go-controls="hand: right">
+         </a-entity>`);
+        document.getElementById('rightHandRig').appendChild(frag);
       },
 
       fragmentFromString(strHTML) {

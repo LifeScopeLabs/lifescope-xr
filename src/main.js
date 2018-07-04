@@ -3,6 +3,8 @@ import VueRouter from 'vue-router';
 
 import App from './App.vue';
 
+// disable warn
+//console.warn = function() {};
 
 // must import aframe here to load components
 import 'aframe';
