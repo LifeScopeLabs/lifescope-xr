@@ -21,7 +21,7 @@ export default {
 
     computed: {
         link: function () {
-            return "href: " + this.href + '; ' +  'title: ' + this.title + ';';
+            return "href: " + this.href + '; ' +  'title: ' + this.title + '; ' + 'image: #sky' + ';';
         },
         href: function () {
             return '?room=' + this.room;

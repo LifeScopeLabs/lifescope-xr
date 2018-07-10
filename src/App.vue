@@ -37,17 +37,17 @@
     </a-sky>
 
     <!-- Log wall -->
-    <!-- <a-entity id="wall-log" class="boundry"
+    <a-entity id="wall-log" class="boundry"
                 :geometry="'primitive: plane; width: 8; height: 4'"
                 material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
                 rotation="0 180 0"
                 :position="'0 2 4'">
-    </a-entity> -->
+    </a-entity>
 
     <!-- test Portal -->
     <!-- <a-entity link="href: ?room=video; title: My Homepage;"
       position="0 2 3.9"
-      rotation="0 180 0"
+      rotation="0 180 0"x
     ></a-entity> -->
 
     <!-- Log text -->
@@ -94,7 +94,8 @@ export default {
         LSObjs: [],
         rooms: [],
         roomConfig: {},
-        roomName: 'ls-room'
+        roomName: 'ls-room',
+        oldSwitch: false
       }
     },
 
@@ -105,11 +106,25 @@ export default {
       document.body.addEventListener('enter-vr', function (evt) {
         console.log('entered vr');
         console.log('adding hand...');
-        // self.createRightHand();
-        self.createRightHandNetworked();
+        if (self.oldSwitch) {
+          self.createRightHand();
+        } else {
+          self.createRightHandNetworked();
+        }
+        // var cameras = document.querySelectorAll('camera');
+        // var camera = cameras[0];
+        // camera.setAttribute('position', '0 0 0');
       });
 
 
+      // DEV Listeners
+      // document.body.addEventListener('loaded', function (evt) {
+      //   console.log('loaded');
+      // });
+      // document.body.addEventListener('camera-set-active', function (evt) {
+      //   console.log('camera-set-active');
+      // });
+      
       // document.body.addEventListener('teleportstart', function (evt) {
       //   console.log('teleportstart');
       //   self.toggleEarthOff();
@@ -130,8 +145,13 @@ export default {
       // Set eyes to invisible when room connects
       document.body.addEventListener('connected', function (evt) {
         console.log('connected event. clientId =', evt.detail.clientId);
-        //document.getElementById('player').getElementsByClassName('face')[0].setAttribute('visible', 'false');
-        //document.getElementById('player').getElementsByClassName('head')[0].setAttribute('visible', 'false');
+        if (self.oldSwitch) {
+          document.getElementById('player').getElementsByClassName('face')[0].setAttribute('visible', 'false');
+          document.getElementById('player').getElementsByClassName('head')[0].setAttribute('visible', 'false');
+        } else {
+          document.getElementsByClassName('player')[0].getElementsByClassName('face')[0].setAttribute('visible', 'false');
+          document.getElementsByClassName('player')[0].getElementsByClassName('head')[0].setAttribute('visible', 'false');
+        }
         document.getElementById('cursor').setAttribute('visible', 'true');
         console.log('roomName: ' + self.roomName);
       });
@@ -147,14 +167,17 @@ export default {
             this.LSObjs = res.LSObjs;
             this.rooms = res.rooms;
 
-            // this.createAvatarTemplate();
-            // this.addAvatarTemplate();
-            // this.createPlayer();
-
-            this.createAvatarRigTemplate();
-            this.addRigAvatarTemplate();
-            this.createNetworkedPlayer();
+            if (self.oldSwitch) {
+              this.createAvatarTemplate();
+              this.addAvatarTemplate();
+              this.createPlayer();
+            } else {
+              this.createAvatarRigTemplate();
+              this.addRigAvatarTemplate();
+              this.createNetworkedPlayer();
             }
+            //this.removeDefaultCamera();
+            } 
           );
         }
       );
@@ -328,15 +351,15 @@ export default {
             {
               selector: '.face',
               component: 'position'
+            },
+            {
+              selector: '.head',
+              component: 'position'
+            },
+            {
+              selector: '.head',
+              component: 'rotation'
             }
-            // {
-            //   selector: '.head',
-            //   component: 'position'
-            // }
-            // {
-            //   selector: '.head',
-            //   component: 'rotation'
-            // }
           ]
        });
       },
@@ -388,7 +411,7 @@ export default {
         <a-entity id="playerRig"
           position="0 0 0"
           >
-          <a-entity id="player" camera position="0 1.3 0" wasd-controls="reverseMouseDrag:true" look-controls networked="template:#avatar-template;attachTemplateToLocal:true;">
+          <a-entity id="player" camera position="0 1.3 0" wasd-controls look-controls="reverseMouseDrag:true" touch-controls networked="template:#avatar-template;attachTemplateToLocal:true;">
             <a-entity id="cursor"
                 cursor="fuse: true; fuseTimeout: 500"
                 position="0 0 -1"
@@ -401,24 +424,41 @@ export default {
       },
 
 
+          
+
       createNetworkedPlayer() {
         var frag = this.fragmentFromString(`
         <a-entity id="playerRig"
           position="0 1.3 0"
+          
           wasd-controls
           look-controls="reverseMouseDrag:true"
           networked="template:#avatar-rig-template;attachTemplateToLocal:true;"
           >
-          <a-entity
-                id="player-camera"
-                class="camera"
-                camera
-            />
+
+          <a-entity id="player-camera"
+            class="camera"
+            camera
+          >
+          </a-entity>
           <a-entity id="rightHandRig"
             class="hand"
-          />
+          ></a-entity>
         </a-entity>`);
         document.getElementsByTagName('a-scene')[0].appendChild(frag);
+      },
+
+      removeDefaultCamera() {
+        console.log("removeDefaultCamera");
+        var cameras = document.querySelectorAll('[camera]');
+
+        for (var camera of cameras) {
+            if (camera.id !== "player-camera") {
+              console.log("removing camera:");
+              console.log(camera);
+              camera.parentElement.removeChild(camera);
+            }
+        }
       },
 
       
@@ -438,11 +478,12 @@ export default {
         document.getElementById('playerRig').appendChild(frag);
       },
 
-      //
+      //teleportOrigin: #player-camera; rightHandRig; teleportOrigin: #playerRig;
+      // 
       createRightHandNetworked() {
         var frag = this.fragmentFromString(`
         <a-entity id="rightHand"
-            teleport-controls="cameraRig: #playerRig; teleportOrigin: #player-camera; startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"
+            teleport-controls="cameraRig: #playerRig; startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"
             daydream-controls="hand: right;"
             oculus-touch-controls="hand: right"
             vive-controls="hand: right"
@@ -450,7 +491,7 @@ export default {
             gearvr-controls="hand: right"
             oculus-go-controls="hand: right">
          </a-entity>`);
-        document.getElementById('rightHandRig').appendChild(frag);
+        document.getElementById('playerRig').appendChild(frag);
       },
 
       fragmentFromString(strHTML) {
