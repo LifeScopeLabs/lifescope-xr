@@ -55,9 +55,9 @@ export default {
     },
 
     mounted () {
-        if (this.image.type === 'video'){
-            //console.log(this.image);
-        }
+        // if (this.image.type === 'video'){
+            // console.log(this.image);
+        // }
         // console.log(this.image.type);
         // console.log(this.image.type === 'image');
         // console.log(this.image.type === 'video');

@@ -8,7 +8,6 @@
                 :text="this.textString(this.title)"
                 position="0.2 0 0"/> -->
     </a-entity>
-
     
 </template>
 
@@ -28,7 +27,11 @@ export default {
         },
         title: function () {
             // capitalize first letter
-            return this.room.charAt(0).toUpperCase() + this.room.slice(1);;
+            str = this.room.split(' ');
+            for (var i = 0; i < str.length; i++) {
+                str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+            }
+            return str.join(' ');
         }
     },
 

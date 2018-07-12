@@ -11,6 +11,7 @@ npm install
 ### build
 
 npm run build
+
 npm run build-server
 
 ### start server w/ dev credentials
