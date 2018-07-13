@@ -6,6 +6,7 @@ import App from './App.vue';
 // disable warn
 //console.warn = function() {};
 
+import 'three';
 // must import aframe here to load components
 import 'aframe';
 import 'aframe-layout-component';
@@ -18,6 +19,10 @@ import 'aframe-teleport-controls';
 import 'aframe-extras';
 import './components/aframe/play-gaze.js';
 import './components/aframe/dynamic-autoplay.js';
+import './components/aframe/entangle.js';
+import './components/hubs/character-controller.js';
+import './components/hubs/pitch-yaw-rotator.js';
+
 
 // controls
 import {mappings, inputActions} from './controls/input-mappings';

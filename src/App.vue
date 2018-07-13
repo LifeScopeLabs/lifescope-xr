@@ -101,15 +101,21 @@ export default {
 
 
     mounted () {
+      // set userHeight
+      AFRAME.scenes[0].renderer.vr.userHeight = 0;
       // Add hand when user enters vr mode
       var self = this;
       document.body.addEventListener('enter-vr', function (evt) {
         console.log('entered vr');
-        console.log('adding hand...');
-        if (self.oldSwitch) {
-          self.createRightHand();
-        } else {
-          self.createRightHandNetworked();
+        var rightHand = document.getElementById('rightHandController');
+        //typeof array != "undefined" && array != null && array.length != null && array.length > 0
+        if (rightHand == null) {
+          console.log('adding hand...');
+          if (self.oldSwitch) {
+            self.createRightHand();
+          } else {
+            self.createRightHandNetworked();
+          }
         }
         // var cameras = document.querySelectorAll('camera');
         // var camera = cameras[0];
@@ -118,6 +124,10 @@ export default {
 
 
       // DEV Listeners
+      
+      document.body.addEventListener('model-loaded', function (evt) {
+        console.log('model-loaded');
+      });
       // document.body.addEventListener('loaded', function (evt) {
       //   console.log('loaded');
       // });
@@ -289,9 +299,10 @@ export default {
       createAvatarRigTemplate() {
         var frag = this.fragmentFromString(`
         <template id="avatar-rig-template" v-pre>
-          <a-entity class="player" >
+          <a-entity class="player">
 
-            <a-entity class="avatar" networked-audio-source>
+            <a-entity class="avatar" networked-audio-source 
+                    entangle="target: #player-camera">
               <a-sphere class="head"
                 color="#5985ff"
                 scale="0.45 0.5 0.4"
@@ -318,6 +329,17 @@ export default {
                   <a-sphere class="pupil"
                     color="#000"
                     position="0 0 -1"
+                    scale="0.2 0.2 0.2"
+                  ></a-sphere>
+                </a-sphere>
+                <a-sphere class="eye dev"
+                  color="#efefef"
+                  position="0 0.1 0.35"
+                  scale="0.12 0.12 0.12"
+                >
+                  <a-sphere class="pupil dev"
+                    color="#000"
+                    position="0 0 1"
                     scale="0.2 0.2 0.2"
                   ></a-sphere>
                 </a-sphere>
@@ -375,31 +397,10 @@ export default {
             {
               component: 'rotation'
             },
-            // {
-            //   selector: ".camera",
-            //   component: "position"
-            // },
-            // {
-            //   selector: ".camera",
-            //   component: "rotation"
-            // },
             {
-              selector: '.head',
-              component: 'material',
-              property: 'color'
-            },
-            {
-              selector: '.face',
-              component: 'position'
+              selector: '.avatar',
+              component: 'rotation'
             }
-            // {
-            //   selector: '.head',
-            //   component: 'position'
-            // }
-            // {
-            //   selector: '.head',
-            //   component: 'rotation'
-            // }
           ]
        });
       },
@@ -424,22 +425,23 @@ export default {
       },
 
 
-          
-
+// pitch-yaw-rotator;  character-controller="pivot: #player-camera"
       createNetworkedPlayer() {
         var frag = this.fragmentFromString(`
         <a-entity id="playerRig"
-          position="0 1.3 0"
-          
+          position="0 1.6 0"
           wasd-controls
           look-controls="reverseMouseDrag:true"
           networked="template:#avatar-rig-template;attachTemplateToLocal:true;"
+          
           >
-
-          <a-entity id="player-camera"
+         
+         <a-entity id="player-camera"
             class="camera"
             camera
+            
           >
+          
           </a-entity>
           <a-entity id="rightHandRig"
             class="hand"
@@ -463,11 +465,11 @@ export default {
 
       
 
-      //   teleportOrigin: #player; 
+      //   cameraRig: #playerRig; teleportOrigin: #player; 
       createRightHand() {
         var frag = this.fragmentFromString(`
         <a-entity id="rightHand"
-            teleport-controls="cameraRig: #playerRig; startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"
+            teleport-controls="startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"
             daydream-controls="hand: right;"
             oculus-touch-controls="hand: right"
             vive-controls="hand: right"
@@ -478,12 +480,13 @@ export default {
         document.getElementById('playerRig').appendChild(frag);
       },
 
-      //teleportOrigin: #player-camera; rightHandRig; teleportOrigin: #playerRig;
+      // rightHandRig; teleportOrigin: #playerRig;
       // 
+       
       createRightHandNetworked() {
         var frag = this.fragmentFromString(`
-        <a-entity id="rightHand"
-            teleport-controls="cameraRig: #playerRig; startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"
+        <a-entity id="rightHandController"
+           teleport-controls="cameraRig: #playerRig; teleportOrigin: #player-camera; startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"
             daydream-controls="hand: right;"
             oculus-touch-controls="hand: right"
             vive-controls="hand: right"
