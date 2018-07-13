@@ -44,31 +44,6 @@
                 :position="'0 2 4'">
     </a-entity>
 
-    <!-- test Portal -->
-    <!-- <a-entity link="href: ?room=video; title: My Homepage;"
-      position="0 2 3.9"
-      rotation="0 180 0"x
-    ></a-entity> -->
-
-    <!-- Log text -->
-    <!-- <a-entity id="log-text" scale="2 2 1"
-                rotation="0 180 0"
-                :text="this.textString('Empty Log')"
-                position="0 2 3.9"/> -->
-    <!-- Test Video "../static/video/VideoOfWomenModelling.mp4" -->
-    <!-- <a-video
-            src="https://s3.amazonaws.com/lifescope-static/test/content/video/GirlSittingNearTheWindow.mp4"
-            rotation="0 180 0"
-            position="0 2 3.9"
-            width="3"
-            src-fit>
-    </a-video> -->
-    <!-- <a-entity
-            rotation="0 180 0"
-            position="0 2 3.9"
-            src="../static/video/VideoOfWomenModelling.mp4">
-    </a-entity> -->
-    <!-- src="../static/video/VideoOfWomenModelling.mp4" -->
 
   </a-scene>
 </template>
@@ -94,8 +69,7 @@ export default {
         LSObjs: [],
         rooms: [],
         roomConfig: {},
-        roomName: 'ls-room',
-        oldSwitch: false
+        roomName: 'ls-room'
       }
     },
 
@@ -111,58 +85,18 @@ export default {
         //typeof array != "undefined" && array != null && array.length != null && array.length > 0
         if (rightHand == null) {
           console.log('adding hand...');
-          if (self.oldSwitch) {
-            self.createRightHand();
-          } else {
-            self.createRightHandNetworked();
-          }
+          self.createRightHandNetworked();
         }
-        // var cameras = document.querySelectorAll('camera');
-        // var camera = cameras[0];
-        // camera.setAttribute('position', '0 0 0');
       });
 
-
-      // DEV Listeners
-      
-      document.body.addEventListener('model-loaded', function (evt) {
-        console.log('model-loaded');
-      });
-      // document.body.addEventListener('loaded', function (evt) {
-      //   console.log('loaded');
-      // });
-      // document.body.addEventListener('camera-set-active', function (evt) {
-      //   console.log('camera-set-active');
-      // });
-      
-      // document.body.addEventListener('teleportstart', function (evt) {
-      //   console.log('teleportstart');
-      //   self.toggleEarthOff();
-      // });
-      // document.body.addEventListener('teleportend', function (evt) {
-      //   console.log('teleportend');
-      //   self.toggleEarthOn();
-      // });
-      // document.body.addEventListener('trackpaddown', function (evt) {
-      //   console.log('trackpaddown');
-      //   //self.toggleEarthOff();
-      // });
-      // document.body.addEventListener('trackpadup', function (evt) {
-      //   console.log('trackpadup');
-      //   //self.toggleEarthOn();
-      // });
 
       // Set eyes to invisible when room connects
       document.body.addEventListener('connected', function (evt) {
         console.log('connected event. clientId =', evt.detail.clientId);
-        if (self.oldSwitch) {
-          document.getElementById('player').getElementsByClassName('face')[0].setAttribute('visible', 'false');
-          document.getElementById('player').getElementsByClassName('head')[0].setAttribute('visible', 'false');
-        } else {
-          document.getElementsByClassName('player')[0].getElementsByClassName('face')[0].setAttribute('visible', 'false');
-          document.getElementsByClassName('player')[0].getElementsByClassName('head')[0].setAttribute('visible', 'false');
-        }
-        document.getElementById('cursor').setAttribute('visible', 'true');
+        
+        document.getElementsByClassName('player')[0].getElementsByClassName('face')[0].setAttribute('visible', 'false');
+        document.getElementsByClassName('player')[0].getElementsByClassName('head')[0].setAttribute('visible', 'false');
+      
         console.log('roomName: ' + self.roomName);
       });
       
@@ -177,36 +111,13 @@ export default {
             this.LSObjs = res.LSObjs;
             this.rooms = res.rooms;
 
-            if (self.oldSwitch) {
-              this.createAvatarTemplate();
-              this.addAvatarTemplate();
-              this.createPlayer();
-            } else {
-              this.createAvatarRigTemplate();
-              this.addRigAvatarTemplate();
-              this.createNetworkedPlayer();
+            this.createAvatarRigTemplate();
+            this.addRigAvatarTemplate();
+            this.createNetworkedPlayer();
             }
-            //this.removeDefaultCamera();
-            } 
           );
         }
       );
-
-
-
-      this.$nextTick(function () {
-          // Code that will run only after the
-          // entire view has been rendered
-          console.log("mounted nextTick")
-          // DO NOT DELETE
-          // document.querySelector('a-scene').addEventListener('loaded', function () {
-          //    console.log("aframe ready");
-          //   AFRAME.scenes[0].emit('connect');
-          //   console.log("connect ready");
-          // });
-          // END DO NOT DELETE
-          
-        })
     },
 
 
@@ -242,58 +153,13 @@ export default {
         console.log(x);
         return axios.get(x)
         .then((res) => {
-          //console.log("getObjs: axios.get.then");
           var result = [];
-          //console.log(res.data);
           var rooms = Object.keys(res.data);
-          //console.log(rooms);
           var someData = res.data[this.roomName].forEach(element => {
             result.push(element);
           });
           return { LSObjs: result, rooms: rooms }
         })
-      },
-
-      createAvatarTemplate() {
-        var frag = this.fragmentFromString(`
-        <template id="avatar-template" v-pre>
-          <a-entity class="avatar" networked-audio-source>
-            <a-sphere class="head"
-              color="#5985ff"
-              scale="0.45 0.5 0.4"
-            ></a-sphere>
-            <a-entity class="face"
-              position="0 0.05 0"
-            >
-              <a-sphere class="eye"
-                color="#efefef"
-                position="0.16 0.1 -0.35"
-                scale="0.12 0.12 0.12"
-              >
-                <a-sphere class="pupil"
-                  color="#000"
-                  position="0 0 -1"
-                  scale="0.2 0.2 0.2"
-                ></a-sphere>
-              </a-sphere>
-              <a-sphere class="eye"
-                color="#efefef"
-                position="-0.16 0.1 -0.35"
-                scale="0.12 0.12 0.12"
-              >
-                <a-sphere class="pupil"
-                  color="#000"
-                  position="0 0 -1"
-                  scale="0.2 0.2 0.2"
-                ></a-sphere>
-              </a-sphere>
-            </a-entity>
-          </a-entity>
-        </template> 
-        `);
-
-        document.getElementsByClassName('aframe-assets')[0].appendChild(frag);
-
       },
 
       createAvatarRigTemplate() {
@@ -354,38 +220,6 @@ export default {
 
       },
 
-      addAvatarTemplate() {
-        console.log("addAvatarTemplate");
-        NAF.schemas.add({
-          template: '#avatar-template',
-          components: [
-            {
-              component: 'position'
-            },
-            {
-              component: 'rotation'
-            },
-            {
-              selector: '.head',
-              component: 'material',
-              property: 'color'
-            },
-            {
-              selector: '.face',
-              component: 'position'
-            },
-            {
-              selector: '.head',
-              component: 'position'
-            },
-            {
-              selector: '.head',
-              component: 'rotation'
-            }
-          ]
-       });
-      },
-
       addRigAvatarTemplate() {
         console.log("addRigAvatarTemplate");
         NAF.schemas.add({
@@ -405,27 +239,7 @@ export default {
        });
       },
 
-      
-      // 
-      createPlayer() {
-        var frag = this.fragmentFromString(`
-        <a-entity id="playerRig"
-          position="0 0 0"
-          >
-          <a-entity id="player" camera position="0 1.3 0" wasd-controls look-controls="reverseMouseDrag:true" touch-controls networked="template:#avatar-template;attachTemplateToLocal:true;">
-            <a-entity id="cursor"
-                cursor="fuse: true; fuseTimeout: 500"
-                position="0 0 -1"
-                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                material="color: black; shader: flat">
-              </a-entity>
-          </a-entity>
-        </a-entity>`);
-        document.getElementsByTagName('a-scene')[0].appendChild(frag);
-      },
 
-
-// pitch-yaw-rotator;  character-controller="pivot: #player-camera"
       createNetworkedPlayer() {
         var frag = this.fragmentFromString(`
         <a-entity id="playerRig"
@@ -450,39 +264,7 @@ export default {
         document.getElementsByTagName('a-scene')[0].appendChild(frag);
       },
 
-      removeDefaultCamera() {
-        console.log("removeDefaultCamera");
-        var cameras = document.querySelectorAll('[camera]');
 
-        for (var camera of cameras) {
-            if (camera.id !== "player-camera") {
-              console.log("removing camera:");
-              console.log(camera);
-              camera.parentElement.removeChild(camera);
-            }
-        }
-      },
-
-      
-
-      //   cameraRig: #playerRig; teleportOrigin: #player; 
-      createRightHand() {
-        var frag = this.fragmentFromString(`
-        <a-entity id="rightHand"
-            teleport-controls="startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"
-            daydream-controls="hand: right;"
-            oculus-touch-controls="hand: right"
-            vive-controls="hand: right"
-            windows-motion-controls="hand: right"
-            gearvr-controls="hand: right"
-            oculus-go-controls="hand: right">
-         </a-entity>`);
-        document.getElementById('playerRig').appendChild(frag);
-      },
-
-      // rightHandRig; teleportOrigin: #playerRig;
-      // 
-       
       createRightHandNetworked() {
         var frag = this.fragmentFromString(`
         <a-entity id="rightHandController"
@@ -500,13 +282,6 @@ export default {
       fragmentFromString(strHTML) {
             return document.createRange().createContextualFragment(strHTML);
       },
-
-      toggleEarthOn() {
-        document.getElementById('Earth').setAttribute('visible', 'true');
-      },
-      toggleEarthOff() {
-        document.getElementById('Earth').setAttribute('visible', 'false');
-      }
 
     }
   }
