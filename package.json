@@ -4,8 +4,7 @@
     "version": "1.0.0",
     "author": "(https://lifescope.io)",
     "scripts": {
-        "build": "webpack",
-        "build-server": "babel ./src/server.js --out-file ./dist/server.js --presets es2015",
+        "build": "webpack && babel ./src/server.js --out-file ./dist/server.js",
         "start": "node ./dist/server.js",
         "debug": "babel-node ./dist/server.js --inspect-brk=localhost:8080",
         "dev-start": "webpack-dev-server"
