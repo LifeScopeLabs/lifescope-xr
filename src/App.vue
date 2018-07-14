@@ -112,7 +112,7 @@ export default {
             this.rooms = res.rooms;
 
             this.createAvatarRigTemplate();
-            this.addRigAvatarTemplate();
+            this.addAvatarRigTemplate();
             this.createNetworkedPlayer();
             }
           );
@@ -167,8 +167,7 @@ export default {
         <template id="avatar-rig-template" v-pre>
           <a-entity class="player">
 
-            <a-entity class="avatar" networked-audio-source 
-                    entangle="target: #player-camera">
+            <a-entity class="avatar" networked-audio-source >
               <a-sphere class="head"
                 color="#5985ff"
                 scale="0.45 0.5 0.4"
@@ -220,8 +219,8 @@ export default {
 
       },
 
-      addRigAvatarTemplate() {
-        console.log("addRigAvatarTemplate");
+      addAvatarRigTemplate() {
+        console.log("addAvatarRigTemplate");
         NAF.schemas.add({
           template: '#avatar-rig-template',
           components: [
@@ -247,7 +246,7 @@ export default {
           wasd-controls
           look-controls="reverseMouseDrag:true"
           networked="template:#avatar-rig-template;attachTemplateToLocal:true;"
-          
+          avatar-rig="camera:#player-camera;"
           >
          
          <a-entity id="player-camera"
