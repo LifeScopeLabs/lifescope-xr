@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import App from './App.vue';
 
 // disable warn
 //console.warn = function() {};
@@ -28,10 +27,15 @@ import './components/hubs/pitch-yaw-rotator.js';
 // controls
 import {mappings, inputActions} from './controls/input-mappings';
 import { runInThisContext } from 'vm';
+
+import App from './App.vue';
+
+
 //console.log(mappings);
 //console.log(inputActions);
 AFRAME.registerInputActions(inputActions, 'default');
 AFRAME.registerInputMappings(mappings);
+
 
 // router
 Vue.use(VueRouter);
@@ -40,26 +44,8 @@ var router = new VueRouter({
   routes: []
 });
 
-// AFRAME.registerComponent('play-gaze', {
-//   init: function () {
-
-//     this.el.addEventListener('mouseenter', function (evt) {
-//       var video = this.components.material.material.map.image;
-//       if (!video) { return; }
-//       video.play();
-//       //this.play();
-//       console.log('mouseenter: ', evt.detail);
-//     });
-
-//     this.el.addEventListener('mouseleave', function (evt) {
-//       var video = this.components.material.material.map.image;
-//       if (!video) { return; }
-//       video.pause();
-//       //this.pause();
-//       console.log('mouseleave: ', evt.detail);
-//     });
-//   }
-// });
+// ignore elements
+Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere', 'a-animation', 'a-sky'];
 
 //var app = new Vue(Vue.util.extend({ router }, App)).$mount('#app');
 var app = new Vue({

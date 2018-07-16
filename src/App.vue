@@ -37,12 +37,12 @@
     </a-sky>
 
     <!-- Log wall -->
-    <a-entity id="wall-log" class="boundry"
+    <!-- <a-entity id="wall-log" class="boundry"
                 :geometry="'primitive: plane; width: 8; height: 4'"
                 material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
                 rotation="0 180 0"
                 :position="'0 2 4'">
-    </a-entity>
+    </a-entity> -->
 
 
   </a-scene>
@@ -75,8 +75,9 @@ export default {
 
 
     mounted () {
+      console.log("App.vue mounted");
       // set userHeight
-      AFRAME.scenes[0].renderer.vr.userHeight = 0;
+      //AFRAME.scenes[0].renderer.vr.userHeight = 0;
       // Add hand when user enters vr mode
       var self = this;
       document.body.addEventListener('enter-vr', function (evt) {
@@ -254,6 +255,12 @@ export default {
             camera
             
           >
+          <a-entity id="cursor"
+                cursor="fuse: true; fuseTimeout: 500"
+                position="0 0 -1"
+                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                material="color: black; shader: flat">
+              </a-entity>
           
           </a-entity>
           <a-entity id="rightHandRig"

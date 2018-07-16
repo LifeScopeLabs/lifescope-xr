@@ -2,7 +2,7 @@ if (typeof AFRAME === 'undefined') {
     throw new Error('Component attempted to register before AFRAME was available.');
   }
   else {
-    console.log("Registering entangle...");
+    console.log("Registering avatar-rig...");
   }
   
 // links the rotation of an avatar to the camera
