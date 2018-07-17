@@ -2,7 +2,7 @@ if (typeof AFRAME === 'undefined') {
   throw new Error('Component attempted to register before AFRAME was available.');
 }
 else {
-  console.log("Registering dynamic-autoplay...");
+  if (CONFIG.DEBUG) {console.log("Registering dynamic-autoplay...");}
 }
 
 AFRAME.registerComponent('dynamic-autoplay', {
@@ -15,7 +15,7 @@ AFRAME.registerComponent('dynamic-autoplay', {
       this.video_el = self.el;
 
       this.el.addEventListener('materialvideoloadeddata', function (evt) {
-        console.log("materialvideoloadeddata");
+        if (CONFIG.DEBUG) {console.log("materialvideoloadeddata");}
         var video = this.components.material.material.map.image;
         if (self.data) { 
           //https://developers.google.com/web/updates/2017/09/autoplay-policy-changes

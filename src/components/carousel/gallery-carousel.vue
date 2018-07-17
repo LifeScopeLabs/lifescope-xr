@@ -33,7 +33,7 @@ import carouselItem from "./components/carousel-item.vue"
 
 import Vue from 'vue'
 
-console.log("from carousel.vue <script>")
+if (CONFIG.DEBUG) {console.log("from carousel.vue <script>")}
 export default {
     props: {'LSObjs': {
                 default: []},

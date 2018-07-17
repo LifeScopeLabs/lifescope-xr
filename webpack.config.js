@@ -1,6 +1,7 @@
 var path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ConfigWebpackPlugin = require("config-webpack");
 
 module.exports = {
     // This is the "main" file which should include all other modules
@@ -67,6 +68,7 @@ module.exports = {
       title: 'LIFESCOPE XR Gallery',
       // Load a custom template (lodash by default see the FAQ for details)
       template: './src/index.html'
-    })
+    }),
+    new ConfigWebpackPlugin()
   ]
 };

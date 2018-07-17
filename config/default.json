@@ -44,6 +44,8 @@
     "wallWidth": 400,
     "wallHeight": 4,
     "hallWidth": 8
-  }
+  },
+
+  "DEBUG": false
 
 }

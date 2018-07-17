@@ -42,6 +42,24 @@
                 material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
                 rotation="0 180 0"
                 :position="'0 2 4'">
+
+            <a-gui-flex-container 
+              flex-direction="column" justify-content="center" align-items="normal" component-padding="0.1" 
+              opacity="0.7" width="3.5" height="4.5"
+              position="0 0 0" rotation="0 0 0"
+            >
+
+                <a-gui-button 
+                  width="2.5" height="0.75"
+                  onclick="testButtonAction" key-code="32"
+                  value="test button"
+                  font-family="Arial"
+                  margin="0 0 0.05 0"
+                >
+                </a-gui-button>
+
+		          </a-gui-flex-container>
+          
     </a-entity> -->
 
 
@@ -58,7 +76,7 @@ import gallery from "./components/gallery.vue";
 import objectLoader from "./components/util/object-loader.vue";
 
 
-console.log("from App.vue <script>")
+if (CONFIG.DEBUG) {console.log("from App.vue <script>");}
 export default {
     components: {
         gallery,
@@ -74,27 +92,26 @@ export default {
     },
 
     beforeCreate () {
-      console.log("beforeCreate");
+      if (CONFIG.DEBUG) {console.log("beforeCreate");};
     },
 
     created () {
-      console.log("created");
+      if (CONFIG.DEBUG) {console.log("created");};
     },
 
     beforeMount () {
-      console.log("beforeMount");
+      if (CONFIG.DEBUG) {console.log("beforeMount");};
     },
 
     mounted () {
-      console.log("App.vue mounted");
+      if (CONFIG.DEBUG) {console.log("App.vue mounted");};
       // set userHeight after a-scene is available
       document.body.addEventListener('renderstart', function (evt) {
-        console.log('renderstart');
+        if (CONFIG.DEBUG) {console.log('renderstart');};
         AFRAME.scenes[0].renderer.vr.userHeight = 0;
       });
 
-      var DEBUG_LISTENERS = true;
-      if (DEBUG_LISTENERS) {
+      if (CONFIG.DEBUG) {
         // aframe events
         document.body.addEventListener('hitend', function (evt) {
           console.log('hitend');
@@ -249,11 +266,11 @@ export default {
       // Add hand when user enters vr mode
       var self = this;
       document.body.addEventListener('enter-vr', function (evt) {
-        console.log('entered vr');
+        if (CONFIG.DEBUG) {console.log('entered vr');};
         var rightHand = document.getElementById('rightHandController');
         //typeof array != "undefined" && array != null && array.length != null && array.length > 0
         if (rightHand == null) {
-          console.log('adding hand...');
+          if (CONFIG.DEBUG) {console.log('adding hand...');};
           self.createRightHandNetworked();
         }
       });
@@ -261,17 +278,17 @@ export default {
 
       // Set eyes to invisible when room connects
       document.body.addEventListener('connected', function (evt) {
-        console.log('connected event. clientId =', evt.detail.clientId);
+        if (CONFIG.DEBUG) {console.log('connected event. clientId =', evt.detail.clientId);};
         
         document.getElementsByClassName('player')[0].getElementsByClassName('face')[0].setAttribute('visible', 'false');
         document.getElementsByClassName('player')[0].getElementsByClassName('head')[0].setAttribute('visible', 'false');
       
-        console.log('roomName: ' + self.roomName);
+        if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);};
       });
       
 
       this.getRoomConfig().then((res) => {
-          console.log("getRoomConfig().then")
+          if (CONFIG.DEBUG) {console.log("getRoomConfig().then")};
 
           this.roomConfig = res.roomConfig;
           //this.roomName = res.roomConfig.ROOM_NAME;
@@ -298,9 +315,12 @@ export default {
         var logtext = document.getElementById('log-text');
         logtext.setAttribute('text', this.textString(value));
       },
+      testButtonAction: function () {
+        if (CONFIG.DEBUG) {console.log("testButtonAction");};
+      },
       
       getRoomConfig () {
-        console.log("getRoomConfig");
+        if (CONFIG.DEBUG) {console.log("getRoomConfig");};
         return axios.get("/roomconfig")
         .then((res) => {
           //console.log(res.data);
@@ -309,7 +329,7 @@ export default {
       },
 
       getObjs () {
-        console.log("getObjs");
+        if (CONFIG.DEBUG) {console.log("getObjs");};
         
         var x = '/' + this.roomConfig.BUCKET_PATH;
 
@@ -319,7 +339,7 @@ export default {
 
         this.roomName = this.$route.query.room || 'ls-room';
 
-        console.log(x);
+        if (CONFIG.DEBUG) {console.log(x);};
         return axios.get(x)
         .then((res) => {
           var result = [];
@@ -389,7 +409,7 @@ export default {
       },
 
       addAvatarRigTemplate() {
-        console.log("addAvatarRigTemplate");
+        if (CONFIG.DEBUG) {console.log("addAvatarRigTemplate");};
         NAF.schemas.add({
           template: '#avatar-rig-template',
           components: [
@@ -408,6 +428,12 @@ export default {
       },
 
 
+          // <a-entity id="cursor"
+          //       cursor="fuse: true; fuseTimeout: 500"
+          //       position="0 0 -1"
+          //       geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+          //       material="color: black; shader: flat">
+          //     </a-entity>
       createNetworkedPlayer() {
         var frag = this.fragmentFromString(`
         <a-entity id="playerRig"
@@ -423,12 +449,13 @@ export default {
             camera
             
           >
-          <a-entity id="cursor"
-                cursor="fuse: true; fuseTimeout: 500"
-                position="0 0 -1"
-                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                material="color: black; shader: flat">
-              </a-entity>
+          
+          <a-gui-cursor id="cursor"
+					  raycaster="interval: 1000; objects: [gui-interactable]"
+					  fuse="true" fuse-timeout="2000"
+					  design="dot"
+			      >
+			    </a-gui-cursor>
           
           </a-entity>
           <a-entity id="rightHandRig"

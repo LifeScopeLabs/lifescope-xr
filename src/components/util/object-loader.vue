@@ -30,24 +30,28 @@ export default {
         },
 
         loadedCB: function () {
-            console.log("img onload");
-            console.log("obj.id: " + this.obj.id);
-            console.log("image-" + this.obj.id);
-            console.log(document.getElementById("image-" + this.obj.id));
+            if (CONFIG.DEBUG) {
+                console.log("img onload");
+                console.log("obj.id: " + this.obj.id);
+                console.log("image-" + this.obj.id);
+                console.log(document.getElementById("image-" + this.obj.id));
+            };
 
         }
     },
 
     mounted () {
-        console.log("object-loader mounted()");
-        console.log("obj.id: " + this.obj.id);
-        console.log("image-" + this.obj.id);
-        console.log(document.getElementById("image-" + this.obj.id));
-        console.log(this.$el);
-        console.log("this.$el.width: " + this.$el.width);
-        console.log("this.$el.height: " + this.$el.height);
-        console.log("this.$el.naturalHeight: " + this.$el.naturalHeight);
-        console.log("this.$el.natrualWidth: " + this.$el.naturalWidth);
+        if (CONFIG.DEBUG) {
+            console.log("object-loader mounted()");
+            console.log("obj.id: " + this.obj.id);
+            console.log("image-" + this.obj.id);
+            console.log(document.getElementById("image-" + this.obj.id));
+            console.log(this.$el);
+            console.log("this.$el.width: " + this.$el.width);
+            console.log("this.$el.height: " + this.$el.height);
+            console.log("this.$el.naturalHeight: " + this.$el.naturalHeight);
+            console.log("this.$el.natrualWidth: " + this.$el.naturalWidth);
+        };
     }
 
 }

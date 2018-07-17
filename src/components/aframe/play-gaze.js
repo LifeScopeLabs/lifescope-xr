@@ -2,7 +2,7 @@ if (typeof AFRAME === 'undefined') {
   throw new Error('Component attempted to register before AFRAME was available.');
 }
 else {
-  console.log("Registering play-gaze...");
+  if (CONFIG.DEBUG) {console.log("Registering play-gaze...");}
 }
 
 AFRAME.registerComponent('play-gaze', {
@@ -25,7 +25,7 @@ AFRAME.registerComponent('play-gaze', {
         var video = this.components.material.material.map.image;
         if (!video || self.buttonActive) { return; }
         video.play();
-        console.log('mouseenter: ', evt.detail);
+        if (CONFIG.DEBUG) {console.log('mouseenter: ', evt.detail);}
       });
   
       // pause when looking away from video
@@ -33,7 +33,7 @@ AFRAME.registerComponent('play-gaze', {
         var video = this.components.material.material.map.image;
         if (!video || self.buttonActive) { return; }
         video.pause();
-        console.log('mouseleave: ', evt.detail);
+        if (CONFIG.DEBUG) {console.log('mouseleave: ', evt.detail);}
       });
 
       // add play/pause button
@@ -82,7 +82,7 @@ AFRAME.registerComponent('play-gaze', {
 
         // play on fuse
         this.play_image.addEventListener('click', function (event) {
-          console.log("click");
+          if (CONFIG.DEBUG) {console.log("click");}
           var video = self.el.components.material.material.map.image;
 
           if(!video.paused){

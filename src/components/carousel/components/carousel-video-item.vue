@@ -17,7 +17,7 @@
 <script>
 
 
-console.log("from carousel-item.vue <script>")
+if (CONFIG.DEBUG) {console.log("from carousel-item.vue <script>")}
 export default {
 
     computed: {

@@ -16,6 +16,7 @@ import 'aframe-asset-on-demand-component';
 import 'aframe-input-mapping-component';
 import 'aframe-teleport-controls';
 import 'aframe-extras';
+import 'aframe-gui';
 import './components/aframe/play-gaze.js';
 import './components/aframe/dynamic-autoplay.js';
 import './components/aframe/entangle.js';
