@@ -27,7 +27,7 @@ export default {
         },
         title: function () {
             // capitalize first letter
-            str = this.room.split(' ');
+            var str = this.room.split(' ');
             for (var i = 0; i < str.length; i++) {
                 str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
             }

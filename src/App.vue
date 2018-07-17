@@ -61,8 +61,6 @@
 		          </a-gui-flex-container>
           
     </a-entity> -->
-
-
   </a-scene>
 </template>
 
