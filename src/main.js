@@ -44,7 +44,7 @@ var router = new VueRouter({
   routes: []
 });
 
-// ignore elements
+// ignore elements for Firefox
 Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere', 'a-animation', 'a-sky'];
 
 //var app = new Vue(Vue.util.extend({ router }, App)).$mount('#app');

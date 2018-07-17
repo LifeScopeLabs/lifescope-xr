@@ -76,8 +76,13 @@ export default {
 
     mounted () {
       console.log("App.vue mounted");
-      // set userHeight
-      //AFRAME.scenes[0].renderer.vr.userHeight = 0;
+      // set userHeight after a-scene is available
+      document.body.addEventListener('renderstart', function (evt) {
+        console.log('renderstart');
+        AFRAME.scenes[0].renderer.vr.userHeight = 0;
+      });
+      
+      //
       // Add hand when user enters vr mode
       var self = this;
       document.body.addEventListener('enter-vr', function (evt) {
