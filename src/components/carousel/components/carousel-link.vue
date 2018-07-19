@@ -1,7 +1,7 @@
 <template>
     <a-entity class="carousel-item carousel-link">
 
-        <a-entity :link="this.link"
+        <a-entity class="clickable" :link="this.link"
                     />
         <!-- <a-entity scale="2 2 1"
                 rotation="0 0 0"

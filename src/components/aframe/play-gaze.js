@@ -1,3 +1,6 @@
+var CONFIG = {};
+CONFIG.DEBUG = true;
+
 if (typeof AFRAME === 'undefined') {
   throw new Error('Component attempted to register before AFRAME was available.');
 }
@@ -43,6 +46,7 @@ AFRAME.registerComponent('play-gaze', {
         this.play_image = document.createElement("a-image");
         this.play_image.setAttribute('position', this.data.position);
         this.play_image.setAttribute("src", self.data.play_image_src);
+        this.play_image.className += " clickable";
 
         if (!this.video_el.isPlaying) {
           //console.log("this.video_el.paused");
@@ -97,12 +101,6 @@ AFRAME.registerComponent('play-gaze', {
               video.play();
               self.buttonActive = true;
           }
-  
-          // Prevent propagation upwards (e.g: canvas click)
-  
-          event.stopPropagation();
-  
-          event.preventDefault();
   
         });
 
