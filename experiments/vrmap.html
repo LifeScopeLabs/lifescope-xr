@@ -1,19 +1,19 @@
 
-<script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+<script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
 <script src="src/mapbox-terrain.js" charset="utf-8"></script>
 <!-- <script src="src/aframe-curve-component.js" charset="utf-8"></script> -->
 
 <body>
   <a-scene>
     <a-assets>
-      <img id="floor" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/floor.jpg">
-      <img id="sky" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/nightsky.jpg">
+      <img id="floor" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/floor/wood-panel.jpg">
+      <img id="sky" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/skybox/nightsky.jpg">
       
-      <img id="marker-red" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/pins/map-marker-red.png">
-      <img id="marker-blue" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/pins/map-marker-blue.png">
-      <img id="marker-green" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/pins/map-marker-green.png">
-      <img id="marker-yellow" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/pins/map-marker-yellow.png">
-      <img id="marker-sky-blue" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/pins/map-marker-sky-blue.png">
+      <img id="marker-red" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/static/map/map-marker-red.png">
+      <img id="marker-blue" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/static/map/map-marker-blue.png">
+      <img id="marker-green" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/static/map/map-marker-green.png">
+      <img id="marker-yellow" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/static/map/map-marker-yellow.png">
+      <img id="marker-sky-blue" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/static/map/map-marker-sky-blue.png">
     </a-assets>
       
     <!-- Floor -->
@@ -32,7 +32,7 @@
 		<a-entity light="color: #888; intensity: 1.5; castShadow: true" position="+20 2 0"></a-entity>
       
     <!-- Demo Markers -->
-    <a-image width="0.2", height="0.2" src="#marker-red" material="transparent: true;" rotation="0 0 0" position="0 0.15 0"></a-image>
+    <a-image width="0.2", height="0.2" src="url(https://s3.amazonaws.com/lifescope-static/static/map/map-marker-red.png)" material="transparent: true;" rotation="0 0 0" position="0 0.15 0"></a-image>
     <a-image width="0.2", height="0.2" src="#marker-red" material="transparent: true;" rotation="0 0 0" position="0.5 0.15 0"></a-image>
     <a-image width="0.2", height="0.2" src="#marker-red" material="transparent: true;" rotation="0 0 0" position="0 0.15 0.5"></a-image>
     
