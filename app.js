@@ -15,7 +15,7 @@
 
 const MODEL_OBJ_URL = '../assets/logo.obj';
 const MODEL_MTL_URL = '../assets/ArcticFox_Posed.mtl';
-const MODEL_SCALE = 0.1;
+const MODEL_SCALE = 0.01;
 
 /**
  * Container class to manage connecting to the WebXR Device API
