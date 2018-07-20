@@ -1,0 +1,306 @@
+<html>
+  <head>
+    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+  </head>
+  
+  <body>
+    <a-scene>
+      <a-assets>
+        <img id="floor" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/floor.jpg">
+        <img id="sky" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/nightsky.jpg">
+        <img id="earth" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/earth/Albedo.jpg">
+        <img id="clouds" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/Clouds.png">
+        <img id="eye" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/iris.jpg">
+        
+        <!-- Travel Photos from https://www.pexels.com/search/travel/-->
+        
+        <img id="accomplishment-adult-adventure" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/accomplishment-adult-adventure.jpg">
+        <img id="adventure-backlit-community" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/adventure-backlit-community.jpg">
+        <img id="aerial-aerial-view-aeroplane" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/aerial-aerial-view-aeroplane.jpg">
+        <img id="aerial-clouds-dawn" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/aerial-clouds-dawn.jpg">
+        <img id="adventure-boy-couple" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/adventure-boy-couple.jpg">
+        <img id="architecture-bay-blonde" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/architecture-bay-blonde.jpg">
+        <img id="cafe-camera-classic" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/cafe-camera-classic.jpg">
+        <img id="aeroplane-air-air-travel" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/aeroplane-air-air-travel.jpg">
+        <img id="action-beach-fun" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/action-beach-fun.jpg">
+        <img id="adventure-albay-clouds" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/adventure-albay-clouds.jpg">
+        <img id="beach-exotic-holiday" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/beach-exotic-holiday.jpg">
+        <img id="agriculture-asia-china" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/agriculture-asia-china.jpg">
+        <img id="asphalt-environment-grass" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/asphalt-environment-grass.jpg">
+        <img id="architecture-buildings-church" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/asphalt-environment-grass.jpg">
+        <img id="beautiful-holiday-lake" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/beautiful-holiday-lake.jpg">
+        <img id="back-view-clouds-cloudy" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/back-view-clouds-cloudy.jpg">
+        <img id="adventure-ancient-architecture" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/adventure-ancient-architecture.jpg">
+        <img id="action-adventure-alps" crossorigin="anonymous" src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/static/photos/action-adventure-alps.jpg">
+      </a-assets>
+      
+      
+      <!-- Floor -->
+      <a-entity geometry="primitive: plane; width: 8; height: 400"
+                material="src:#floor; repeat: 4 200"
+                rotation="-90 0 0"
+                position="0 0 -4">
+      </a-entity>
+      
+      <!-- Wall left -->
+      <a-entity geometry="primitive: plane; width: 8; height: 400"
+                material="color: #fff4cc; repeat: 4 200"
+                rotation="0 90 90"
+                position="-4 0 4">
+      </a-entity>
+      
+      <!-- Wall right -->
+      <a-entity geometry="primitive: plane; width: 8; height: 400"
+                material="color: #fff4cc; repeat: 4 200"
+                rotation="180 90 90"
+                position="4 0 4">
+      </a-entity>
+      
+      
+      
+      <!-- Canvas Left -->
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #accomplishment-adult-adventure; side: double"
+                rotation="0 90 0"
+                position="-3.8 2 0">
+      </a-entity>
+      <a-entity text="value: Accomplishment Adult Adventure;"
+                material="color: black"
+                rotation="0 90 0"
+                position="-3.8 .8 -.55"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #adventure-backlit-community; side: double"
+                rotation="0 90 0"
+                position="-3.8 2 4">
+      </a-entity>
+      <a-entity text="value: Adventure Backlit Community;"
+                rotation="0 90 0"
+                position="-3.8 .8 3.45"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #aerial-aerial-view-aeroplane; side: double"
+                rotation="0 90 0"
+                position="-3.8 2 8">
+      </a-entity>
+      <a-entity text="value: Arial View Aeroplane;"
+                rotation="0 90 0"
+                position="-3.8 .8 7.45"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #aerial-clouds-dawn; side: double"
+                rotation="0 90 0"
+                position="-3.8 2 12">
+      </a-entity>
+      <a-entity text="value: Aerial Clouds Dawn;"
+                rotation="0 90 0"
+                position="-3.8 .8 11.45"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #adventure-boy-couple; side: double"
+                rotation="0 90 0"
+                position="-3.8 2 16">
+      </a-entity>
+      <a-entity text="value: Adventrue Boy Couple;"
+                rotation="0 90 0"
+                position="-3.8 .8 15.45"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #architecture-bay-blonde; side: double"
+                rotation="0 90 0"
+                position="-3.8 2 -4">
+      </a-entity>
+      <a-entity text="value: Architecture Bay Blonde;"
+                rotation="0 90 0"
+                position="-3.8 .8 -4.55"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #cafe-camera-classic; side: double"
+                rotation="0 90 0"
+                position="-3.8 2 -8">
+      </a-entity>
+      <a-entity text="value: Cafe Camera Classic;"
+                rotation="0 90 0"
+                position="-3.8 .8 -8.55"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #aeroplane-air-air-travel; side: double"
+                rotation="0 90 0"
+                position="-3.8 2 -12">
+      </a-entity>
+      <a-entity text="value: Aeroplane Air Travel;"
+                rotation="0 90 0"
+                position="-3.8 .8 -12.55"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #action-beach-fun; side: double"
+                rotation="0 90 0"
+                position="-3.8 2 -16">
+      </a-entity>
+      <a-entity text="value: Action Beach Fun;"
+                rotation="0 90 0"
+                position="-3.8 .8 -16.55"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <!-- Canvas Right -->
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #adventure-albay-clouds; side: double"
+                rotation="0 90 0"
+                position="3.8 2 0">
+      </a-entity>
+      <a-entity text="value: Adventure Albay Clouds;"
+                rotation="0 -90 0"
+                position="3.8 .8 .55"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #beach-exotic-holiday; side: double"
+                rotation="0 90 0"
+                position="3.8 2 4">
+      </a-entity>
+      <a-entity text="value: Beach Exotic Holiday;"
+                rotation="0 -90 0"
+                position="3.8 .8 4.55"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #agriculture-asia-china; side: double"
+                rotation="0 90 0"
+                position="3.8 2 8">
+      </a-entity>
+      <a-entity text="value: Agriculture Asia China;"
+                rotation="0 -90 0"
+                position="3.8 .8 8.55"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #asphalt-environment-grass; side: double"
+                rotation="0 90 0"
+                position="3.8 2 12">
+      </a-entity>
+      <a-entity text="value: Asphalt Environment Grass;"
+                rotation="0 -90 0"
+                position="3.8 .8 12.55"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #architecture-buildings-church; side: double"
+                rotation="0 90 0"
+                position="3.8 2 16">
+      </a-entity>
+      <a-entity text="value: Architecture Buildings Church;"
+                rotation="0 -90 0"
+                position="3.8 .8 16.55"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #beautiful-holiday-lake; side: double"
+                rotation="0 90 0"
+                position="3.8 2 -4">
+      </a-entity>
+      <a-entity text="value: Beautiful Holiday Lake;"
+                rotation="0 -90 0"
+                position="3.8 .8 -3.45"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #back-view-clouds-cloudy; side: double"
+                rotation="0 90 0"
+                position="3.8 2 -8">
+      </a-entity>
+      <a-entity text="value: Backview Clouds Cloudy;"
+                rotation="0 -90 0"
+                position="3.8 .8 -7.45"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #adventure-ancient-architecture; side: double"
+                rotation="0 90 0"
+                position="3.8 2 -12">
+      </a-entity>
+      <a-entity text="value: Adventure Ancient Architecture;"
+                rotation="0 -90 0"
+                position="3.8 .8 -11.45"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      <a-entity geometry="primitive: plane; width: 3; height: 2"
+                material="src: #action-adventure-alps; side: double"
+                rotation="0 90 0"
+                position="3.8 2 -16">
+      </a-entity>
+      <a-entity text="value: Action Adventure Alps;"
+                rotation="0 -90 0"
+                position="3.8 .8 -15.45"
+                scale="4 4 1">
+      </a-entity>
+      
+      
+      
+      
+      <!-- Earth -->
+      <a-sphere position="0 1 -4" radius="1" material="src:#earth; metalness: ; roughness: 1;">
+          <a-animation attribute="rotation"
+                 easing="linear" 
+                 dur="150000"
+                 fill="forwards"
+                 to="0 360 0"
+                 repeat="indefinite"></a-animation>
+
+      </a-sphere>
+      
+      <!-- Sky -->
+      <a-sky src="#sky" rotation="90 0 90">
+      </a-sky>
+      
+    </a-scene>
+  </body>
+</html>
+
+<!-- 
+<a-plane src="#floor" position="0 0 -4" rotation="-90 0 0" width="4" height="4" ></a-plane>
+      <a-plane src="floor" height="20" width="20"></a-plane>
+
+-->

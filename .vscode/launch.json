@@ -7,11 +7,25 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "xr",
+            "name": "xr - debug",
             "runtimeExecutable": "npm",
             "runtimeArgs": [
-                "run-script",
+                "run",
                 "debug"
+            ],
+            "port": 8080,
+            "env": {
+                "NODE_ENV": "prod"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "xr - build",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "build"
             ],
             "port": 8080,
             "env": {
