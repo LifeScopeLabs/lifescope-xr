@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-const MODEL_OBJ_URL = '../assets/ArcticFox_Posed.obj';
+const MODEL_OBJ_URL = '../assets/logo.obj';
 const MODEL_MTL_URL = '../assets/ArcticFox_Posed.mtl';
 const MODEL_SCALE = 0.1;
 

@@ -1,0 +1,12 @@
+artifacts/
+config/production.json
+dist/
+node_modules/
+data/*
+fixtures/mongo/explorer/providers/keys/
+config/production.*
+config/local.*
+static/lib/lifescope-styles
+
+
+prod.json
