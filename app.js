@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-const MODEL_OBJ_URL = '../assets/logo.obj';
-const MODEL_MTL_URL = '../assets/ArcticFox_Posed.mtl';
-const MODEL_SCALE = 0.01;
+const MODEL_OBJ_URL = '../assets/earth_obj.obj';
+const MODEL_MTL_URL = '../assets/earth_obj.mtl';
+const MODEL_SCALE = 0.6;
 
 /**
  * Container class to manage connecting to the WebXR Device API
