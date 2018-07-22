@@ -34,7 +34,7 @@
     <a-sky src="#sky" rotation="90 0 90">
     </a-sky>
 
-    <!-- Log wall -->
+    <!-- Search Wall -->
     <!-- <a-entity id="wall-log" class="boundry"
                 :geometry="'primitive: plane; width: 8; height: 4'"
                 material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
@@ -69,7 +69,6 @@ import socketIO from 'socket.io-client';
 import easyrtc from '../static/easyrtc/easyrtc.js';
 
 import gallery from "./components/gallery.vue";
-import objectLoader from "./components/util/object-loader.vue";
 
 var CONFIG = {};
 CONFIG.DEBUG = true;
@@ -78,8 +77,7 @@ import debugListeners from './dev/listeners.js';
 if (CONFIG.DEBUG) {console.log("from App.vue <script>");}
 export default {
     components: {
-        gallery,
-        objectLoader
+        gallery
     },
     data() {
       return {
