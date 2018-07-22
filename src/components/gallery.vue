@@ -88,6 +88,7 @@
                  repeat="indefinite"></a-animation>
     </a-entity>
 
+    <a-entity a-terrain="latitude:34.023552; longitude:-118.286189; radius:1000; elevation:580000"></a-entity>
 
   </a-entity>
 </template>
