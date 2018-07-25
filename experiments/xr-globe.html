@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LifeScope WebXR Demo</title>
-    <link rel="stylesheet" type="text/css" href="../shared/app.css" />
-    <link rel="stylesheet" type="text/css" href="../third_party/mdl/material.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/experiments/src/app.css" />
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/experiments/src/material.min.css" />
   </head>
   <body>
     <div id="enter-ar-info" class="demo-card mdl-card mdl-shadow--4dp">
@@ -17,8 +17,10 @@
         Share Socal Augmented Reality expierences with WebXR using LifeScope.
       </div>
       <div class="mdl-card__supporting-text">
-        <a href="https://play.google.com/store/apps/details?id=com.google.ar.core">AR Core (Android)</a> 
         <a href="https://developers.google.com/ar/discover/#supported_devices">Supported Devices</a>
+      </div>
+      <div class="mdl-card__supporting-text">
+        <a href="https://play.google.com/store/apps/details?id=com.google.ar.core">AR Core (Android)</a>
       </div>
       <div class="mdl-card__supporting-text">
         <a href="https://play.google.com/store/apps/details?id=com.chrome.canary">Chrome Canary (Android)</a>
@@ -37,17 +39,33 @@
         <h2 class="mdl-card__title-text">Unsupported Browser</h2>
       </div>
       <div class="mdl-card__supporting-text">
-          Your browser does not support AR features with WebXR. <a href="https://s3.amazonaws.com/lifescope-static/static/xr/markers/lifescope-letter-marker-960-marker.pdf"></a>Please use the LifeScope AR Marker.</a>
+        Share Socal Augmented Reality expierences with WebXR using LifeScope.
       </div>
       <div class="mdl-card__supporting-text">
-          <a href="https://codelabs.developers.google.com/codelabs/ar-with-webxr"></a>LifeScope AR Marker Demo</a>
+          Your browser does not support AR features with WebXR. Please use one of the viewers below on a supported device or use the <a href="https://s3.amazonaws.com/lifescope-static/static/xr/markers/lifescope-letter-marker-960-marker.pdf">LifeScope AR Marker</a> with the <a href="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/experiments/ar-globe-marker.html">LifeScope AR Marker Demo</a>.
+      </div>
+      <div class="mdl-card__supporting-text">
+        <a href="https://play.google.com/store/apps/details?id=com.google.ar.core">AR Core (Android)</a> 
+        <a href="https://developers.google.com/ar/discover/#supported_devices">Supported Devices</a>
+      </div>
+      <div class="mdl-card__supporting-text">
+        <a href="https://play.google.com/store/apps/details?id=com.chrome.canary">Chrome Canary (Android)</a>
+      </div>
+      <div class="mdl-card__supporting-text">
+        <a href="https://itunes.apple.com/us/app/webxr-viewer/id1295998056">WebXR Viewer (iOS)</a>
+      </div>
+      <div class="mdl-card__supporting-text">
+          <a href="https://s3.amazonaws.com/lifescope-static/static/xr/markers/lifescope-letter-marker-960-marker.pdf">LifeScope AR Marker</a>
+      </div>
+      <div class="mdl-card__supporting-text">
+          <a href="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/experiments/ar-globe-marker.html">LifeScope AR Marker Demo</a>
       </div>
     </div>
     <div id="stabilization"></div>
-    <script src="../third_party/three.js/three.js"></script>
-    <script src="../third_party/three.js/OBJLoader.js"></script>
-    <script src="../third_party/three.js/MTLLoader.js"></script>
-    <script src="../shared/utils.js"></script>
-    <script src="app.js"></script>
+    <script src="https://cdn.rawgit.com/LifeScopeLabs/lifescope-xr/master/experiments/src/three.js"></script>
+    <script src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/experiments/src/OBJLoader.js"></script>
+    <script src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/experiments/src/MTLLoader.js"></script>
+    <script src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/experiments/src/utils.js"></script>
+    <script src="https://rawgit.com/LifeScopeLabs/lifescope-xr/master/experiments/src/app.js"></script>
   </body>
 </html>
