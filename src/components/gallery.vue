@@ -88,6 +88,12 @@
                  repeat="indefinite"></a-animation>
     </a-entity>
 
+    <!-- Demo Map -->
+    <!-- Floor -->
+    <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 0 0" zoom-level="11"></a-mapbox-terrain>
+    <!-- World -->
+    <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 -10 0" zoom-level="11" scale="45 5 45"></a-mapbox-terrain>
+
 
   </a-entity>
 </template>
