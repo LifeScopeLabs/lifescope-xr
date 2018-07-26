@@ -20,22 +20,27 @@ module.exports = {
     module: {
       // Special compilation rules
       rules: [
+        // babel
         {
-          // Ask webpack to check: If this file ends with .js, then apply some transforms
           test: /\.js$/,
-          // Transform it with babel
           loader: 'babel-loader',
-          // don't transform node_modules folder (which don't need to be compiled)
           exclude: /node_modules/
         },
+
+        // css
+        { 
+          test: /\.css$/, 
+          loader: "style-loader!css-loader" ,
+          exclude: /node_modules/
+        },
+
+        // vue
         {
-          // Ask webpack to check: If this file ends with .vue, then apply some transforms
           test: /\.vue$/,
-          // Transform it with vue
           loader: 'vue-loader',
-          // don't transform node_modules folder (which don't need to be compiled)
           exclude: /(node_modules|bower_components)/,
       },
+
       // images
       {
         test: /\.(gif|png|jpe?g|svg)$/i,
@@ -49,6 +54,7 @@ module.exports = {
           },
         ],
       },
+
       // easyrtc
       {
         test: require.resolve('./static/easyrtc/easyrtc.js'),
