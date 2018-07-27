@@ -1,5 +1,5 @@
-const MODEL_OBJ_URL = 'https://s3.amazonaws.com/lifescope-static/test/content/3d/ArcticFox_Posed.obj';
-const MODEL_MTL_URL = 'https://s3.amazonaws.com/lifescope-static/test/content/3d/ArcticFox_Posed.mtl';
+const MODEL_OBJ_URL = 'https://s3.amazonaws.com/lifescope-static/test/content/3d/earth-obj.obj';
+const MODEL_MTL_URL = 'https://s3.amazonaws.com/lifescope-static/test/content/3d/earth-obj.mtl';
 const MODEL_SCALE = 0.6;
 
 /**

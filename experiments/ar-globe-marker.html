@@ -7,21 +7,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.6.0/aframe/build/aframe-ar.js"> </script>
   </head>
   
   <body style="margin : 0px; overflow: hidden;">
     
     <a-scene embedded arjs="debugUIEnabled: false;">
-    
-      <a-marker type="pattern" url="https://s3.amazonaws.com/lifescope-static/static/xr/markers/lifescope-letter-marker-960-marker.patt">
-        <a-entity position="0 0.5 0" gltf-model="url(https://s3.amazonaws.com/lifescope-static/test/content/3d/Rubber-Duck.gltf)"></a-entity>
+
+      <a-marker type="pattern" url="https://static.lifescope.io/assets/lifescope-letter-marker-960-marker.patt">
+        <a-entity position="0 0.5 0" scale="0.3 0.3 0.3" color="#000000" gltf-model="url(https://s3.amazonaws.com/lifescope-static/static/xr/logo/logo.gltf)"></a-entity>
       </a-marker>
       
       <a-entity camera>
       </a-entity>
     </a-scene>
-    
   </body>
 </html>
