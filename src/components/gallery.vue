@@ -1,73 +1,68 @@
 <template>
   <a-entity class="gallery">
-      <!-- Create scene -->
       <!-- Floor -->
       <a-entity id="floor" class="boundry"
-                geometry="primitive: plane; width: 8; height: 400"
-                material="src:#floor; repeat: 4 200"
+                :geometry="'primitive: plane; width:' + hallWidth + '; height: ' + hallDepth + ''"
+                :material="'src:#floor; repeat: ' + hallWidth + ' ' + -hallDepth"
                 rotation="-90 0 0"
-                position="0 0 -4">
+                :position="'0 0 ' + -hallWidth/2">
       </a-entity>
       
       <!-- Wall left -->
       <a-entity id="wall-left" class="boundry"
-                :geometry="'primitive: plane; width:' + wallWidth + '; height: ' + wallHeight"
-                material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
+                :geometry="'primitive: plane; width:' + hallDepth + '; height: ' + wallHeight"
+                material="color: #cee1ff; side: double; transparent: true; opacity: 0.4;" 
                 rotation="0 90 0"
-                :position="-hallWidth/2 + ' ' + wallHeight/2 + ' 0'">
+                :position="-hallWidth/2 + ' ' + wallHeight/2 +' ' + -hallDepth/2">
       </a-entity>
       
-      <!-- Wall right repeat: 4 200" -->
+      <!-- Wall right" -->
       <a-entity id="wall-right" class="boundry"
-                :geometry="'primitive: plane; width:' + wallWidth + '; height: ' + wallHeight"
-                material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;"
+                :geometry="'primitive: plane; width:' + hallDepth + '; height: ' + wallHeight"
+                material="color: #cee1ff; side: double; transparent: true; opacity: 0.4;"
                 rotation="180 90 0"
-                :position="hallWidth/2 + ' ' + wallHeight/2 + ' 0'">
+                :position="hallWidth/2 + ' ' + wallHeight/2 +' ' + -hallDepth/2">
+      </a-entity>
+      
+      <!-- Wall front" -->
+      <a-entity id="wall-front" class="boundry"
+                :geometry="'primitive: plane; width:' + hallWidth + '; height: ' + wallHeight"
+                material="color: #cee1ff; side: double; transparent: true; opacity: 0.4;"
+                rotation="0 0 0"
+                :position="'0 ' + wallHeight/2 +' ' + -hallDepth">
+      </a-entity>
+      
+      <!-- Wall back" -->
+      <a-entity id="wall-back" class="boundry"
+                :geometry="'primitive: plane; width:' + hallWidth + '; height: ' + wallHeight"
+                material="color: #cee1ff; side: double; transparent: true; opacity: 0.4;"
+                rotation="0 0 0"
+                :position="'0 ' + wallHeight/2 + ' 0'">
       </a-entity>
 
       <!-- Carousel -->
-      <gallery-carousel :LSObjs='LSObjs' :roomConfig='roomConfig'/>
+      <gallery-carousel :LSObjs='LSObjs' :roomConfig='roomConfig' :hallWidth='hallWidth' :hallDepth='hallDepth' />
       
       <!-- portals -->
-        <a-entity class="portal-left"
-                    layout="type: line; margin: 4"
-                    rotation="0 90 0"
-                    position="-3.8 1.5 16">
+        <a-entity class="portals"
+                    layout="type: line; margin: 2"
+                    rotation="0 0 0"
+                    :position="-sortedRooms.length + ' 1 -1'">
 
-                <carouselLink v-for="room of roomsLeft"
+                <carouselLink v-for="room of sortedRooms"
                         :key="room"
                         :room="room"
-                        rotation="0 180 0">
+                        rotation="0 0 0">
                 </carouselLink>
 
         </a-entity>
-      <a-entity class="portal-right"
-                    layout="type: line; margin: 4"
-                    rotation="0 270 0"
-                    position="3.8 1.5 16">
-                <carouselLink v-for="room of roomsRight"
-                        :key="room"
-                        :room="room"
-                        rotation="180 0 180">
-                </carouselLink>
-        </a-entity> 
-
-        <!-- // <carouselLink
-        //             rotation="0 270 0"
-        //             position="3.8 1.5 16"
-        //             :room="'video'">
-        // </carouselLink> -->
 
       <!-- Earth -->
       <a-sphere id="Earth" class="boundry"
-                position="0 1.2 -4" radius=".99" 
+                :position="'0 1.5 ' + -hallWidth/2" 
+                radius=".99" 
                 material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;">
-                <!-- animation="attribute=rotation;
-                 easing=linear;
-                 dur=150000;
-                 fill=forwards;
-                 to=0 360 0;
-                 repeat=indefinite;"> -->
+
           <a-animation attribute="rotation"
                  easing="linear" 
                  dur="150000"
@@ -76,7 +71,7 @@
                  repeat="indefinite"></a-animation>
       </a-sphere>
 
-    <a-entity id="Logo" position="0 2.5 -4"
+    <a-entity id="Logo" :position="'0 2.6 ' + -hallWidth/2" 
               rotation="0 0 0">
       <a-gltf-model src="#logo" scale="0.075 0.075 0.075">
         </a-gltf-model>
@@ -90,10 +85,9 @@
 
     <!-- Demo Map -->
     <!-- Floor -->
-    <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 0 0" zoom-level="11"></a-mapbox-terrain>
+    <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 0 -10" zoom-level="11"></a-mapbox-terrain>
     <!-- World -->
-    <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 -10 0" zoom-level="11" scale="45 5 45"></a-mapbox-terrain>
-
+    <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 -4 0" zoom-level="11" scale="45 5 45"></a-mapbox-terrain>
 
   </a-entity>
 </template>
@@ -108,11 +102,11 @@ if (CONFIG.DEBUG) {console.log("from gallery.vue <script>")}
 export default {
     data () {
         return {
-            name: "Lifescope",
+            name: "LifeScope",
             description: "The Internet of You",
-            wallWidth: 400,
-            wallHeight: 4,
-            hallWidth: 8
+            wallHeight: 1.1,
+            hallWidth: 20,
+            hallDepth: 20,
         }
     },
     components: {
@@ -129,18 +123,6 @@ export default {
                 return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
             });
             return sorted;
-        },
-        roomsLeft() {
-            return this.sortedRooms.slice(0, this.rooms.length/2);
-        },
-        roomsRight() {
-            var reversed = this.sortedRooms.slice(this.rooms.length/2, this.rooms.length);
-            reversed.reverse();
-            return reversed;
-        },
-        aRoom() {
-            if (CONFIG.DEBUG) {console.log(this.roomsRight[0]);};
-            return this.roomsRight[0];
         }
     },
     

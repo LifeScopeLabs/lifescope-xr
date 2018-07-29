@@ -329,7 +329,7 @@ export default {
       createNetworkedPlayer() {
         var frag = this.fragmentFromString(`
         <a-entity id="playerRig"
-          position="0 1.6 0"
+          position="0 1.6 -2"
           wasd-controls
           networked="template:#avatar-rig-template;attachTemplateToLocal:true;"
           
