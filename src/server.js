@@ -49,17 +49,19 @@ const contentTypes = {
 };
 
 s3.listObjects(bucketParams, function(err, data) {
+    //console.log("s3.listObjects");
     if (err) {console.log(err, err.stack);}
     else {
         //debugger;
 
         for (var content of data.Contents) {
+            //console.log(content);
             var re_ext=/\.([0-9a-z]+)$/i;
             //var re_name = /\/([0-9a-zA-Z\-\s]+)\.[0-9a-zA-Z]+$/i; 
             //var re_room=/^test\/content\/([0-9a-z\-]+\/)+/i;
             var room_name = "";
 
-            var re = /\/([0-9a-zA-Z\-\s]+)\.(.*)/i;
+            var re = /\/([0-9a-zA-Z\-_\s]+)\.(.*)/i;
 
             if (content.Key.startsWith(BUCKET_PATH) && !content.Key.endsWith('/')) {
                 //console.log(content);
