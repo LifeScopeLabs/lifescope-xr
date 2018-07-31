@@ -4,11 +4,11 @@
 
         
         <a-entity v-if="this.image.type === 'image'"
-            geometry="primitive: plane; width: 3;"
-            rotation="0 0 0"
-            position="0 1 0"
+            geometry="primitive: plane; width: 0.7;"
+            rotation="-30 0 0"
+            position="0 0.4 0"
             :material="this.imageMaterial"
-            src-fit="orientation: width; maxDimension: 3;"
+            src-fit="orientation: width; maxDimension: 0.7;"
             >
         </a-entity>
 
@@ -16,9 +16,9 @@
             :id="'video-rig-' + this.image.id">
             <a-video
                 :src="this.videoSrc"
-                rotation="0 0 0"
-                position="0 1 0"
-                width="3"
+                rotation="-30 0 0"
+                position="0 0.4 0"
+                width="0.7"
                 src-fit
                 :play-gaze="'button: true; rig: video-rig-' + this.image.id + '; position: -1 -0.35 0;'"
                 dynamic-autoplay="false">

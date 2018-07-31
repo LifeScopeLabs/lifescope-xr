@@ -18,19 +18,19 @@ AFRAME.registerComponent('mapbox-terrain', {
 	},
 	init: function () {
 		// https://www.mapbox.com/studio/account/tokens/
-		var access_token = 'pk.eyJ1IjoiamV0aWVubmUiLCJhIjoiY2o1eWFxaHFqMDBlcTJxbnBlNTVlOGkwZiJ9.-gTP-Ef27RRamJP7iF7W9g'
+		var access_token = 'pk.eyJ1IjoiaGVnZW1vbiIsImEiOiJjamVxa3NxYWcwN3ZvMndwNGNhcHM3emtoIn0.zYwZCho1w0eCEMiWiTHSaw';
 
-		var mapLatitude = this.data.latitude
-		var mapLongitude = this.data.longitude
-		var mapZoomLevel = this.data['zoom-level']
-		var tileX = long2tile(mapLongitude, mapZoomLevel)
-		var tileY = lat2tile(mapLatitude, mapZoomLevel)
+		var mapLatitude = this.data.latitude;
+		var mapLongitude = this.data.longitude;
+		var mapZoomLevel = this.data['zoom-level'];
+		var tileX = long2tile(mapLongitude, mapZoomLevel);
+		var tileY = lat2tile(mapLatitude, mapZoomLevel);
 
 	
-		var texture = buildTerrainTexture()
+		var texture = buildTerrainTexture();
 
 		var geometry	= new THREE.PlaneGeometry(1,1);
-		var geometry	= buildElevationPlaneGeometry()
+		var geometry	= buildElevationPlaneGeometry();
 		var material	= new THREE.MeshPhongMaterial({
 			map: texture,
 			// wireframe: true

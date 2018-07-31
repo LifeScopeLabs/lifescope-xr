@@ -2,9 +2,9 @@
     <a-entity class="gallery-carousel">
         <!-- Carousel left -->
         <a-entity class="gallery-carousel-left"
-                        layout="type: line; margin: 4"
+                        layout="type: line; margin: 1"
                         rotation="0 90 0"
-                        position="-3.8 1 0">
+                        :position="-hallWidth/2 + ' 1 0'">
                 <carouselItem v-for="wimage of itemsLeft"
                             :key="wimage.id"
                             :image='wimage'
@@ -12,11 +12,23 @@
                             :roomConfig='roomConfig'>
                 </carouselItem>
         </a-entity>
+        <!-- Carousel back -->
+        <a-entity class="gallery-carousel-back"
+                    layout="type: line; margin: 1"
+                    rotation="0 0 0"
+                    :position="-hallDepth/2 + ' 1 ' + -hallDepth">
+                <carouselItem v-for="wimage of itemsBack"
+                            :key="wimage.id"
+                            :image='wimage'
+                            rotation="0 0 0"
+                            :roomConfig='roomConfig'>
+                </carouselItem>
+        </a-entity> 
         <!-- Carousel right -->
         <a-entity class="gallery-carousel-right"
-                    layout="type: line; margin: 4"
+                    layout="type: line; margin: 1"
                     rotation="0 90 0"
-                    position="3.8 1 0">
+                    :position="hallWidth/2 + ' 1 0'">
                 <carouselItem v-for="wimage of itemsRight"
                             :key="wimage.id"
                             :image='wimage'
@@ -37,15 +49,17 @@ if (CONFIG.DEBUG) {console.log("from carousel.vue <script>")}
 export default {
     props: {'LSObjs': {
                 default: []},
-            'roomConfig': {}
+            'roomConfig': {},
+            'hallWidth': {
+                default: 20},
+            'hallDepth': {
+                default: 20}
     },
     components: {
         carouselItem
     },
     computed: {
-        LSObjsLength() {
-            return this.LSObjs.length;
-        },
+        // TODO: Clean up
         sortedLSObjs() {
             var sorted = this.LSObjs;
             sorted.sort(function (a, b) {
@@ -54,12 +68,13 @@ export default {
             return sorted;
         },
         itemsLeft() {
-            return this.sortedLSObjs.slice(0, this.LSObjsLength/2);
+            return this.sortedLSObjs.slice(0, this.LSObjs.length/3);
+        },
+        itemsBack() {
+            return this.sortedLSObjs.slice(this.LSObjs.length/3, (2*this.LSObjs.length)/3);
         },
         itemsRight() {
-            var reversed = this.sortedLSObjs.slice(this.LSObjsLength/2, this.LSObjsLength);
-            reversed.reverse();
-            return reversed;
+            return this.sortedLSObjs.slice((2*this.LSObjs.length)/3, this.LSObjs.length);
         }
     }
   }
