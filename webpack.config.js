@@ -34,6 +34,13 @@ module.exports = {
           exclude: /node_modules/
         },
 
+        // fonts
+        {
+          test: /\.(eot|svg|ttf|woff|woff2)$/,
+          loader: 'file-loader?name=public/fonts/[name].[ext]',
+          exclude: /node_modules/ 
+        },
+
         // vue
         {
           test: /\.vue$/,

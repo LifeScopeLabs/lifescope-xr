@@ -36,6 +36,7 @@
     <a-sky src="#sky" rotation="90 0 90">
     </a-sky>
 
+    <!-- -->
     <!-- test plane -->
     <!-- <a-plane color="#7BC8A4" rotation="-30 -30 0 " position="0 2 -2"></a-plane> -->
 
@@ -45,25 +46,32 @@
                 material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
                 rotation="0 180 0"
                 :position="'0 2 4'">
-
-            <a-gui-flex-container 
-              flex-direction="column" justify-content="center" align-items="normal" component-padding="0.1" 
-              opacity="0.7" width="3.5" height="4.5"
-              position="0 0 0" rotation="0 0 0"
-            >
-
-                <a-gui-button 
-                  width="2.5" height="0.75"
-                  onclick="testButtonAction" key-code="32"
-                  value="test button"
-                  font-family="Arial"
-                  margin="0 0 0.05 0"
-                >
-                </a-gui-button>
-
-		          </a-gui-flex-container>
           
     </a-entity> -->
+
+    <!-- <a-font-awesome charcode="fa-eye" color="blue" size="512" rotation="0 180 0" :position="'0 2 3.8'"></a-font-awesome> -->
+
+    <!-- <a-gui-flex-container 
+			flex-direction="column" justify-content="center" align-items="normal" component-padding="0.1" 
+			opacity="0.7" width="3.5" height="4.5"
+			
+		> -->
+      <!-- <a-gui-icon-button height="0.75"
+          icon="social-twitter"
+          margin="0 0 0.05 0"
+          position="-1 2 3.7"
+          rotation="0 180 0">
+      </a-gui-icon-button> -->
+    <!-- </a-gui-flex-container> -->
+
+    <!-- <a-ionicon id='testicon'
+      icon='social-twitter'
+      width=2
+      height=2
+      rotation="0 180 0"
+      position='0 2 3.6'>
+    </a-ionicon> -->
+
   </a-scene>
 </template>
 
@@ -395,3 +403,6 @@ export default {
     }
   }
 </script>
+
+<style src="./app.css"></style>
+
