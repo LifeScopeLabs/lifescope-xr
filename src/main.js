@@ -31,7 +31,7 @@ import './components/hubs/virtual-gamepad-controls.js';
 import './components/aframe/mapbox-terrain.js';
 import './components/hubs/character-controller.js';
 import './components/hubs/pitch-yaw-rotator.js';
-
+import './components/aframe/mapbox-terrain.js';
 
 // controls
 import {mappings, inputActions} from './controls/input-mappings';
@@ -54,7 +54,7 @@ var router = new VueRouter({
 });
 
 // ignore elements for Firefox
-Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere', 'a-animation', 'a-sky'];
+Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere', 'a-animation', 'a-sky', 'a-mapbox-terrain'];
 
 //var app = new Vue(Vue.util.extend({ router }, App)).$mount('#app');
 var app = new Vue({

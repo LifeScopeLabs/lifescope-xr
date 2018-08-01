@@ -1,6 +1,16 @@
 //////////////////////////////////////////////////////////////////////////////
 //		arjs-hit-testing
 //////////////////////////////////////////////////////////////////////////////
+var CONFIG = {};
+CONFIG.DEBUG = true;
+
+if (typeof AFRAME === 'undefined') {
+    throw new Error('Component attempted to register before AFRAME was available.');
+  }
+  else {
+    if (CONFIG.DEBUG) {console.log("Registering mapbox-terrain...");}
+}
+
 AFRAME.registerComponent('mapbox-terrain', {
 	schema: {
 		latitude: {
