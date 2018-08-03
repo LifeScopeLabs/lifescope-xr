@@ -6,15 +6,12 @@
     <!-- Load assets -->
     <!-- <a-assets/> -->
     <a-assets class="aframe-assets">
-      <img id="sky" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/skybox/nightsky.jpg"
-        crossorigin="anonymous">
+      <img id="sky" src="../static/gallery/nightsky.jpg">
 
-      <img id="floor" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/floor/wood-panel.jpg"
-        crossorigin="anonymous">
+      <img id="floor" src="../static/gallery/wood-panel.jpg">
 
-      <img id="earth" src="https://s3.amazonaws.com/lifescope-static/static/xr/components/globe/Albedo.jpg"
-        crossorigin="anonymous">
-
+      <img id="earth" src="../static/gallery/Albedo.jpg">
+      
       <!-- video controls -->
       <img id="video-play" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/video_play.png"
         crossorigin="anonymous">

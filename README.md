@@ -33,7 +33,6 @@ npm install
 ### build
 
 npm run build
-npm run build-server
 
 ### test site works with only production dependencies
 
@@ -45,7 +44,7 @@ npm install --production
 
 #### test site works
 
-npm run start
+NODE_ENV=prod npm run start
 
 ### zip config/, dist/, static/, and package.json
 
