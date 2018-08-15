@@ -152,6 +152,7 @@ export default {
 
 
       // Set eyes to invisible when room connects
+      // TODO : should this be after createNetworkedPlayer?
       document.body.addEventListener('connected', function (evt) {
         if (CONFIG.DEBUG) {console.log('connected event. clientId =', evt.detail.clientId);};
         if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);};
@@ -185,6 +186,11 @@ export default {
               if (CONFIG.DEBUG) {console.log("isMobile");};
               var playerRig = document.getElementById('playerRig');
               playerRig.setAttribute("virtual-gamepad-controls", {});
+              var camera = document.getElementById('player-camera');
+              var sceneEl = document.getElementsByTagName('a-scene')[0];
+              //this.eventHandlers.push(new TouchEventsHandler(this.cursor, this.cameraController, this.cursor.el));
+              sceneEl.setAttribute("look-on-mobile", "camera", camera);
+              sceneEl.setAttribute("look-on-mobile", "verticalLookSpeedRatio", 3);
             } else {
               if (CONFIG.DEBUG) {console.log("!isMobile");};
               var playerRig = document.getElementById('playerRig');
@@ -342,7 +348,7 @@ export default {
          <a-entity id="player-camera"
             class="camera"
             camera
-            
+            pitch-yaw-rotator
           >
           
           <a-gui-cursor id="cursor"

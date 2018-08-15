@@ -53,30 +53,39 @@ AFRAME.registerComponent("look-on-mobile", {
     this.prevX = this.hmdEuler.x;
     this.prevY = this.hmdEuler.y;
     this.pendingLookX = 0;
+    //this.pendingLookY = 0;
     this.onRotateX = this.onRotateX.bind(this);
+    //this.onRotateY = this.onRotateY.bind(this);
     this.dXBuffer = new CircularBuffer(6);
     this.dYBuffer = new CircularBuffer(6);
   },
 
   play() {
     this.el.addEventListener("rotateX", this.onRotateX);
+    //this.el.addEventListener("rotateY", this.onRotateY);
     this.polyfillObject = new THREE.Object3D();
     this.polyfillControls = new PolyfillControls(this.polyfillObject);
   },
 
   pause() {
     this.el.removeEventListener("rotateX", this.onRotateX);
+    //this.el.removeEventListener("rotateY", this.onRotateY);
     this.polyfillControls = null;
     this.polyfillObject = null;
   },
 
   update() {
+    //console.log("update");
     this.cameraController = this.data.camera.components["pitch-yaw-rotator"];
   },
 
   onRotateX(e) {
     this.pendingLookX = e.detail.value;
   },
+
+  // onRotateY(e) {
+  //   this.pendingLookY = e.detail.value;
+  // },
 
   tick() {
     const hmdEuler = this.hmdEuler;
@@ -91,7 +100,7 @@ AFRAME.registerComponent("look-on-mobile", {
     this.dYBuffer.push(Math.abs(dY) < 0.001 ? 0 : dY);
 
     const deltaYaw = average(this.dYBuffer.items) * horizontalLookSpeedRatio;
-    const deltaPitch = average(this.dXBuffer.items) * verticalLookSpeedRatio + this.pendingLookX;
+    const deltaPitch = (average(this.dXBuffer.items) + this.pendingLookX) * verticalLookSpeedRatio;
 
     this.cameraController.look(deltaPitch, deltaYaw);
 

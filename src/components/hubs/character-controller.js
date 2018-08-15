@@ -24,10 +24,12 @@ AFRAME.registerComponent("character-controller", {
     this.accelerationInput = new THREE.Vector3(0, 0, 0);
     this.pendingSnapRotationMatrix = new THREE.Matrix4();
     this.angularVelocity = 0; // Scalar value because we only allow rotation around Y
+    //this.yAngularVelocity = 0; // Scalar value because we allow rotation around X
     this.setAccelerationInput = this.setAccelerationInput.bind(this);
     this.snapRotateLeft = this.snapRotateLeft.bind(this);
     this.snapRotateRight = this.snapRotateRight.bind(this);
     this.setAngularVelocity = this.setAngularVelocity.bind(this);
+    //this.setYAngularVelocity = this.setYAngularVelocity.bind(this);
     this.handleTeleport = this.handleTeleport.bind(this);
   },
 
@@ -40,6 +42,7 @@ AFRAME.registerComponent("character-controller", {
     const eventSrc = this.el.sceneEl;
     eventSrc.addEventListener("move", this.setAccelerationInput);
     eventSrc.addEventListener("rotateY", this.setAngularVelocity);
+    //eventSrc.addEventListener("rotateX", this.setYAngularVelocity);
     eventSrc.addEventListener("snap_rotate_left", this.snapRotateLeft);
     eventSrc.addEventListener("snap_rotate_right", this.snapRotateRight);
     eventSrc.addEventListener("teleported", this.handleTeleport);
@@ -49,6 +52,7 @@ AFRAME.registerComponent("character-controller", {
     const eventSrc = this.el.sceneEl;
     eventSrc.removeEventListener("move", this.setAccelerationInput);
     eventSrc.removeEventListener("rotateY", this.setAngularVelocity);
+    //eventSrc.removeEventListener("rotateX", this.setYAngularVelocity);
     eventSrc.removeEventListener("snap_rotate_left", this.snapRotateLeft);
     eventSrc.removeEventListener("snap_rotate_right", this.snapRotateRight);
     eventSrc.removeEventListener("teleported", this.handleTeleport);
@@ -59,6 +63,7 @@ AFRAME.registerComponent("character-controller", {
     this.accelerationInput.set(0, 0, 0);
     this.velocity.set(0, 0, 0);
     this.angularVelocity = 0;
+    //this.yAngularVelocity = 0;
     this.pendingSnapRotationMatrix.identity();
   },
 
@@ -70,6 +75,10 @@ AFRAME.registerComponent("character-controller", {
   setAngularVelocity: function(event) {
     this.angularVelocity = event.detail.value;
   },
+
+  // setYAngularVelocity: function(event) {
+  //   this.yAngularVelocity = event.detail.value;
+  // },
 
   snapRotateLeft: function() {
     this.pendingSnapRotationMatrix.copy(this.leftRotationMatrix);
@@ -91,7 +100,9 @@ AFRAME.registerComponent("character-controller", {
     const transInv = new THREE.Matrix4();
     const pivotPos = new THREE.Vector3();
     const rotationAxis = new THREE.Vector3(0, 1, 0);
+    //const yRotationAxis = new THREE.Vector3(0, 0, 1);
     const yawMatrix = new THREE.Matrix4();
+    //const pitchMatrix = new THREE.Matrix4();
     const rotationMatrix = new THREE.Matrix4();
     const rotationInvMatrix = new THREE.Matrix4();
     const pivotRotationMatrix = new THREE.Matrix4();
@@ -105,6 +116,7 @@ AFRAME.registerComponent("character-controller", {
       const pivot = this.data.pivot.object3D;
       const distance = this.data.groundAcc * deltaSeconds;
       const rotationDelta = this.data.rotationSpeed * this.angularVelocity * deltaSeconds;
+      //const yRotationDelta = this.data.rotationSpeed * this.yAngularVelocity * deltaSeconds;
 
       startScale.copy(root.scale);
       startPos.copy(root.position);
@@ -123,6 +135,7 @@ AFRAME.registerComponent("character-controller", {
       this.updateVelocity(deltaSeconds);
       move.makeTranslation(this.velocity.x * distance, this.velocity.y * distance, this.velocity.z * distance);
       yawMatrix.makeRotationAxis(rotationAxis, rotationDelta);
+      //pitchMatrix.makeRotationAxis(yRotationAxis, yRotationDelta);
 
       // Translate to middle of playspace (player rig)
       root.applyMatrix(transInv);
@@ -134,6 +147,8 @@ AFRAME.registerComponent("character-controller", {
       root.applyMatrix(move);
       // Apply joystick yaw rotation
       root.applyMatrix(yawMatrix);
+      // // Apply joystick pitch rotation
+      // root.applyMatrix(pitchMatrix);
       // Apply snap rotation if necessary
       root.applyMatrix(this.pendingSnapRotationMatrix);
       // Reapply pivot (camera/head) rotation

@@ -11,6 +11,7 @@ AFRAME.registerComponent("pitch-yaw-rotator", {
   },
 
   look(deltaPitch, deltaYaw) {
+    //console.log(`deltaPitch: ${deltaPitch},\ndeltaYaw: ${deltaYaw}`);
     const { minPitch, maxPitch } = this.data;
     this.pitch += deltaPitch;
     this.pitch = Math.max(minPitch, Math.min(maxPitch, this.pitch));
