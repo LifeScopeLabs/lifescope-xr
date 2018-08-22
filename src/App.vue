@@ -1,5 +1,5 @@
 <template>
-  <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; debug: true; adapter: easyrtc; connectOnLoad: true;'">
+  <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; true; adapter: easyrtc; connectOnLoad: true;'">
 
     <!-- Register Aframe components -->
 
