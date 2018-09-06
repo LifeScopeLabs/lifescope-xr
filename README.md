@@ -1,4 +1,4 @@
-# Lifescope XR
+# LifeScope XR
 
 ## How to run
 
@@ -52,23 +52,23 @@ zip -r xr config/ dist/ package.json static/
 
 ### upload xr.zip to elastic beanstalk
 
-# [LIFESCOPE-XR](https://github.com/LifeScopeLabs/lifescope-xr)
+# [LifeScope-XR](https://github.com/LifeScopeLabs/lifescope-xr)
 
 ## [Repository](https://github.com/LifeScopeLabs/lifescope-xr)
 
 (development phase, medium priority)
 
-The LIFESCOPE API allows anyone to create a shared virtual space to access their memory and tell their stories. 
+The LifeScope API allows anyone to create a shared virtual space to access their memory and tell their stories. 
 
 This repo contains a series of AR/VR Views written to extend lifescope-app codebase as JS/Vue/Nuxt plugins.
 
 # Augmented Reality
 
-**LIFESCOPE AR Marker**
+**LifeScope AR Marker**
 
 ![marker]
 
-**LIFESCOPE AR Marker Pattern file.** 
+**LifeScope AR Marker Pattern file.** 
 
 **Notice how the pattern encodes the variance of the bitmap**
 
@@ -82,14 +82,14 @@ This repo contains a series of AR/VR Views written to extend lifescope-app codeb
 ![armap][armap2]
 
 ### Requirements
-- **MVP**: See a trail of gateways left behind from LIFESCOPE location objects.
-- Shows the current location (GPS) tile and database LIFESCOPE objects using markers.
-- See location of other lifLIFESCOPEescope objects.
-- See geo-polygons drawn from LIFESCOPE places objects.
+- **MVP**: See a trail of gateways left behind from LifeScope location objects.
+- Shows the current location (GPS) tile and database LifeScope objects using markers.
+- See location of other lifLifeScopeescope objects.
+- See geo-polygons drawn from LifeScope places objects.
 - Able to select locations, zoom, objects
 - Ability to see AR Globe (See VR Globe)
 - Able to work without marker. Using compass, accelerometer, gyroscope, camera (slam), etc…
-- Able to see other LIFESCOPE users with permissions.
+- Able to see other LifeScope users with permissions.
 
 ### Dependencies
 - Vue/Nuxt compatible
@@ -113,7 +113,7 @@ This repo contains a series of AR/VR Views written to extend lifescope-app codeb
 ![argateway]
 
 ### Requirements
-- **MVP**: Shows AR gateways around the current location (GPS) from the LIFESCOPE database
+- **MVP**: Shows AR gateways around the current location (GPS) from the LifeScope database
 - Able to select gateways, zoom, objects
 - Able to see friends
 
@@ -133,8 +133,8 @@ This repo contains a series of AR/VR Views written to extend lifescope-app codeb
 
 ## 3. Facial recognition (concept phase, low priority)
 ## Requirements
-- **MVP**: Able to recognize faces from LIFESCOPE data
-- Capture store photo/video/location/speech of “AR encounter” in LIFESCOPE api
+- **MVP**: Able to recognize faces from LifeScope data
+- Capture store photo/video/location/speech of “AR encounter” in LifeScope api
 Dependencies
  - Vue/Nuxt compatible
 Examples
@@ -142,7 +142,7 @@ Examples
 
 # Virtual Reality
 
-## 1. Globe of LIFESCOPE trails (development phase, medium priority)
+## 1. Globe of LifeScope trails (development phase, medium priority)
 
 **Aframe Earth wireframe.**
 
@@ -154,7 +154,7 @@ Examples
 ![vrmapbox]
 
 ### Requirements
-- MVP: Shows the current location (GPS) on globe and database LIFESCOPE objects using marker
+- MVP: Shows the current location (GPS) on globe and database LifeScope objects using marker
 - Able to select locations, zoom, objects
 - Able to see friends
 

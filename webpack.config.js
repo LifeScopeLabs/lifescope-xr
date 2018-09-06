@@ -78,7 +78,7 @@ module.exports = {
   plugins: [
     new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
-      title: 'LIFESCOPE XR Gallery',
+      title: 'LifeScope XR Gallery',
       // Load a custom template (lodash by default see the FAQ for details)
       template: './src/index.html'
     }),
