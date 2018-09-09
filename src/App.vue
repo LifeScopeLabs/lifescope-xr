@@ -151,15 +151,18 @@ export default {
       });
 
 
-      // Set eyes to invisible when room connects
-      // TODO : should this be after createNetworkedPlayer?
       document.body.addEventListener('connected', function (evt) {
         if (CONFIG.DEBUG) {console.log('connected event. clientId =', evt.detail.clientId);};
         if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);};
 
-        document.getElementsByClassName('player')[0].getElementsByClassName('face')[0].setAttribute('visible', 'false');
-        document.getElementsByClassName('player')[0].getElementsByClassName('head')[0].setAttribute('visible', 'false');
+      });
 
+      // make eyes invisible to user when the avatar is created
+      document.body.addEventListener('entityCreated', function (evt) {
+        if (evt.detail.el.id === 'playerRig') {
+          document.getElementsByClassName('player')[0].getElementsByClassName('face')[0].setAttribute('visible', 'false');
+          document.getElementsByClassName('player')[0].getElementsByClassName('head')[0].setAttribute('visible', 'false');
+        }
       });
       
 
