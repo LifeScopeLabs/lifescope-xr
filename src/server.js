@@ -61,7 +61,7 @@ s3.listObjects(bucketParams, function(err, data) {
             //var re_room=/^test\/content\/([0-9a-z\-]+\/)+/i;
             var room_name = "";
 
-            var re = /\/([0-9a-zA-Z\-_\s]+)\.(.*)/i;
+            var re = /\/([0-9a-zA-Z\-_,\s]+)\.(.*)/i;
 
             if (content.Key.startsWith(BUCKET_PATH) && !content.Key.endsWith('/')) {
                 //console.log(content);

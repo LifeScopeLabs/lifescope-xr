@@ -46,7 +46,7 @@ npm install --production
 
 NODE_ENV=prod npm run start
 
-### zip config/, dist/, static/, and package.json
+### zip .ebextensions/ .npmrc config/, dist/, static/, and package.json
 
 zip -r xr .ebextensions/ .npmrc config/ dist/ package.json static/
 

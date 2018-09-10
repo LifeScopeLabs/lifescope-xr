@@ -9,7 +9,8 @@
                             :key="wimage.id"
                             :image='wimage'
                             rotation="0 0 0"
-                            :roomConfig='roomConfig'>
+                            :roomConfig='roomConfig'
+                            :carouselDim="carouselDim">
                 </carouselItem>
         </a-entity>
         <!-- Carousel back -->
@@ -21,7 +22,8 @@
                             :key="wimage.id"
                             :image='wimage'
                             rotation="0 0 0"
-                            :roomConfig='roomConfig'>
+                            :roomConfig='roomConfig'
+                            :carouselDim="carouselDim">
                 </carouselItem>
         </a-entity> 
         <!-- Carousel right -->
@@ -33,7 +35,8 @@
                             :key="wimage.id"
                             :image='wimage'
                             rotation="180 0 180"
-                            :roomConfig='roomConfig'>
+                            :roomConfig='roomConfig'
+                            :carouselDim="carouselDim">
                 </carouselItem>
         </a-entity> 
     </a-entity>
@@ -47,6 +50,26 @@ import Vue from 'vue'
 
 if (CONFIG.DEBUG) {console.log("from carousel.vue <script>")}
 export default {
+    data () {
+        return {
+            carouselDim: {
+                wallEdgeOffset: 1,
+                itemsPerWall: 18,
+                layoutMargin: 1,
+                contentHeight: 2,
+                top: 1.5,
+                lineSeparation: 0.1,
+                columnWidth: 1,
+                iconOffset: 0.5,
+                iconWidth: 0.1,
+                backgroundWidth: 0.8,
+                backgroundHeight: 1.5,
+                displayDegrees: 30,
+			    truncateText: 30
+            }
+        }
+    },
+
     props: {'LSObjs': {
                 default: []},
             'roomConfig': {},

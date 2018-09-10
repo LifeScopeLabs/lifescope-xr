@@ -1,29 +1,21 @@
 <template>
   <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; true; adapter: easyrtc; connectOnLoad: true;'">
 
-    <!-- Register Aframe components -->
-
     <!-- Load assets -->
-    <!-- <a-assets/> -->
     <a-assets class="aframe-assets">
       <img id="sky" src="../static/gallery/nightsky.jpg">
-
       <img id="floor" src="../static/gallery/wood-panel.jpg">
-
       <img id="earth" src="../static/gallery/Albedo.jpg">
-      
       <!-- video controls -->
       <img id="video-play" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/video_play.png"
         crossorigin="anonymous">
       <img id="video-pause" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/video_pause.png"
         crossorigin="anonymous">
-
       <!-- gltf -->
       <!-- logo -->
       <a-gltf-model id="logo" src="https://s3.amazonaws.com/lifescope-static/static/xr/logo/logo.gltf"
                     crossorigin="anonymous">
       </a-gltf-model>
-
     </a-assets>
 
     <!-- gallery -->
@@ -32,42 +24,6 @@
     <!-- Sky id="Sky" -->
     <a-sky src="#sky" rotation="90 0 90">
     </a-sky>
-
-    <!-- -->
-    <!-- test plane -->
-    <!-- <a-plane color="#7BC8A4" rotation="-30 -30 0 " position="0 2 -2"></a-plane> -->
-
-    <!-- Log wall -->
-    <!-- <a-entity id="wall-log" class="boundry"
-                :geometry="'primitive: plane; width: 8; height: 4'"
-                material="color: #cee1ff; side: double; transparent: true; opacity: 0.5;" 
-                rotation="0 180 0"
-                :position="'0 2 4'">
-          
-    </a-entity> -->
-
-    <!-- <a-font-awesome charcode="fa-eye" color="blue" size="512" rotation="0 180 0" :position="'0 2 3.8'"></a-font-awesome> -->
-
-    <!-- <a-gui-flex-container 
-			flex-direction="column" justify-content="center" align-items="normal" component-padding="0.1" 
-			opacity="0.7" width="3.5" height="4.5"
-			
-		> -->
-      <!-- <a-gui-icon-button height="0.75"
-          icon="social-twitter"
-          margin="0 0 0.05 0"
-          position="-1 2 3.7"
-          rotation="0 180 0">
-      </a-gui-icon-button> -->
-    <!-- </a-gui-flex-container> -->
-
-    <!-- <a-ionicon id='testicon'
-      icon='social-twitter'
-      width=2
-      height=2
-      rotation="0 180 0"
-      position='0 2 3.6'>
-    </a-ionicon> -->
 
   </a-scene>
 </template>
@@ -179,11 +135,6 @@ export default {
             this.createAvatarRigTemplate();
             this.addAvatarRigTemplate();
             this.createNetworkedPlayer();
-
-            // this.createHTMLShader();
-            // this.createHTMLEntity();
-            // document.getElementsByClassName('player')[0].getElementsByClassName('face')[0].setAttribute('visible', 'false');
-            // document.getElementsByClassName('player')[0].getElementsByClassName('head')[0].setAttribute('visible', 'false');
 
             if (AFRAME.utils.device.isMobile()) {
               if (CONFIG.DEBUG) {console.log("isMobile");};
@@ -383,22 +334,6 @@ export default {
          </a-entity>`);
         document.getElementById('playerRig').appendChild(frag);
       },
-
-      // createHTMLShader() {
-      //   var frag = this.fragmentFromString(`
-      //   <div style="width: 100%; height: 100%; position: fixed; left: 0; top: 0; z-index: -1; overflow: hidden">
-      //     <div id="planeHTML" style="background: linear-gradient(red, yellow, green); width: 500px; height: 200px; font-size: 64px; padding-top: 15px; color: #222; font-weight: 600; display: flex; align-items: center; text-align: center; border-radius: 200px">
-      //       <p style="border: 1px #FFF">ARE YOU HUNGRY?</p>
-      //     </div>
-      //   </div>
-      //   `);
-      //   document.body.appendChild(frag);
-      // },
-
-      // createHTMLEntity() {
-      //   var frag = this.fragmentFromString(`<a-plane material="shader: html; target: #planeHTML; ratio: height; transparent: true; side: double" rotation="-30 -30 0 " position="0 2 -2"></a-plane>`);
-      //   document.getElementsByTagName('a-scene')[0].appendChild(frag);
-      // },
 
       fragmentFromString(strHTML) {
             return document.createRange().createContextualFragment(strHTML);
