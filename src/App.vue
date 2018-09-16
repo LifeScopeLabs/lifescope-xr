@@ -1,5 +1,5 @@
 <template>
-  <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; true; adapter: easyrtc; connectOnLoad: true;'">
+  <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; adapter: easyrtc; connectOnLoad: true;'">
 
     <!-- Load assets -->
     <a-assets class="aframe-assets">
@@ -37,7 +37,7 @@ import easyrtc from '../static/easyrtc/easyrtc.js';
 import gallery from "./components/gallery.vue";
 
 var CONFIG = {};
-CONFIG.DEBUG = false;
+CONFIG.DEBUG = true;
 import debugListeners from './dev/listeners.js';
 
 if (CONFIG.DEBUG) {console.log("from App.vue <script>");}
