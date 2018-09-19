@@ -51,6 +51,12 @@
 
 if (CONFIG.DEBUG) {console.log("from carousel-item.vue <script>")}
 export default {
+    data () {
+        return {
+			size: 1,
+        }
+    },
+    
     props: ['image', 'roomConfig', 'carouselDim'],
 
     computed: {
@@ -61,7 +67,11 @@ export default {
         videoSrc: function () {
             //console.log('src: ' + this.roomConfig.bucket_route + '/' + this.roomConfig.BUCKET_NAME + '/' + this.image.route);
             return this.roomConfig.bucket_route + '/' + this.roomConfig.BUCKET_NAME + '/' + this.image.route;
-        }
+        },
+
+        textScale: function() {
+			return (0.5*this.size) + ' ' + (0.5*this.size) + ' ' + (0.25*this.size);
+		}
     },
 
     methods: {
@@ -82,10 +92,10 @@ export default {
     },
 
     mounted () {
-        console.log("item mounted");
+        //console.log("item mounted");
         //console.log(this.image);
         //console.log(this.image.id);
-        console.log(this.image.name);
+        //console.log(this.image.name);
         //console.log(this.image.route);
         // if (this.image.type === 'video'){
             // console.log(this.image);
