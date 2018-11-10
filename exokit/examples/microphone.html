@@ -1,0 +1,241 @@
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+  <script src="three.js"></script>
+  <script>
+    let container, scene, camera, renderer, display, controllerMeshes;
+    let audioCtx, mediaStream;
+
+    const controllerGeometry = new THREE.BoxBufferGeometry(0.1, 0.2, 0.01);
+    const controllerMaterial = new THREE.MeshPhongMaterial({
+      color: 0x4caf50,
+    });
+    const _makeControllerMesh = (x = 0, y = 0, z = 0, qx = 0, qy = 0, qz = 0, qw = 1) => {
+      const mesh = new THREE.Mesh(controllerGeometry, controllerMaterial);
+      mesh.position.set(x, y, z);
+      mesh.quaternion.set(qx, qy, qz, qw);
+      // mesh.matrix.compose(mesh.position, mesh.quaternion, mesh.scale);
+      mesh.updateMatrix();
+      mesh.updateMatrixWorld();
+      mesh.matrixAutoUpdate = false;
+      mesh.frustumCulled = false;
+      return mesh;
+    };
+    const _makeAudioCtx = () => {
+      const audioCtx = new AudioContext();
+
+      return navigator.mediaDevices.getUserMedia({
+        audio: true,
+      })
+        .then(mediaStream => {
+          const mediaStreamSource = audioCtx.createMediaStreamSource(mediaStream);
+          mediaStreamSource.connect(audioCtx.destination);
+
+          return Promise.resolve({
+            audioCtx,
+            mediaStream,
+          });
+        });
+    };
+    const _destroyAudioCtx = ({audioCtx, mediaStream}) => {
+      const mediaStreamTracks = mediaStream.getTracks();
+      const tracks = mediaStream.getTracks();
+      for (let i = 0; i < tracks.length; i++) {
+        tracks[i].stop();
+      }
+
+      audioCtx.close();
+    };
+    const _toggleAudio = () => {
+      if (audioCtx && mediaStream) {
+        _destroyAudioCtx({audioCtx, mediaStream});
+        audioCtx = null;
+        mediaStream = null;
+
+        _makeAudioCtx()
+          .then(result => {
+            audioCtx = result.audioCtx;
+            mediaStream = result.mediaStream;
+          })
+          .catch(err => {
+            console.warn('microphone error', err.stack);
+          });
+      }
+    };
+
+    const _makeButtons = () => ({
+      bumper: false,
+    });
+    const currentButtons = [
+      _makeButtons(),
+      _makeButtons(),
+    ];
+    const lastButtons = [
+      _makeButtons(),
+      _makeButtons(),
+    ];
+    window.addEventListener('keydown', e => {
+      if (e.keyCode === 82) { // R
+        currentButtons[1].bumper = true;
+      }
+    });
+    window.addEventListener('keyup', e => {
+      if (e.keyCode === 82) { // R
+        currentButtons[1].bumper = false;
+      }
+    });
+
+    function init() {
+      container = document.createElement('div');
+      document.body.appendChild(container);
+
+      scene = new THREE.Scene();
+      scene.matrixAutoUpdate = false;
+      // scene.background = new THREE.Color(0x3B3961);
+
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+      // camera.position.set(0, 1, 0);
+      // camera.lookAt(new THREE.Vector3());
+      scene.add(camera);
+
+      // const ambientLight = new THREE.AmbientLight(0x333333);
+      const ambientLight = new THREE.AmbientLight(0x808080);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0x808080, 1);
+      directionalLight.position.set(1, 1, 1);
+      scene.add(directionalLight);
+
+      controllerMeshes = [
+        _makeControllerMesh(-0.1),
+        _makeControllerMesh(0.1),
+      ];
+      controllerMeshes.forEach(controllerMesh => {
+        scene.add(controllerMesh);
+      });
+
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      // window.browser.magicleap.RequestDepthPopulation(true);
+      // renderer.autoClearDepth = false;
+
+      container.appendChild(renderer.domElement);
+
+      renderer.setAnimationLoop(animate);
+    }
+
+    function animate(time, frame) {
+      if (renderer.vr.enabled) {
+        const inputSources = display.session.getInputSources();
+        const gamepads = navigator.getGamepads();
+
+        for (let i = 0; i < inputSources.length; i++) {
+          {
+            const inputSource = inputSources[i];
+            const pose = frame.getInputPose(inputSource);
+
+            const controllerMesh = controllerMeshes[i];
+            controllerMesh.matrix.fromArray(pose.pointerMatrix);
+            controllerMesh.updateMatrixWorld(true);
+          }
+
+          {
+            const bumper = gamepads[i].buttons[2].pressed;
+            const lastBumper = lastButtons[i].bumper;
+
+            if (bumper && !lastBumper) {
+              _toggleAudio();
+            }
+
+            lastButtons[i].bumper = bumper;
+          }
+        }
+      } else {
+        for (let i = 0; i < currentButtons.length; i++) {
+          const bumper = currentButtons[i].bumper;
+          const lastBumper = lastButtons[i].bumper;
+
+          if (bumper && !lastBumper) {
+            _toggleAudio();
+          }
+
+          lastButtons[i].bumper = bumper;
+        }
+      }
+
+      renderer.render(scene, renderer.vr.enabled ? renderer.vr.getCamera(camera) : camera);
+    }
+
+    init();
+
+    const audio = document.createElement('audio');
+    audio.oncanplay = () => {
+      console.log('audio loaded');
+    };
+    audio.onerror = err => {
+      console.warn('audio error', err.stack);
+    };
+    audio.src = 'ohno.mp3';
+
+    _makeAudioCtx()
+      .then(result => {
+        audioCtx = result.audioCtx;
+        mediaStream = result.mediaStream;
+      })
+      .catch(err => {
+        console.warn('microphone error', err.stack);
+      });
+
+    (async () => {
+      console.log('request device');
+      display = await navigator.xr.requestDevice();
+      console.log('request session');
+      const session = await display.requestSession({
+        exclusive: true,
+      });
+      display.session = session;
+
+      session.onselect = () => {
+        console.log('audio play', audio.paused);
+
+        if (!audio.paused) {
+          audio.pause();
+        }
+        audio.currentTime = 0;
+        audio.play();
+      };
+
+      session.requestAnimationFrame((timestamp, frame) => {
+        renderer.vr.setSession(session, {
+          frameOfReferenceType: 'stage',
+        });
+
+        const viewport = session.baseLayer.getViewport(frame.views[0]);
+        const width = viewport.width;
+        const height = viewport.height;
+
+        renderer.setSize(width * 2, height);
+
+        renderer.setAnimationLoop(null);
+
+        renderer.vr.enabled = true;
+        renderer.vr.setDevice(display);
+        renderer.vr.setAnimationLoop(animate);
+
+        console.log('running!');
+      });
+    })();
+  </script>
+  </body>
+</html>
