@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"name": "Today",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Name": "Sightglass Coffee", "description": null }, "geometry": { "type": "Point", "coordinates": [ -122.4084543, 37.7770356 ] } },
+{ "type": "Feature", "properties": { "Name": "Golden Gate Park Dog Training Area", "description": null }, "geometry": { "type": "Point", "coordinates": [ -122.4993547, 37.7710118 ] } },
+{ "type": "Feature", "properties": { "Name": "Golden Gate Bridge", "description": null }, "geometry": { "type": "Point", "coordinates": [ -122.4782551, 37.8199286 ] } },
+{ "type": "Feature", "properties": { "Name": "Robin Williams Tunnel", "description": null }, "geometry": { "type": "Point", "coordinates": [ -122.4862819, 37.8445671 ] } },
+{ "type": "Feature", "properties": { "Name": "Union Square", "description": null }, "geometry": { "type": "Point", "coordinates": [ -122.4074374, 37.7879938 ] } },
+{ "type": "Feature", "properties": { "Name": "Cable Car Museum", "description": null }, "geometry": { "type": "Point", "coordinates": [ -122.4115375, 37.7946026 ] } }
+]
+}
