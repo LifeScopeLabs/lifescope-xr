@@ -1,16 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>LIFESCOPE XR</title>
-    <meta name="description" content="LIFESCOPE XR">
+    <title>LifeScope XR</title>
+    <meta name="description" content="LifeScope XR">
     <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    <script src="registerMagic.js"></script>
+    <script></script>
   </head>
-  <body>
-    <a-scene>
-    <!-- Demo Map -->
-    <a-mapbox-terrain latitude='34.023552' longitude='-118.286189' zoom-level='10'></a-mapbox-terrain>
-        
-      <a-sky color="#ECECEC"></a-sky>
+<a-scene>
+  <a-assets>
+
+  </a-assets>
+      <a-entity position="0,0,5">
+        <a-camera>
+        </a-camera>
+      </a-entity>
+      <a-entity magic></a-entity>
+      
+
+<!--a-image width="0.2", height="0.2" src="#marker-red" material="transparent: true;" rotation="0 0 0" position="0 -0.85 -4.8"></a-image>
+
+<a-image width="0.2", height="0.2" src="#marker-blue" material="transparent: true;" rotation="0 0 0" position="0 -0.35 -4.8"></a-image>
+
+<a-image width="0.2", height="0.2" src="#marker-sky-blue" material="transparent: true;" rotation="0 0 0" position="0.5 -0.35 -4.8"></a-image>
+
+<a-image width="0.2", height="0.2" src="#marker-yellow" material="transparent: true;" rotation="0 0 0" position="0.5 -0.85 -4.8"></a-image>-->
+      <!--<a-sky id="sky" src="#b1"  radius="1"></a-sky>-->
     </a-scene>
   </body>
 </html>
