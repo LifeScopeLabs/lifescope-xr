@@ -21,6 +21,7 @@
     <!-- gallery -->
     <gallery :LSObjs='LSObjs' :rooms='rooms' :roomConfig='roomConfig'/>
 
+
     <!-- Sky id="Sky" -->
     <a-sky src="#sky" rotation="90 0 90">
     </a-sky>
@@ -29,12 +30,15 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import axios from 'axios';
 
 import socketIO from 'socket.io-client';
 import easyrtc from '../static/easyrtc/easyrtc.js';
 
 import gallery from "./components/gallery.vue";
+import hud from "./hud.vue";
+var hudClass = Vue.extend(hud);
 
 var CONFIG = {};
 CONFIG.DEBUG = true;
@@ -43,7 +47,8 @@ import debugListeners from './dev/listeners.js';
 if (CONFIG.DEBUG) {console.log("from App.vue <script>");}
 export default {
     components: {
-        gallery
+        gallery,
+        hud
     },
     data() {
       return {
@@ -135,6 +140,7 @@ export default {
             this.createAvatarRigTemplate();
             this.addAvatarRigTemplate();
             this.createNetworkedPlayer();
+            this.attachHud();
 
             if (AFRAME.utils.device.isMobile()) {
               if (CONFIG.DEBUG) {console.log("isMobile");};
@@ -211,6 +217,7 @@ export default {
                 color="#5985ff"
                 scale="0.45 0.5 0.4"
               ></a-sphere>
+
               <a-entity class="face"
                 position="0 0.05 0"
               >
@@ -236,17 +243,6 @@ export default {
                     scale="0.2 0.2 0.2"
                   ></a-sphere>
                 </a-sphere>
-                <a-sphere class="eye dev"
-                  color="#efefef"
-                  position="0 0.1 0.35"
-                  scale="0.12 0.12 0.12"
-                >
-                  <a-sphere class="pupil dev"
-                    color="#000"
-                    position="0 0 1"
-                    scale="0.2 0.2 0.2"
-                  ></a-sphere>
-                </a-sphere>
               </a-entity>
             </a-entity>
 
@@ -256,6 +252,18 @@ export default {
 
         document.getElementsByClassName('aframe-assets')[0].appendChild(frag);
 
+      },
+
+      attachHud() {
+        var playerRig = document.getElementById('playerRig');
+        var playerHud = new hudClass({
+          propsData: { playerrig: playerRig}
+        });
+//         var instance = new ComponentClass({
+//          propsData: { type: 'primary' }
+//         })
+        playerHud.$mount();
+        playerRig.appendChild(playerHud.$el);
       },
 
       addAvatarRigTemplate() {
