@@ -83,6 +83,10 @@
                  repeat="indefinite"></a-animation>
     </a-entity>
 
+    <!-- Sky id="Sky" -->
+    <a-sky src="#sky" rotation="90 0 90">
+    </a-sky>
+    
     <!-- Demo Map -->
     <!-- Floor -->
     <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 0 -10" zoom-level="11"></a-mapbox-terrain>
@@ -124,43 +128,7 @@ export default {
             });
             return sorted;
         }
-    },
-    
-    // Lifecycle hooks
-    // https://vuejs.org/v2/api/#Options-Lifecycle-Hooks
-    beforeCreate () {
-        if (CONFIG.DEBUG) {console.log("beforeCreate");};
-    },
-    created () {
-        //  data observation, computed properties, methods, watch/event callbacks
-        if (CONFIG.DEBUG) {console.log("created");};
-        //debugger;
-    },
-    beforeMount () {
-        if (CONFIG.DEBUG) {console.log("beforeMount");};
-    },
-    mounted () {
-        // el is replaced by the newly created vm.$el
-        if (CONFIG.DEBUG) {console.log("mounted");};
-        if (CONFIG.DEBUG) {console.log("gallery.vue :" + this.LSObjs);};
-
-        this.$nextTick(function () {
-            // Code that will run only after the
-            // entire view has been rendered
-            if (CONFIG.DEBUG) {console.log("mounted nextTick");};
-        })
-    },
-    beforeUpdate () {
-        if (CONFIG.DEBUG) {console.log("beforeUpdate");};
-    },
-    updated () {
-        if (CONFIG.DEBUG) {console.log("updated");};
-    },
-    beforeDestroy () {
-        if (CONFIG.DEBUG) {console.log("beforeDestroy");};
-    },
-    destroyed () {
-        if (CONFIG.DEBUG) {console.log("destroyed");};
     }
+  
 }
 </script>

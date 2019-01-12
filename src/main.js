@@ -53,7 +53,7 @@ var router = new VueRouter({
 });
 
 // ignore elements for Firefox
-Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere', 'a-animation', 'a-sky', 'a-plane', 'a-mapbox-terrain'];
+Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere', 'a-animation', 'a-sky', 'a-plane', 'a-mapbox-terrain', 'a-videosphere'];
 
 //var app = new Vue(Vue.util.extend({ router }, App)).$mount('#app');
 var app = new Vue({

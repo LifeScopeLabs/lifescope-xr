@@ -62,6 +62,19 @@ module.exports = {
         ],
       },
 
+      // video
+      {
+        test: /\.(mov|mp4)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            // options: {
+            //   name: '[name].[ext]'
+            // }  
+          }
+        ]
+      },
+
       // easyrtc
       {
         test: require.resolve('./static/easyrtc/easyrtc.js'),

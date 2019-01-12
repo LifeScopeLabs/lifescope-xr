@@ -16,15 +16,28 @@
       <a-gltf-model id="logo" src="https://s3.amazonaws.com/lifescope-static/static/xr/logo/logo.gltf"
                     crossorigin="anonymous">
       </a-gltf-model>
+      <!-- 360 video -->
+      <!-- <video id="cable-car" autoplay loop="true" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/test/content/video360/CABLE_CAR_360_optimized.mp4"/>
+      <video id="dog-cam" autoplay loop="true" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/test/content/video360/DOG_CAM_360_optimized.mp4"/>
+      <video id="golden-gate" autoplay loop="true" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/test/content/video360/GOLDEN_GATE_360_optimized.mp4"/>
+      <video id="ice-skating-day" autoplay loop="true" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/test/content/video360/ICE_SKATING_DAY_360_optimized.mp4"/>
+      <video id="ice-skating-night" autoplay loop="true" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/test/content/video360/ICE_SKATING_NIGHT_360_optimized.mp4"/> -->
+      <!-- <video id="cable-car" preload="auto" loop="true" crossorigin="anonymous" src="../static/video360/CABLE_CAR_360_optimized.mp4"/> -->
+      <!-- <video id="dog-cam" autoplay loop="true" crossorigin="anonymous" src="../static/video360/DOG_CAM_360_optimized.mp4"/>
+      <video id="golden-gate" autoplay loop="true" crossorigin="anonymous" src="../static/video360/GOLDEN_GATE_360_optimized.mp4"/>
+      <video id="ice-skating-day" autoplay loop="true" crossorigin="anonymous" src="../static/video360/ICE_SKATING_DAY_360_optimized.mp4"/>
+      <video id="ice-skating-night" autoplay loop="true" crossorigin="anonymous" src="../static/video360/ICE_SKATING_NIGHT_360_optimized.mp4"/> -->
     </a-assets>
 
+
+    <!-- 360 theater -->
+       <!-- <theater/> -->
+    <!-- landing -->
+
+    <landing :LSObjs='LSObjs' :rooms='rooms' :roomConfig='roomConfig'/>
+
     <!-- gallery -->
-    <gallery :LSObjs='LSObjs' :rooms='rooms' :roomConfig='roomConfig'/>
-
-
-    <!-- Sky id="Sky" -->
-    <a-sky src="#sky" rotation="90 0 90">
-    </a-sky>
+    <!-- <gallery :LSObjs='LSObjs' :rooms='rooms' :roomConfig='roomConfig'/> -->
 
   </a-scene>
 </template>
@@ -36,7 +49,9 @@ import axios from 'axios';
 import socketIO from 'socket.io-client';
 import easyrtc from '../static/easyrtc/easyrtc.js';
 
+import landing from "./components/landing.vue";
 import gallery from "./components/gallery.vue";
+import theater from "./components/theater360.vue";
 import hud from "./hud.vue";
 var hudClass = Vue.extend(hud);
 
@@ -47,7 +62,9 @@ import debugListeners from './dev/listeners.js';
 if (CONFIG.DEBUG) {console.log("from App.vue <script>");}
 export default {
     components: {
+        landing,
         gallery,
+        theater,
         hud
     },
     data() {
@@ -55,20 +72,8 @@ export default {
         LSObjs: [],
         rooms: [],
         roomConfig: {},
-        roomName: 'ls-room'
+        roomName: 'landing'
       }
-    },
-
-    beforeCreate () {
-      if (CONFIG.DEBUG) {console.log("beforeCreate");};
-    },
-
-    created () {
-      if (CONFIG.DEBUG) {console.log("created");};
-    },
-
-    beforeMount () {
-      if (CONFIG.DEBUG) {console.log("beforeMount");};
     },
 
     mounted () {
@@ -79,23 +84,6 @@ export default {
         AFRAME.scenes[0].renderer.vr.userHeight = 0;
       });
 
-      //if (CONFIG.DEBUG) {debugListeners();}
-      document.body.addEventListener('move', function (evt) {
-        // console.log('move');
-        // console.log(evt);
-      });
-      document.body.addEventListener('rotateY', function (evt) {
-        // console.log('rotateY');
-        // console.log(evt);
-        // console.log(evt.detail.value);
-        // var playerRig = document.getElementById("playerRig");
-        // console.log(playerRig.getAttribute('rotation'));
-      });
-      document.body.addEventListener('rotateX', function (evt) {
-        // console.log('rotateX');
-        // console.log(evt);
-        // console.log(evt.detail.value);
-      });
 
 
       //
@@ -134,13 +122,14 @@ export default {
           //this.roomName = res.roomConfig.ROOM_NAME;
 
           this.getObjs().then((res) => {
+            console.log("this.getObjs().then((res))");
             this.LSObjs = res.LSObjs;
             this.rooms = res.rooms;
 
             this.createAvatarRigTemplate();
             this.addAvatarRigTemplate();
             this.createNetworkedPlayer();
-            this.attachHud();
+            // this.attachHud();
 
             if (AFRAME.utils.device.isMobile()) {
               if (CONFIG.DEBUG) {console.log("isMobile");};
@@ -164,17 +153,6 @@ export default {
 
 
     methods: {
-      textString: function (value) {
-            return 'width: 1.5; color: white; value: ' + value
-      },
-      logText: function (value) {
-        var logtext = document.getElementById('log-text');
-        logtext.setAttribute('text', this.textString(value));
-      },
-      testButtonAction: function () {
-        if (CONFIG.DEBUG) {console.log("testButtonAction");};
-      },
-      
       getRoomConfig () {
         if (CONFIG.DEBUG) {console.log("getRoomConfig");};
         return axios.get("/roomconfig")
@@ -190,21 +168,37 @@ export default {
         var x = '/' + this.roomConfig.BUCKET_PATH;
 
         if (!this.$route.query.room){
-          this.$route.query.room = 'ls-room';
+          this.$route.query.room = 'landing';
         }
 
-        this.roomName = this.$route.query.room || 'ls-room';
+        this.roomName = this.$route.query.room || 'landing';
 
         if (CONFIG.DEBUG) {console.log(x);};
-        return axios.get(x)
-        .then((res) => {
-          var result = [];
-          var rooms = Object.keys(res.data);
-          var someData = res.data[this.roomName].forEach(element => {
-            result.push(element);
-          });
-          return { LSObjs: result, rooms: rooms }
+        
+          return axios.get(x)
+          .then((res) => {
+            var result = [];
+            var rooms = [];
+            console.log("this.roomName:");
+            console.log(this.roomName);
+            if (this.roomName != 'theater360' && this.roomName != 'landing') {
+              console.log("this.roomName != 'theater360'");
+              rooms = Object.keys(res.data);
+              var someData = res.data[this.roomName].forEach(element => {
+                result.push(element);
+              });
+            }
+            else if (this.roomName != 'landing') {
+              console.log("this.roomName == 'landing'");
+              result.push('theater360'); rooms.push('landing');
+            }
+            else {
+              console.log("this.roomName == 'theater360'");
+              result.push('theater360'); rooms.push('theater360');}
+            return { LSObjs: result, rooms: rooms }
         })
+        
+        
       },
 
       createAvatarRigTemplate() {
@@ -298,6 +292,7 @@ export default {
       // look-controls="reverseMouseDrag:true"
       
       createNetworkedPlayer() {
+        console.log("createNetworkedPlayer");
         var frag = this.fragmentFromString(`
         <a-entity id="playerRig"
           position="0 1.6 -2"
@@ -314,7 +309,7 @@ export default {
           >
           
           <a-gui-cursor id="cursor"
-					  raycaster="interval: 1000; objects: gui-interactable, .clickable"
+					  raycaster="far: 1; interval: 1000; objects: gui-interactable, .clickable"
 					  fuse="true" fuse-timeout="2000"
 					  design="dot"
 			      >
