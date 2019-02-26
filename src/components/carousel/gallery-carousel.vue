@@ -75,6 +75,7 @@ export default {
                 img.setAttribute('width', 0.7);
                 img.setAttribute('src-fit', {orientation: 'width',
                     maxDimension: 0.7});
+                img.setAttribute('crossorigin', 'anonymous');
                 img.setAttribute('src', this.imageSrc(this.items[i]));
                 var roty = theta * (180/Math.PI) - 180;
                 img.setAttribute('rotation', '-15 ' + roty + ' 0');

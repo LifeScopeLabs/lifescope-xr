@@ -2,8 +2,8 @@ var brassBaseTexture, brassBumpTexture, brassNormalTexture;
 var woodBaseTexture, woodBumpTexture, woodNormalTexture;
 
 function getOrLoadTexture(type) {
-    const brassBaseUrl = '/static/textures/metal/TexturesCom_Metal_BronzeBare/TexturesCom_Metal_BronzeBare_1K_'
-    const woodBaseUrl = '/static/textures/plane/WoodenFloor/WoodenFloor_';
+    const brassBaseUrl = 'https://s3.amazonaws.com/lifescope-static/static/xr/textures/BronzeBare/TexturesCom_Metal_BronzeBare_1K_'
+    const woodBaseUrl = 'https://s3.amazonaws.com/lifescope-static/static/xr/textures/WoodenFloor/WoodenFloor_';
 
     // brass
     if (type == 'brassBase') {

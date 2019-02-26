@@ -3,8 +3,8 @@
 
     <!-- Load assets -->
     <a-assets class="aframe-assets">
-      <img id="sky" src="../static/gallery/nightsky.jpg">
-      <img id="earth" src="../static/gallery/Albedo.jpg">
+      <img id="sky" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/skybox/nightsky.jpg">
+      <img id="earth" src="https://s3.amazonaws.com/lifescope-static/static/xr/components/globe/Albedo.jpg">
       <!-- video controls -->
       <img id="video-play" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/video_play.png"
         crossorigin="anonymous">

@@ -19,7 +19,7 @@ AFRAME.registerComponent('wooden-floor', {
     init: function () {
 
         var self = this;
-        const baseUrl = '/static/textures/plane/WoodenFloor/WoodenFloor_';
+        const baseUrl = 'https://s3.amazonaws.com/lifescope-static/static/xr/textures/WoodenFloor/WoodenFloor_';
         // texture author: Brandon Funk https://gumroad.com/l/wood_floor
         var baseTexture = new THREE.TextureLoader().load( baseUrl + 'basecolor.png');
         var bumpTexture = new THREE.TextureLoader().load( baseUrl + 'height.png');
