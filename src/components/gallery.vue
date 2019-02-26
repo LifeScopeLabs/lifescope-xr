@@ -1,65 +1,23 @@
 <template>
   <a-entity class="gallery">
+      <!-- lights -->
+      <a-entity light="type: ambient; color: #FFF; intensity: 0.5"></a-entity>
+        <a-entity id="dirLight" light="type: directional; color: #FFF; intensity: 0.5" position="1 1 1"></a-entity>
+
       <!-- Floor -->
-      <a-entity id="floor" class="boundry"
-                :geometry="'primitive: plane; width:' + hallWidth + '; height: ' + hallDepth + ''"
-                :material="'src:#floor; repeat: ' + hallWidth + ' ' + -hallDepth"
-                rotation="-90 0 0"
-                :position="'0 0 ' + -hallWidth/2">
-      </a-entity>
-      
-      <!-- Wall left -->
-      <a-entity id="wall-left" class="boundry"
-                :geometry="'primitive: plane; width:' + hallDepth + '; height: ' + wallHeight"
-                material="color: #cee1ff; side: double; transparent: true; opacity: 0.4;" 
-                rotation="0 90 0"
-                :position="-hallWidth/2 + ' ' + wallHeight/2 +' ' + -hallDepth/2">
-      </a-entity>
-      
-      <!-- Wall right" -->
-      <a-entity id="wall-right" class="boundry"
-                :geometry="'primitive: plane; width:' + hallDepth + '; height: ' + wallHeight"
-                material="color: #cee1ff; side: double; transparent: true; opacity: 0.4;"
-                rotation="180 90 0"
-                :position="hallWidth/2 + ' ' + wallHeight/2 +' ' + -hallDepth/2">
-      </a-entity>
-      
-      <!-- Wall front" -->
-      <a-entity id="wall-front" class="boundry"
-                :geometry="'primitive: plane; width:' + hallWidth + '; height: ' + wallHeight"
-                material="color: #cee1ff; side: double; transparent: true; opacity: 0.4;"
-                rotation="0 0 0"
-                :position="'0 ' + wallHeight/2 +' ' + -hallDepth">
-      </a-entity>
-      
-      <!-- Wall back" -->
-      <a-entity id="wall-back" class="boundry"
-                :geometry="'primitive: plane; width:' + hallWidth + '; height: ' + wallHeight"
-                material="color: #cee1ff; side: double; transparent: true; opacity: 0.4;"
-                rotation="0 0 0"
-                :position="'0 ' + wallHeight/2 + ' 0'">
-      </a-entity>
+        <a-wooden-floor radius='6.1'></a-wooden-floor>
+
+        <!-- Rail -->
+        <a-diorama-cyl radius='6' position="0 0 0"></a-diorama-cyl>
+
 
       <!-- Carousel -->
       <gallery-carousel :LSObjs='LSObjs' :roomConfig='roomConfig' :hallWidth='hallWidth' :hallDepth='hallDepth' />
       
-      <!-- portals -->
-        <a-entity class="portals"
-                    layout="type: line; margin: 2"
-                    rotation="0 0 0"
-                    :position="-sortedRooms.length + ' 1 -1'">
-
-                <carouselLink v-for="room of sortedRooms"
-                        :key="room"
-                        :room="room"
-                        rotation="0 0 0">
-                </carouselLink>
-
-        </a-entity>
 
       <!-- Earth -->
       <a-sphere id="Earth" class="boundry"
-                :position="'0 1.5 ' + -hallWidth/2" 
+                :position="'0 1.5 0' " 
                 radius=".99" 
                 material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;">
 
@@ -71,7 +29,8 @@
                  repeat="indefinite"></a-animation>
       </a-sphere>
 
-    <a-entity id="Logo" :position="'0 2.6 ' + -hallWidth/2" 
+<!-- Logo  -->
+    <a-entity id="Logo" :position="'0 2.6 0'"
               rotation="0 0 0">
       <a-gltf-model src="#logo" scale="0.075 0.075 0.075">
         </a-gltf-model>
@@ -85,9 +44,9 @@
 
     <!-- Demo Map -->
     <!-- Floor -->
-    <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 0 -10" zoom-level="11"></a-mapbox-terrain>
+    <!-- <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 0 -10" zoom-level="11"></a-mapbox-terrain> -->
     <!-- World -->
-    <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 -4 0" zoom-level="11" scale="45 5 45"></a-mapbox-terrain>
+    <!-- <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 -4 0" zoom-level="11" scale="45 5 45"></a-mapbox-terrain> -->
 
   </a-entity>
 </template>

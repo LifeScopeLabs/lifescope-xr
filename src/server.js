@@ -1,3 +1,4 @@
+import path from 'path';
 import config from 'config';
 import http from "http";
 import easyRTC from "easyrtc";
@@ -105,7 +106,7 @@ Promise.resolve()
       });
 
     // serve static files
-    server.use('/static', express.static('static'));
+    server.use('/static/', express.static(path.join(__dirname, '../static')));
     server.use(express.static('./dist'));
     server.use('/dist', express.static('./dist'));
 

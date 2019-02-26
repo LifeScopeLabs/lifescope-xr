@@ -1,52 +1,15 @@
 <template>
     <a-entity class="gallery-carousel">
-        <!-- Carousel left -->
-        <a-entity class="gallery-carousel-left"
-                        layout="type: line; margin: 1"
-                        rotation="0 90 0"
-                        :position="-hallWidth/2 + ' 1 0'">
-                <carouselItem v-for="wimage of itemsLeft"
-                            :key="wimage.id"
-                            :image='wimage'
-                            rotation="0 0 0"
-                            :roomConfig='roomConfig'
-                            :carouselDim="carouselDim">
-                </carouselItem>
-        </a-entity>
-        <!-- Carousel back -->
-        <a-entity class="gallery-carousel-back"
-                    layout="type: line; margin: 1"
-                    rotation="0 0 0"
-                    :position="-hallDepth/2 + ' 1 ' + -hallDepth">
-                <carouselItem v-for="wimage of itemsBack"
-                            :key="wimage.id"
-                            :image='wimage'
-                            rotation="0 0 0"
-                            :roomConfig='roomConfig'
-                            :carouselDim="carouselDim">
-                </carouselItem>
-        </a-entity> 
-        <!-- Carousel right -->
-        <a-entity class="gallery-carousel-right"
-                    layout="type: line; margin: 1"
-                    rotation="0 90 0"
-                    :position="hallWidth/2 + ' 1 0'">
-                <carouselItem v-for="wimage of itemsRight"
-                            :key="wimage.id"
-                            :image='wimage'
-                            rotation="180 0 180"
-                            :roomConfig='roomConfig'
-                            :carouselDim="carouselDim">
-                </carouselItem>
-        </a-entity> 
     </a-entity>
 </template>
 
 <script>
 
-import carouselItem from "./components/carousel-item.vue"
+import carouselItem from "./components/carousel-item.vue";
 
-import Vue from 'vue'
+import Vue from 'vue';
+var CONFIG = {};
+CONFIG.DEBUG = true;
 
 if (CONFIG.DEBUG) {console.log("from carousel.vue <script>")}
 export default {
@@ -82,7 +45,6 @@ export default {
         carouselItem
     },
     computed: {
-        // TODO: Clean up
         sortedLSObjs() {
             var sorted = this.LSObjs;
             sorted.sort(function (a, b) {
@@ -90,15 +52,46 @@ export default {
             });
             return sorted;
         },
-        itemsLeft() {
-            return this.sortedLSObjs.slice(0, this.LSObjs.length/3);
-        },
-        itemsBack() {
-            return this.sortedLSObjs.slice(this.LSObjs.length/3, (2*this.LSObjs.length)/3);
-        },
-        itemsRight() {
-            return this.sortedLSObjs.slice((2*this.LSObjs.length)/3, this.LSObjs.length);
+        items() {
+            return this.sortedLSObjs.slice(0, 36);
         }
-    }
+    },
+    methods: {
+        imageSrc: function (image) {
+            return this.roomConfig.bucket_route + '/' + this.roomConfig.BUCKET_NAME + '/' + image.route;
+        },
+        createImages: function() {
+            if (CONFIG.DEBUG) {console.log("createImages")};
+            var scene = document.querySelector('a-scene');
+            for ( var i = 0; i < this.items.length; i ++ ) {
+                var u = i / 36;
+                var theta = u * Math.PI * 2 + 0;
+                var sinTheta = Math.sin( theta );
+                var cosTheta = Math.cos( theta );
+                var segx = 6.2 * sinTheta;
+                var segz = 6.2 * cosTheta;
+
+                var img = document.createElement("a-image");
+                img.setAttribute('width', 0.7);
+                img.setAttribute('src-fit', {orientation: 'width',
+                    maxDimension: 0.7});
+                img.setAttribute('src', this.imageSrc(this.items[i]));
+                var roty = theta * (180/Math.PI) - 180;
+                img.setAttribute('rotation', '-15 ' + roty + ' 0');
+                img.setAttribute('position', segx + ' 1.5 ' + segz);
+                this.$el.appendChild(img);
+            }
+        }
+    },
+
+    watch: {
+        LSObjs: function (newVals, oldVals) {
+            if(typeof newVals != "undefined" && newVals != null
+                && newVals.length != null && newVals.length > 0
+                && oldVals.length == 0) {
+                this.createImages();
+            }
+        }
+    },
   }
 </script>

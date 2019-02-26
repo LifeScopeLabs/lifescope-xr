@@ -13,7 +13,6 @@ import 'three';
 import 'aframe';
 import 'aframe-layout-component';
 import 'networked-aframe';
-import 'aframe-animation-component';
 import 'aframe-src-fit-component';
 import 'aframe-asset-on-demand-component';
 import 'aframe-input-mapping-component';
@@ -27,6 +26,8 @@ import './components/aframe/dynamic-autoplay.js';
 import './components/aframe/avatar-rig';
 import './components/aframe/ionicon';
 import './components/aframe/mapbox-terrain.js';
+import './components/aframe/diorama.js';
+import './components/aframe/woodenfloor.js';
 import './components/hubs/virtual-gamepad-controls.js';
 import './components/hubs/character-controller.js';
 import './components/hubs/pitch-yaw-rotator.js';
@@ -53,7 +54,7 @@ var router = new VueRouter({
 });
 
 // ignore elements for Firefox
-Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere', 'a-animation', 'a-sky', 'a-mapbox-terrain'];
+Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere', 'a-animation', 'a-sky', 'a-mapbox-terrain', 'a-wooden-floor', 'a-diorama-cyl'];
 
 //var app = new Vue(Vue.util.extend({ router }, App)).$mount('#app');
 var app = new Vue({

@@ -4,7 +4,6 @@
     <!-- Load assets -->
     <a-assets class="aframe-assets">
       <img id="sky" src="../static/gallery/nightsky.jpg">
-      <img id="floor" src="../static/gallery/wood-panel.jpg">
       <img id="earth" src="../static/gallery/Albedo.jpg">
       <!-- video controls -->
       <img id="video-play" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/video_play.png"
@@ -74,23 +73,6 @@ export default {
         AFRAME.scenes[0].renderer.vr.userHeight = 0;
       });
 
-      //if (CONFIG.DEBUG) {debugListeners();}
-      document.body.addEventListener('move', function (evt) {
-        // console.log('move');
-        // console.log(evt);
-      });
-      document.body.addEventListener('rotateY', function (evt) {
-        // console.log('rotateY');
-        // console.log(evt);
-        // console.log(evt.detail.value);
-        // var playerRig = document.getElementById("playerRig");
-        // console.log(playerRig.getAttribute('rotation'));
-      });
-      document.body.addEventListener('rotateX', function (evt) {
-        // console.log('rotateX');
-        // console.log(evt);
-        // console.log(evt.detail.value);
-      });
 
 
       //
@@ -129,7 +111,12 @@ export default {
           //this.roomName = res.roomConfig.ROOM_NAME;
 
           this.getObjs().then((res) => {
+            console.log("getObjs");
+            // console.log(res);
+            // var event = new Event('lsobjs');
+            // document.body.dispatchEvent(event);
             this.LSObjs = res.LSObjs;
+            // console.log(this.LSObjs);
             this.rooms = res.rooms;
 
             this.createAvatarRigTemplate();
@@ -173,7 +160,8 @@ export default {
         if (CONFIG.DEBUG) {console.log("getRoomConfig");};
         return axios.get("/roomconfig")
         .then((res) => {
-          //console.log(res.data);
+          // console.log("res.data");
+          // console.log(res.data);
           return {roomConfig: res.data}
         })
       },
@@ -195,6 +183,7 @@ export default {
           var result = [];
           var rooms = Object.keys(res.data);
           var someData = res.data[this.roomName].forEach(element => {
+            // console.log(element);
             result.push(element);
           });
           return { LSObjs: result, rooms: rooms }
@@ -289,6 +278,12 @@ export default {
       // pitch-yaw-rotator
       // look-controls="reverseMouseDrag:true"
       
+      // <a-gui-cursor id="cursor"
+			// 		  raycaster="interval: 1000; objects: gui-interactable, .clickable"
+			// 		  fuse="true" fuse-timeout="2000"
+			// 		  design="dot"
+			//       >
+			//     </a-gui-cursor>
       createNetworkedPlayer() {
         var frag = this.fragmentFromString(`
         <a-entity id="playerRig"
@@ -305,12 +300,7 @@ export default {
             pitch-yaw-rotator
           >
           
-          <a-gui-cursor id="cursor"
-					  raycaster="interval: 1000; objects: gui-interactable, .clickable"
-					  fuse="true" fuse-timeout="2000"
-					  design="dot"
-			      >
-			    </a-gui-cursor>
+          
           
           </a-entity>
           <a-entity id="rightHandRig"
