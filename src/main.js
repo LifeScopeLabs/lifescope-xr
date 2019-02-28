@@ -7,15 +7,11 @@ import VueRouter from 'vue-router';
 import 'three';
 // must import aframe here to load components
 import 'aframe';
-import 'aframe-layout-component';
 import 'networked-aframe';
 import 'aframe-src-fit-component';
-import 'aframe-asset-on-demand-component';
 import 'aframe-input-mapping-component';
 import 'aframe-teleport-controls';
 import 'aframe-extras';
-import 'aframe-gui';
-import 'aframe-html-shader';
 import 'nipplejs';
 import './components/aframe/play-gaze.js';
 import './components/aframe/dynamic-autoplay.js';

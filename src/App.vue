@@ -3,8 +3,10 @@
 
     <!-- Load assets -->
     <a-assets class="aframe-assets">
-      <img id="sky" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/skybox/nightsky.jpg">
-      <img id="earth" src="https://s3.amazonaws.com/lifescope-static/static/xr/components/globe/Albedo.jpg">
+      <img id="sky" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/skybox/nightsky.jpg"
+        crossorigin="anonymous">
+      <img id="earth" src="https://s3.amazonaws.com/lifescope-static/static/xr/components/globe/Albedo.jpg"
+        crossorigin="anonymous">
       <!-- video controls -->
       <img id="video-play" src="https://s3.amazonaws.com/lifescope-static/static/xr/gallery/video_play.png"
         crossorigin="anonymous">
@@ -50,7 +52,8 @@ export default {
         LSObjs: [],
         rooms: [],
         roomConfig: {},
-        roomName: 'ls-room'
+        roomName: 'ls-room',
+        avatar: {}
       }
     },
 
@@ -68,25 +71,13 @@ export default {
 
     mounted () {
       if (CONFIG.DEBUG) {console.log("App.vue mounted");};
-      // set userHeight after a-scene is available
-      document.body.addEventListener('renderstart', function (evt) {
-        if (CONFIG.DEBUG) {console.log('renderstart');};
-        AFRAME.scenes[0].renderer.vr.userHeight = 0;
-      });
-
-
-
-      //
-      // Add hand when user enters vr mode
       var self = this;
+
       document.body.addEventListener('enter-vr', function (evt) {
-        if (CONFIG.DEBUG) {console.log('entered vr');};
-        var rightHand = document.getElementById('rightHandController');
-        //typeof array != "undefined" && array != null && array.length != null && array.length > 0
-        if (rightHand == null) {
-          if (CONFIG.DEBUG) {console.log('adding hand...');};
-          self.createRightHandNetworked();
-        }
+        self.onEnterVR();
+        document.body.addEventListener('exit-vr', function (event) {
+          self.onExitVR();
+        })
       });
 
 
@@ -109,7 +100,6 @@ export default {
           if (CONFIG.DEBUG) {console.log("getRoomConfig().then")};
 
           this.roomConfig = res.roomConfig;
-          //this.roomName = res.roomConfig.ROOM_NAME;
 
           this.getObjs().then((res) => {
             console.log("getObjs");
@@ -117,32 +107,65 @@ export default {
             this.rooms = res.rooms;
 
             var avatar = new Avatar();
+            this.avatar = avatar;
             avatar.createAvatarRigTemplate();
             avatar.addAvatarRigTemplate();
             avatar.createNetworkedPlayer();
 
             if (AFRAME.utils.device.isMobile()) {
-              if (CONFIG.DEBUG) {console.log("isMobile");};
-              var playerRig = document.getElementById('playerRig');
-              playerRig.setAttribute("virtual-gamepad-controls", {});
-              var camera = document.getElementById('player-camera');
-              var sceneEl = document.getElementsByTagName('a-scene')[0];
-              //this.eventHandlers.push(new TouchEventsHandler(this.cursor, this.cameraController, this.cursor.el));
-              sceneEl.setAttribute("look-on-mobile", "camera", camera);
-              sceneEl.setAttribute("look-on-mobile", "verticalLookSpeedRatio", 3);
+              self.setupMobile();
             } else {
-              if (CONFIG.DEBUG) {console.log("!isMobile");};
-              var playerRig = document.getElementById('playerRig');
-              playerRig.setAttribute("look-controls", "reverseMouseDrag:true");
+              self.setupDesktop();
             }
-            }
-          );
+          });
         }
       );
     },
 
 
     methods: {
+      onEnterVR () {
+        if (CONFIG.DEBUG) {console.log('entered vr');};
+        this.avatar.createRightHandNetworked();
+
+        if (AFRAME.utils.device.isMobile()) {
+              this.teardownMobile();
+        }
+      },
+      onExitVR () {
+        if (CONFIG.DEBUG) {console.log('exited vr');};
+        var rightHand = document.getElementById('rightHandController');
+        rightHand.parentElement.removeChild(rightHand);
+
+        if (AFRAME.utils.device.isMobile()) {
+          this.setupMobile();
+        }
+      },
+
+      setupMobile () {
+        if (CONFIG.DEBUG) {console.log("isMobile");};
+        var playerRig = document.getElementById('playerRig');
+        playerRig.setAttribute("virtual-gamepad-controls", {});
+        var camera = document.getElementById('player-camera');
+        var sceneEl = document.getElementsByTagName('a-scene')[0];
+        sceneEl.setAttribute("look-on-mobile", "camera", camera);
+        sceneEl.setAttribute("look-on-mobile", "verticalLookSpeedRatio", 3);
+      },
+
+      teardownMobile () {
+        if (CONFIG.DEBUG) {console.log("teardownMobile");};
+        var playerRig = document.getElementById('playerRig');
+        playerRig.removeAttribute('virtual-gamepad-controls');
+        var sceneEl = document.getElementsByTagName('a-scene')[0];
+        sceneEl.removeAttribute('look-on-mobile');
+      },
+
+      setupDesktop () {
+        if (CONFIG.DEBUG) {console.log("!isMobile");};
+        var playerRig = document.getElementById('playerRig');
+        playerRig.setAttribute("look-controls", "reverseMouseDrag:true");
+      },
+
       getRoomConfig () {
         if (CONFIG.DEBUG) {console.log("getRoomConfig");};
         return axios.get("/roomconfig")
@@ -162,7 +185,6 @@ export default {
 
         this.roomName = this.$route.query.room || 'ls-room';
 
-        if (CONFIG.DEBUG) {console.log(x);};
         return axios.get(x)
         .then((res) => {
           var result = [];
