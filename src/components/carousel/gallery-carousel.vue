@@ -8,8 +8,6 @@
 import carouselItem from "./components/carousel-item.vue";
 
 import Vue from 'vue';
-var CONFIG = {};
-CONFIG.DEBUG = true;
 
 if (CONFIG.DEBUG) {console.log("from carousel.vue <script>")}
 export default {

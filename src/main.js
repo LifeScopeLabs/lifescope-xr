@@ -1,10 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-//import 'config';
-var CONFIG = {};
-CONFIG.DEBUG = false;
-
 // disable warn
 //console.warn = function() {};
 

@@ -49,7 +49,6 @@ export default class Avatar {
       }
 
       addAvatarRigTemplate() {
-        //if (CONFIG.DEBUG) {console.log("addAvatarRigTemplate");};
         NAF.schemas.add({
           template: '#avatar-rig-template',
           components: [

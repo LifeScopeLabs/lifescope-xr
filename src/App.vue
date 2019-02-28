@@ -37,11 +37,10 @@ import gallery from "./components/gallery.vue";
 
 import Avatar from "./avatar.js";
 
-var CONFIG = {};
-CONFIG.DEBUG = true;
 import debugListeners from './dev/listeners.js';
 
 if (CONFIG.DEBUG) {console.log("from App.vue <script>");}
+
 export default {
     components: {
         gallery

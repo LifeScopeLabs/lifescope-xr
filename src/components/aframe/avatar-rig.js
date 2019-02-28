@@ -20,8 +20,6 @@ if (typeof AFRAME === 'undefined') {
         this.avatar = null;
         if (CONFIG.DEBUG) {
           console.log('avatar-rig init');
-          console.log(this);
-          console.log(this.el.children);
         }
         for (var i = 0; i < this.el.children.length; i++) {
             if (CONFIG.DEBUG) {console.log("className: " + this.el.children[i].className);};

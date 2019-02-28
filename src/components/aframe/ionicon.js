@@ -1,6 +1,3 @@
-var CONFIG = {};
-CONFIG.DEBUG = true;
-
 // TODO : make sure ionicon font family loaded
 
 if (typeof AFRAME === 'undefined') {

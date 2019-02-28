@@ -12,6 +12,7 @@ module.exports = {
       publicPath: '/dist/',
       filename: 'build.js'
     },
+    mode: 'none',
     resolve: {
     alias: {
       vue: 'vue/dist/vue.js'
