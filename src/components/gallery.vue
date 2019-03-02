@@ -9,6 +9,7 @@
 
         <!-- Rail -->
         <a-diorama-cyl radius='6' position="0 0 0"></a-diorama-cyl>
+        <!-- <a-custom-image></a-custom-image> -->
 
 
       <!-- Carousel -->

@@ -21,7 +21,7 @@ module.exports = {
       // Special compilation rules
       rules: [
         // babel
-        {
+        { 
           test: /\.js$/,
           loader: 'babel-loader',
           exclude: /node_modules/
@@ -61,7 +61,6 @@ module.exports = {
           },
         ],
       },
-
       // easyrtc
       {
         test: require.resolve('./static/easyrtc/easyrtc.js'),
