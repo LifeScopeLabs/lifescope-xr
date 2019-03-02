@@ -113,6 +113,15 @@ function createDioramaComponent(self, theta) {
         geom = new THREE.SphereBufferGeometry( self.data.radius,
             self.data.radialsegments, self.data.radialsegments );
     }
+    else if (self.data.geo == 'plack' || self.data.geo == 'case' || self.data.geo == 'safeguard') { // frosted case
+        geom = new THREE.BoxBufferGeometry( self.data.width, self.data.height, self.data.depth );
+        geom.rotateX(2 * Math.PI * 30 / 360);
+
+        // mesh = new THREE.Mesh(geom, material);
+        // mesh.position.set(self.data.x,
+        //     self.data.y + self.data.height/2,
+        //     self.data.z);
+    }
     else if (self.data.geo == 'box' || self.data.geo == 'ex-box') {
         var width = self.data.width;
         width = self.data.cylradius * Math.sin(2 * Math.PI / self.data.radialsegments);
@@ -138,7 +147,6 @@ function createDioramaComponent(self, theta) {
         geom = new THREE.ExtrudeBufferGeometry( shape, extrudeSettings );
 
     }
-        
 
     if (self.data.geo == 'column' || self.data.geo == 'sphere') {
         geom.translate(self.data.x + (self.data.width/2),
@@ -146,6 +154,14 @@ function createDioramaComponent(self, theta) {
                 self.data.z + self.data.depth/2);
         geom.rotateY(theta);
         geom.translate(segx - (self.data.width/2), 0, segz);
+    }
+    else if (self.data.geo == 'plack' || self.data.geo == 'safeguard' || self.data.geo == 'case') {
+        // main diorama position logic in gallery-carousel.vue
+        // this is for relative positioning of case/display object
+        // geom.translate(self.data.x + 0,
+        //     self.data.y + self.data.height/2,
+        //     self.data.z - self.data.depth/2);
+        geom.translate(self.data.x, self.data.y, self.data.z); 
     }
     else {
         geom.rotateY(theta);
@@ -161,9 +177,226 @@ function createDioramaComponent(self, theta) {
 
     var group = self.el.getObject3D('group') || new THREE.Group();
     //if (self.data.helper) {group.add(new THREE.BoxHelper(floor, HELPER_COLOR));}
+    // group.add(new THREE.BoxHelper(mesh, 0xffff00));
     group.add(mesh);
     self.el.setObject3D('group', group);        
 }
+
+
+
+/////
+function createImageComponent(self) {
+    var material, geom, mesh;
+
+    console.log(self.data.width + ' | ' + self.data.height + ' | ' + self.data.depth);
+    console.log(self.data);
+
+    geom = new THREE.BoxBufferGeometry( self.data.width, self.data.height, self.data.depth );
+    geom.rotateX(2 * Math.PI * 30 / 360);
+    geom.translate(self.data.x, self.data.y, self.data.z);
+    // geom.translate(self.data.x + 0,
+    //     self.data.y + self.data.height/2,
+    //     self.data.z - self.data.depth/2);
+
+    var texture = new THREE.TextureLoader().load( self.data.imageURL );
+    // immediately use the texture for material creation
+    material = new THREE.MeshBasicMaterial( { map: texture } );
+
+    mesh = new THREE.Mesh(geom, material);
+    // console.log(mesh);
+
+    var group = self.el.getObject3D('group') || new THREE.Group();
+    // group.add(new THREE.BoxHelper(mesh, 0xffff00));
+    group.add(mesh);
+    self.el.setObject3D('group', group);    
+}
+
+var railHeight = 1.2
+
+var floorRad = 6;
+var columnRadius = 0.05;
+var columnHeight = railHeight + 0.01;
+
+var sphereRadius = columnRadius * (3/2);
+
+// self.data.cylradius * Math.sin(2 * Math.PI / self.data.radialsegments);
+var baseWidth = (floorRad) * Math.sin(2 * Math.PI / 36);
+var baseHeight = 0.2;
+var baseDepth = 0.03;
+
+var glassHeight = railHeight - (2*baseHeight);
+var glassWidth = baseWidth;
+var glassDepth = baseDepth - 0.01; // 0.02
+
+var trimHeight = 0.01;
+var trimDepth = glassDepth/2 // 0.01
+
+var bevelThickness = 0.01
+
+var imagePlackHeight = 0.5;
+var imagePlackWidth = 0.6;
+var imagePlackDepth = 0.01;
+
+var safeguardHeight = 0.8;
+var safeguardWidth = 0.6;
+var safeguardDepth = 0.01;
+
+var brassPlackHeight = 0.8;
+var brassPlackWidth = 0.6;
+var brassPlackDepth = 0.01;
+
+var frostedCaseHeight = 0.85;
+var frostedCaseWidth = 0.65;
+var frostedCaseDepth = 0.06;
+
+var woodBackingHeight = 0.87;
+var woodBackingWidth = 0.66;
+var woodBackingDepth = 0.02;
+
+function createStakeComponent(self) {
+    var stakeGeom1, stakeGeom2, stakeGeom3;
+    var material, mesh1, mesh2, mesh3;
+
+    //load brass texture once
+    brassBaseTexture = getOrLoadTexture('brassBase');
+    brassBumpTexture = getOrLoadTexture('brassBump');
+    brassNormalTexture = getOrLoadTexture('brassNormal');
+
+    brassBaseTexture.wrapS = brassBaseTexture.wrapT = THREE.RepeatWrapping;
+    brassBaseTexture.offset.set( 0, 0 );
+    brassBaseTexture.repeat.set( self.data.repeatU, self.data.repeatV );
+    
+    material = new THREE.MeshPhongMaterial( { map: brassBaseTexture,
+        side:THREE.FrontSide,
+        bumpMap: brassBumpTexture,
+        normalMap: brassNormalTexture,
+        // reflectivity: self.data.reflectivity,
+        // color: 0x552811,
+        specular: 0x222222,
+        shininess: 25,
+        bumpScale: 1} );
+
+
+    /*stakeGeom1 = new THREE.BoxBufferGeometry( self.data.width, self.data.height, self.data.depth );
+    // stakeGeom1.translate(0,0,-self.data.depth/2);
+    stakeGeom1.rotateX(2 * Math.PI * -30 / 360);
+    stakeGeom1.translate(0,self.data.depth/2,0);
+    stakeGeom1.translate(self.data.x, self.data.y, self.data.z);
+    
+
+    stakeGeom2 = new THREE.BoxBufferGeometry( self.data.width, self.data.height, self.data.depth );
+    // stakeGeom1.translate(0,0,-self.data.depth/2);
+    stakeGeom2.rotateY(2 * Math.PI * -30 / 360);
+    stakeGeom2.rotateZ(2 * Math.PI * 30 / 360);
+    stakeGeom2.translate(self.data.x-0.05, self.data.y, self.data.z);
+    // stakeGeom2.rotateY(2 * Math.PI * 30 / 360);
+
+    stakeGeom3 = new THREE.BoxBufferGeometry( self.data.width, self.data.height, self.data.depth );
+    // stakeGeom1.translate(0,0,-self.data.depth/2);
+    stakeGeom3.rotateY(2 * Math.PI * 30 / 360);
+    stakeGeom3.rotateZ(2 * Math.PI * -30 / 360);
+    stakeGeom3.translate(self.data.x+0.05, self.data.y, self.data.z);*/
+
+    //turn 30 deg towards ground because the whole display is 30 deg towards ground
+    
+
+    stakeGeom1 = new THREE.BoxBufferGeometry( self.data.width, self.data.height, self.data.depth );
+    // stakeGeom1.rotateX(2 * Math.PI * 30 / 360);
+    stakeGeom1.rotateX(2 * Math.PI * 30 / 360);
+    stakeGeom1.translate(self.data.x, self.data.y, self.data.z);
+    
+
+    var downShift = -0.2;
+    var ang = 30;
+    var dy = Math.cos(2 * Math.PI * ang / 360) * downShift;
+    var dz = Math.sin(2 * Math.PI * ang / 360) * downShift;
+    stakeGeom1.translate(0, dy, dz);
+    stakeGeom1.translate(0, 0.04, -0.04);
+
+
+    mesh1 = new THREE.Mesh(stakeGeom1, material);
+    // mesh2 = new THREE.Mesh(stakeGeom2, material);
+    // mesh3 = new THREE.Mesh(stakeGeom3, material);
+
+
+    var group = self.el.getObject3D('group') || new THREE.Group();
+    // group.add(new THREE.BoxHelper(mesh1, 0xffff00));
+    group.add(mesh1);
+    // group.add(mesh2);
+    // group.add(mesh3);
+    self.el.setObject3D('group', group);   
+
+}
+
+AFRAME.registerComponent('stake-component', {
+    schema: {
+        mat: { type: 'string', default: '' },
+        height: { type: 'number', default: 0},
+        width: { type: 'number', default: 0 },
+        depth: { type: 'number', default: 0.0},
+        x: { type: 'number', default: 0},
+        y: { type: 'number', default: 0},
+        z: { type: 'number', default: 0},
+        opacity: { type: 'number', default: 0.2 },
+    },
+
+    multiple: true,
+
+    init: function() {
+        var self = this;
+        createStakeComponent(self);
+    }
+});
+
+
+AFRAME.registerComponent('image-component', {
+    schema: {
+        imageURL: {type: 'string', default: 'https://i.imgur.com/gmem7Ca.jpg'},
+        height: { type: 'number', default: 0},
+        width: { type: 'number', default: 0 },
+        depth: { type: 'number', default: 0.0},
+        x: { type: 'number', default: 0},
+        y: { type: 'number', default: 0},
+        z: { type: 'number', default: 0},
+        opacity: { type: 'number', default: 0.2 },
+    },
+
+    multiple: true,
+
+    init: function() {
+        var self = this;
+        createImageComponent(self);
+    }
+});
+
+AFRAME.registerPrimitive('a-custom-image', {
+    defaultComponents: {
+        'image-component': {imageURL: 'https://i.imgur.com/gmem7Ca.jpg',
+        'width': imagePlackWidth, 'height': imagePlackHeight, 'depth': imagePlackDepth,
+        'x': 0, 'y': 0, 'z' : -0.2 + -0.15},
+        'diorama-component__safeguard': { 'geo': 'safeguard', 'mat': 'glass',
+        'width': safeguardWidth, 'height': safeguardHeight, 'depth': safeguardDepth,
+        'x': 0, 'y': 0, 'z' : -0.2 + -0.16},
+        'diorama-component__frosted_case': { 'geo': 'case', 'mat': 'glass',
+        'width': frostedCaseWidth, 'height': frostedCaseHeight, 'depth': frostedCaseDepth,
+        'x': 0, 'y': 0, 'z' : -0.2 + frostedCaseDepth/2 + safeguardDepth + brassPlackDepth - 0.15},
+        'diorama-component__brass_plack': { 'geo': 'plack', 'mat': 'brass',
+        'width': brassPlackWidth, 'height': brassPlackHeight, 'depth': brassPlackDepth,
+        'x': 0, 'y': 0, 'z' : -0.2 + brassPlackDepth/2 + safeguardDepth - 0.15},
+        'diorama-component__brass_backing': { 'geo': 'plack', 'mat': 'wood',
+        'width': woodBackingWidth, 'height': woodBackingHeight, 'depth': woodBackingDepth,
+        'x': 0, 'y': 0, 'z' : -0.2 + woodBackingDepth/2 + frostedCaseDepth + safeguardDepth + brassPlackDepth - 0.15},
+        'stake-component': {'mat': 'brass',
+        'width': 0.03, 'height':0.03, 'depth': 0.08,
+        'x': 0, 'y': 0, 'z': -0.2 + woodBackingDepth/2 + frostedCaseDepth + safeguardDepth + brassPlackDepth - 0.05},
+    },
+    mappings: {
+        'src': 'image-component.imageURL'
+    }
+    // <a-custom-image src="myfile.jpg">
+});
+
+
 
 AFRAME.registerComponent('diorama-component', {
     schema: {
@@ -213,27 +446,39 @@ AFRAME.registerComponent('diorama-component', {
     }
 });
 
-var railHeight = 1.2
+// var railHeight = 1.2
 
-var floorRad = 6;
-var columnRadius = 0.05;
-var columnHeight = railHeight + 0.01;
+// var floorRad = 6;
+// var columnRadius = 0.05;
+// var columnHeight = railHeight + 0.01;
 
-var sphereRadius = columnRadius * (3/2);
+// var sphereRadius = columnRadius * (3/2);
 
-// self.data.cylradius * Math.sin(2 * Math.PI / self.data.radialsegments);
-var baseWidth = (floorRad) * Math.sin(2 * Math.PI / 36);
-var baseHeight = 0.2;
-var baseDepth = 0.03;
+// // var safeguardHeight = 0.8;
+// // var safeguardWidth = 0.6;
+// // var safeguardDepth = 0.01;
 
-var glassHeight = railHeight - (2*baseHeight);
-var glassWidth = baseWidth;
-var glassDepth = baseDepth - 0.01; // 0.02
+// // var brassPlackHeight = 0.8;
+// // var brassPlackWidth = 0.6;
+// // var brassPlackDepth = 0.01;
 
-var trimHeight = 0.01;
-var trimDepth = glassDepth/2 // 0.01
+// // var frostedCaseHeight = 0.85;
+// // var frostedCaseWidth = 0.65;
+// // var frostedCaseDepth = 0.06;
 
-var bevelThickness = 0.01
+// // self.data.cylradius * Math.sin(2 * Math.PI / self.data.radialsegments);
+// var baseWidth = (floorRad) * Math.sin(2 * Math.PI / 36);
+// var baseHeight = 0.2;
+// var baseDepth = 0.03;
+
+// var glassHeight = railHeight - (2*baseHeight);
+// var glassWidth = baseWidth;
+// var glassDepth = baseDepth - 0.01; // 0.02
+
+// var trimHeight = 0.01;
+// var trimDepth = glassDepth/2 // 0.01
+
+// var bevelThickness = 0.01
 
 AFRAME.registerPrimitive( 'a-diorama', {
     defaultComponents: {
@@ -310,7 +555,16 @@ AFRAME.registerPrimitive( 'a-diorama-cyl', {
             'y': baseHeight },
         'diorama-component__left_sphere': { 'cyl': true, 'geo': 'sphere', 'mat': 'brass',
             'radius': sphereRadius, 'depth': columnRadius,
-            'x': -(glassWidth/2), 'y': columnHeight + sphereRadius }
+            'x': -(glassWidth/2), 'y': columnHeight + sphereRadius },
+        // 'diorama-component__left_plack': { 'cyl': true, 'geo': 'safeguard', 'mat': 'glass',
+        //     'width': safeguardWidth, 'height': safeguardHeight, 'depth': safeguardDepth,
+        //     'x': -(glassWidth/2), 'y': columnHeight + sphereRadius -  safeguardHeight/2, 'z' : -0.15},
+        // 'diorama-component__left_frosted_case': { 'cyl': true, 'geo': 'case', 'mat': 'glass',
+        //     'width': frostedCaseWidth, 'height': frostedCaseHeight, 'depth': frostedCaseDepth,
+        //     'x': -(glassWidth/2), 'y': columnHeight + sphereRadius - safeguardHeight/2, 'z' : frostedCaseDepth/2 + safeguardDepth + brassPlackDepth + 0.1 - 0.2},
+        // 'diorama-component__left_brass_plack': { 'cyl': true, 'geo': 'plack', 'mat': 'brass',
+        //     'width': brassPlackWidth, 'height': brassPlackHeight, 'depth': brassPlackDepth,
+        //     'x': -(glassWidth/2), 'y': columnHeight + sphereRadius - brassPlackHeight/2, 'z' : brassPlackDepth/2 + safeguardDepth - 0.15},
     },
     mappings: {
         'radius': 'diorama-component.cylradius'
