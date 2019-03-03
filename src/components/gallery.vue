@@ -1,8 +1,8 @@
 <template>
   <a-entity class="gallery">
       <!-- lights -->
-      <a-entity light="type: ambient; color: #FFF; intensity: 0.5"></a-entity>
-        <a-entity id="dirLight" light="type: directional; color: #FFF; intensity: 0.5" position="1 1 1"></a-entity>
+      <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
+        <a-entity id="dirLight" light="type: directional; color: #FFF; intensity: 0.8" position="1 1 1"></a-entity>
 
       <!-- Floor -->
         <a-wooden-floor radius='6.1'></a-wooden-floor>

@@ -68,16 +68,12 @@ export default {
                 var cosTheta = Math.cos( theta );
                 var segx = 6.2 * sinTheta;
                 var segz = 6.2 * cosTheta;
-                // const postMargin = 0.1;
 
                 var img = document.createElement("a-custom-image");
-                // img.setAttribute('width', 0.7);
-                // img.setAttribute('src-fit', {orientation: 'width',
-                //     maxDimension: 0.7});
-                // img.setAttribute('crossorigin', 'anonymous');
                 img.setAttribute('src', this.imageSrc(this.items[i]));
-                var roty = theta * (180/Math.PI) - 180 + 180;
-                img.setAttribute('rotation', '-15 ' + roty + ' 0');
+                var roty = theta * (180/Math.PI); // 
+                var rotx = 0;
+                img.setAttribute('rotation', rotx + ' ' + roty + ' 0');
                 img.setAttribute('position', segx + ' 1.5 ' + segz);
                 this.$el.appendChild(img);
             }
