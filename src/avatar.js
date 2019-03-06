@@ -95,6 +95,7 @@ export default class Avatar {
 
 
       createRightHandNetworked() {
+        if (CONFIG.DEBUG) {console.log("creating networked right hand");}
         var frag = this.fragmentFromString(`
         <a-entity id="rightHandController"
            teleport-controls="cameraRig: #playerRig; teleportOrigin: #player-camera; startEvents: teleportstart; endEvents: teleportend; collisionEntities:.boundry; landingNormal: 0 0 1;"

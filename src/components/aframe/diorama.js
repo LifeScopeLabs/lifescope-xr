@@ -137,7 +137,7 @@ function createDioramaComponent(self, theta) {
         var extrudeSettings = {
             steps: 2,
             depth: self.data.depth,
-            //amount: self.data.depth,
+            //amount: self.data.depth, // aframe 8.2 / three.js r92
             bevelEnabled: self.data.geo == 'ex-box' ? true : false,
             bevelThickness: 0.01,
             bevelSize: 0.01,
