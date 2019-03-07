@@ -8,10 +8,10 @@ import 'three';
 // must import aframe here to load components
 import 'aframe';
 import 'networked-aframe';
-import 'aframe-src-fit-component';
 import 'aframe-input-mapping-component';
 import 'aframe-teleport-controls';
 import 'aframe-extras';
+import 'aframe-sun-sky';
 import 'nipplejs';
 import './components/aframe/play-gaze.js';
 import './components/aframe/dynamic-autoplay.js';
@@ -24,6 +24,7 @@ import './components/hubs/virtual-gamepad-controls.js';
 import './components/hubs/character-controller.js';
 import './components/hubs/pitch-yaw-rotator.js';
 import './components/hubs/look-on-mobile.js';
+import './components/aframe/sky-sun-position.js';
 
 // controls
 import {mappings, inputActions} from './controls/input-mappings';
@@ -46,7 +47,9 @@ var router = new VueRouter({
 });
 
 // ignore elements for Firefox
-Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere', 'a-animation', 'a-sky', 'a-mapbox-terrain', 'a-wooden-floor', 'a-diorama-cyl'];
+Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere',
+ 'a-animation', 'a-sky', 'a-mapbox-terrain', 'a-wooden-floor', 'a-diorama-cyl',
+ 'a-sun-sky'];
 
 //var app = new Vue(Vue.util.extend({ router }, App)).$mount('#app');
 var app = new Vue({
