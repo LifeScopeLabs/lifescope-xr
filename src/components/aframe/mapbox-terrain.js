@@ -39,23 +39,56 @@ AFRAME.registerComponent('mapbox-terrain', {
 		var tileX = long2tile(mapLongitude, mapZoomLevel);
 		var tileY = lat2tile(mapLatitude, mapZoomLevel);
 
-	
-		var texture = buildTerrainTexture();
+		var meshOffset = 4;
 
-		// var geometry	= new THREE.PlaneGeometry(1,1);
-		var geometry	= buildElevationPlaneGeometry();
-		var material	= new THREE.MeshPhongMaterial({
-			map: texture,
-			// wireframe: true
-		}); 
+		var ctr = 1;
+		var dx = 0;
+		var dy = 0;
+		var addX = 1;
+		var addY = -1;
+		var N = 1;
+		var mesh;
+		mesh = drawTile(tileX + dx, tileY + dy);
+		this.el.setObject3D("mesh0", mesh);
 
-		var mesh	= new THREE.Mesh( geometry, material );
-		mesh.rotation.x = -Math.PI/2;
-		mesh.receiveShadow = true;
-		mesh.castShadow = true;
- 
-		mesh.scale.multiplyScalar(4);
-		this.el.object3D.add(mesh);
+		
+		while (ctr < this.data.tiles) {
+			for (var i = 0; i < N && ctr < this.data.tiles; i++) {
+				dx += addX;
+				mesh = drawTile(tileX + dx, tileY + dy);
+				mesh.position.x = meshOffset*dx;
+				mesh.position.z = meshOffset*dy;
+				this.el.setObject3D("mesh" + ctr, mesh);
+				ctr += 1;
+			}
+			for (var i = 0; i < N && ctr < this.data.tiles; i++) {
+				dy += addY;
+				mesh = drawTile(tileX + dx, tileY + dy);
+				mesh.position.x = meshOffset*dx;
+				mesh.position.z = meshOffset*dy;
+				this.el.setObject3D("mesh" + ctr, mesh);
+				ctr += 1;
+			}
+			N += 1;
+			addX *= -1;
+			addY *= -1;
+		}
+
+		function drawTile(tileX, tileY) {
+			var texture = buildTerrainTexture(tileX, tileY);
+			var geometry = buildElevationPlaneGeometry(tileX, tileY);
+			var material = new THREE.MeshPhongMaterial({
+				map: texture,
+				// wireframe: true
+			});
+			var mesh = new THREE.Mesh(geometry, material);
+			mesh.rotation.x = -Math.PI / 2;
+			mesh.receiveShadow = true;
+			mesh.castShadow = true;
+
+			mesh.scale.multiplyScalar(4);
+			return mesh;
+		}
 		
 		// http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
 		function long2tile(lon,zoom) { return (Math.floor((lon+180)/360*Math.pow(2,zoom))); }
