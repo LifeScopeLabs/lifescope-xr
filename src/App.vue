@@ -39,8 +39,6 @@ import gallery from "./components/gallery.vue";
 
 import Avatar from "./avatar.js";
 
-if (CONFIG.DEBUG) {console.log("from App.vue <script>");}
-
 export default {
     components: {
         gallery
@@ -53,18 +51,6 @@ export default {
         roomName: 'ls-room',
         avatar: {}
       }
-    },
-
-    beforeCreate () {
-      if (CONFIG.DEBUG) {console.log("beforeCreate");};
-    },
-
-    created () {
-      if (CONFIG.DEBUG) {console.log("created");};
-    },
-
-    beforeMount () {
-      if (CONFIG.DEBUG) {console.log("beforeMount");};
     },
 
     mounted () {
