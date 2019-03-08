@@ -47,26 +47,62 @@ AFRAME.registerComponent('mapbox-terrain', {
 		var addX = 1;
 		var addY = -1;
 		var N = 1;
-		var mesh;
-		mesh = drawTile(tileX + dx, tileY + dy);
-		this.el.setObject3D("mesh0", mesh);
+		var tileGeom;
+		var geometries = [];
 
+		var tilesPerRow = parseInt(Math.sqrt(this.data.tiles));
+		console.log('tilesPerRow = ' + tilesPerRow);
 		
+
+		var canvas = document.createElement('canvas');
+  		canvas.width  = 512*4*tilesPerRow;
+		canvas.height = 512*4*tilesPerRow;
+		console.log(canvas.width + " | " + canvas.height);
+		var context = canvas.getContext('2d');
+		var texture = new THREE.Texture(canvas);
+		texture.needsUpdate = true;
+
+		var middleX = parseInt((tilesPerRow-1)/2);
+		var middleY = parseInt((tilesPerRow)/2);
+
+		function callbackClosure(dx, dy, ctr, callback) {
+			return function() {
+			  return callback(dx, dy, ctr);
+			}
+		}
+
+		callbackClosure(dx, dy, 0, function (dx, dy, ctr) {
+			buildTerrainTexture(tileX+dx, tileY+dy, function (image) {
+				context.drawImage(image, (middleX+dx)*512*4,(middleY+dy)*512*4,512*4,512*4); // (image, x, y, width, height)
+				texture.needsUpdate = true;
+			});
+		})();
+		tileGeom = drawTile(tileX + dx, tileY + dy);
+		geometries.push(tileGeom);
+
 		while (ctr < this.data.tiles) {
 			for (var i = 0; i < N && ctr < this.data.tiles; i++) {
 				dx += addX;
-				mesh = drawTile(tileX + dx, tileY + dy);
-				mesh.position.x = meshOffset*dx;
-				mesh.position.z = meshOffset*dy;
-				this.el.setObject3D("mesh" + ctr, mesh);
+				callbackClosure(dx, dy, ctr, function (dx, dy, ctr) {
+					buildTerrainTexture(tileX+dx, tileY+dy, function (image) {
+						context.drawImage(image, (middleX+dx)*512*4,(middleY+dy)*512*4,512*4,512*4); // (image, x, y, width, height)
+						texture.needsUpdate = true;
+					});
+				})();
+				tileGeom = drawTile(tileX + dx, tileY + dy);
+				geometries.push(tileGeom);
 				ctr += 1;
 			}
 			for (var i = 0; i < N && ctr < this.data.tiles; i++) {
 				dy += addY;
-				mesh = drawTile(tileX + dx, tileY + dy);
-				mesh.position.x = meshOffset*dx;
-				mesh.position.z = meshOffset*dy;
-				this.el.setObject3D("mesh" + ctr, mesh);
+				callbackClosure(dx, dy, ctr, function (dx, dy, ctr) {
+					buildTerrainTexture(tileX+dx, tileY+dy, function (image) {
+						context.drawImage(image, (middleX+dx)*512*4,(middleY+dy)*512*4,512*4,512*4); // (image, x, y, width, height)
+						texture.needsUpdate = true;
+					});
+				})();
+				tileGeom = drawTile(tileX + dx, tileY + dy);
+				geometries.push(tileGeom);
 				ctr += 1;
 			}
 			N += 1;
@@ -74,21 +110,31 @@ AFRAME.registerComponent('mapbox-terrain', {
 			addY *= -1;
 		}
 
-		function drawTile(tileX, tileY) {
-			var texture = buildTerrainTexture(tileX, tileY);
-			var geometry = buildElevationPlaneGeometry(tileX, tileY);
-			var material = new THREE.MeshPhongMaterial({
-				map: texture,
-				// wireframe: true
-			});
-			var mesh = new THREE.Mesh(geometry, material);
-			mesh.rotation.x = -Math.PI / 2;
-			mesh.receiveShadow = true;
-			mesh.castShadow = true;
+		var material = new THREE.MeshPhongMaterial({
+			map: texture,
+			// wireframe: true
+		});
+		
+		var mergedMapGeometry = THREE.BufferGeometryUtils.mergeBufferGeometries(geometries, false); //new THREE.PlaneBufferGeometry
+		mergedMapGeometry = new THREE.PlaneBufferGeometry(tilesPerRow,tilesPerRow);
+		mergedMapGeometry.rotateX(2 * Math.PI * -90 / 360);
 
-			mesh.scale.multiplyScalar(4);
-			return mesh;
+		var mapMesh = new THREE.Mesh(mergedMapGeometry, material);
+
+		mapMesh.receiveShadow = true;
+		mapMesh.castShadow = true;
+		this.el.setObject3D("meshMain", mapMesh);
+
+		function drawTile(tileX, tileY, dx, dy, meshOffset) {
+			var geometry = buildElevationPlaneGeometry(tileX + dx, tileY + dy);
+
+			geometry.rotateX(-Math.PI / 2);
+			geometry.scale(4,4,4);
+			geometry.translate(meshOffset*dx, 0, meshOffset*dy);
+
+			return geometry;
 		}
+
 		
 		// http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
 		function long2tile(lon,zoom) { return (Math.floor((lon+180)/360*Math.pow(2,zoom))); }
@@ -128,17 +174,12 @@ AFRAME.registerComponent('mapbox-terrain', {
 
 			return geometry
 		}
-		function buildTerrainTexture(){
+		function buildTerrainTexture(tileX, tileY, callback) {
 			var restURL = `https://api.mapbox.com/v4/mapbox.${type}/${mapZoomLevel}/${tileX}/${tileY}@2x.png?access_token=${access_token}`
-			// var restURL = `https://api.mapbox.com/v4/mapbox.satellite/${mapZoomLevel}/${tileX}/${tileY}@2x.png?access_token=${access_token}`
-
-			var texture = new THREE.Texture()
-			loadImage(restURL, function(image){
-				texture.image = image
-				texture.needsUpdate = true
-			})
-
-			return texture
+			
+			loadImage(restURL, function (image) {
+				callback(image);
+			});
 		}
 		function loadImage(imageURL, onLoad) {
 			var image = document.createElement('img')
