@@ -39,10 +39,6 @@ import gallery from "./components/gallery.vue";
 
 import Avatar from "./avatar.js";
 
-import debugListeners from './dev/listeners.js';
-
-if (CONFIG.DEBUG) {console.log("from App.vue <script>");}
-
 export default {
     components: {
         gallery
@@ -55,18 +51,6 @@ export default {
         roomName: 'ls-room',
         avatar: {}
       }
-    },
-
-    beforeCreate () {
-      if (CONFIG.DEBUG) {console.log("beforeCreate");};
-    },
-
-    created () {
-      if (CONFIG.DEBUG) {console.log("created");};
-    },
-
-    beforeMount () {
-      if (CONFIG.DEBUG) {console.log("beforeMount");};
     },
 
     mounted () {
@@ -112,6 +96,9 @@ export default {
             avatar.addAvatarRigTemplate();
             avatar.createNetworkedPlayer();
 
+            var avatarCreatedEvent = new Event('avatarCreated');
+            document.body.dispatchEvent(avatarCreatedEvent);
+
             if (AFRAME.utils.device.isMobile()) {
               self.setupMobile();
             } else {
@@ -125,8 +112,17 @@ export default {
 
     methods: {
       onEnterVR () {
+        var self = this;
         if (CONFIG.DEBUG) {console.log('entered vr');};
-        this.avatar.createRightHandNetworked();
+        if (this.avatar !== null) {
+          this.avatar.createRightHandNetworked();
+        }
+        else {
+          document.body.addEventListener('avatarCreated', function(evt) {
+            console.log("avatarCreated");
+            self.avatar.createRightHandNetworked();
+          })
+        }
 
         if (AFRAME.utils.device.isMobile()) {
               this.teardownMobile();
