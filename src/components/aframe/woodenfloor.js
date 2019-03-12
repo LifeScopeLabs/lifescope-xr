@@ -14,7 +14,8 @@ AFRAME.registerComponent('wooden-floor', {
       repeatU: { type: 'number', default: 10},
       repeatV: { type: 'number', default: 40},
       reflectivity: { type: 'number', default: 0.5 },
-      withBump: { default: true },
+      withBump: { default: false },
+      withNormal: { default: false },
       helper: { default: false }
     },
   
@@ -30,19 +31,25 @@ AFRAME.registerComponent('wooden-floor', {
                 texture.offset.set( 0, 0 );
                 texture.repeat.set( self.data.repeatU, self.data.repeatV );
         });
-        var bumpTexture = tlHelper.getOrLoadTexture( 'wood', 'height');
-        var normalTexture = tlHelper.getOrLoadTexture( 'wood', 'normal');
         
         var floorMaterial = new THREE.MeshPhongMaterial( { map: baseTexture,
-            side:THREE.DoubleSide,// } );
-            bumpMap: bumpTexture,
-            normalMap: normalTexture,
+            side:THREE.DoubleSide,
             // reflectivity: self.data.reflectivity,
             // color: 0x552811,
             specular: 0x222222,
             shininess: 25,
-            bumpScale: 1} );
+            } );
         var floorGeometry = new THREE.CircleBufferGeometry(self.data.radius, self.data.radialsegments);
+
+        if (self.data.withBump) {
+            var bumpTexture = tlHelper.getOrLoadTexture( 'wood-panel', 'height' );
+            material.bumpMap = bumpTexture;
+            material.bumpScale = 1;
+        }
+        if (self.data.withNormal) {
+            var normalTexture = tlHelper.getOrLoadTexture( 'wood-panel', 'normal' );
+            material.normalMap = normalTexture;
+        }
             
         var floor = new THREE.Mesh(floorGeometry, floorMaterial);
         floor.rotation.x = Math.PI / 2;

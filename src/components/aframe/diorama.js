@@ -19,41 +19,53 @@ function createDioramaComponent(self, theta) {
                 texture.offset.set( 0, 0 );
                 texture.repeat.set( self.data.repeatU, self.data.repeatV );
         });
-        brassBumpTexture = tlHelper.getOrLoadTexture( 'bronze', 'height' );
-        brassNormalTexture = tlHelper.getOrLoadTexture( 'bronze', 'normal' );
         
         material = new THREE.MeshPhongMaterial( { map: brassBaseTexture,
             side:THREE.FrontSide,
-            bumpMap: brassBumpTexture,
-            normalMap: brassNormalTexture,
             // reflectivity: self.data.reflectivity,
             // color: 0x552811,
             specular: 0x222222,
             shininess: 25,
-            bumpScale: 1} );
+            } );
+
+        if (self.data.withBump) {
+            brassBumpTexture = tlHelper.getOrLoadTexture( 'bronze', 'height' );
+            material.bumpMap = brassBumpTexture;
+            material.bumpScale = 1;
+        }
+        if (self.data.withNormal) {
+            brassNormalTexture = tlHelper.getOrLoadTexture( 'bronze', 'normal' );
+            material.normalMap = brassNormalTexture;
+        }
     }
 
     else if (self.data.mat == 'wood') {
 
-        woodBaseTexture = tlHelper.getOrLoadTexture( 'wood', 'base', 'jpg',
+        woodBaseTexture = tlHelper.getOrLoadTexture( 'wood-panel', 'base', 'jpg',
             function (texture) {
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                 texture.offset.set( 0, 0 );
                 texture.repeat.set( self.data.repeatU, self.data.repeatV );
         });
-        woodBumpTexture = tlHelper.getOrLoadTexture( 'wood', 'height' );
-        woodNormalTexture = tlHelper.getOrLoadTexture( 'wood', 'normal' );
         
         var material = new THREE.MeshPhongMaterial( { map: woodBaseTexture,
-            side:THREE.DoubleSide,// } );
-            bumpMap: woodBumpTexture,
-            normalMap: woodNormalTexture,
+            side:THREE.DoubleSide,
             needsUpdate: true,
             // reflectivity: self.data.reflectivity,
             // color: 0x552811,
             specular: 0x222222,
             shininess: 25,
             bumpScale: 1} );
+
+        if (self.data.withBump) {
+            woodBumpTexture = tlHelper.getOrLoadTexture( 'wood-panel', 'height' );
+            material.bumpMap = woodBumpTexture;
+            material.bumpScale = 1;
+        }
+        if (self.data.withNormal) {
+            woodNormalTexture = tlHelper.getOrLoadTexture( 'wood-panel', 'normal' );
+            material.normalMap = woodNormalTexture;
+        }
 
     }
 
@@ -151,7 +163,7 @@ function createDioramaComponent(self, theta) {
 
 
 function createImageComponent(self) {
-    var material, geom, mesh;
+    var imgMaterial, colorMaterial, geom, mesh;
 
     var texture = new THREE.TextureLoader().load( self.data.imageURL, function () {
         console.log("texture loaded");
@@ -174,9 +186,18 @@ function createImageComponent(self) {
         geom.translate(self.data.x, self.data.y, self.data.z);
 
         // immediately use the texture for material creation
-        material = new THREE.MeshBasicMaterial( { map: texture } );
+        imgMaterial = new THREE.MeshBasicMaterial( { map: texture } );
+        colorMaterial = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0xffffff )} );
 
-        mesh = new THREE.Mesh(geom, material);
+        var materials = [
+            colorMaterial,        // Left side
+            colorMaterial,       // Right side
+            colorMaterial,         // Top side
+            colorMaterial,      // Bottom side
+            colorMaterial,       // Front side
+            imgMaterial         // Back side
+        ];
+        mesh = new THREE.Mesh(geom, materials);
         // console.log(mesh);
 
         var group = self.el.getObject3D('group') || new THREE.Group();
@@ -196,7 +217,7 @@ var sphereRadius = columnRadius * (3/2);
 
 // self.data.cylradius * Math.sin(2 * Math.PI / self.data.radialsegments);
 var baseWidth = (floorRad) * Math.sin(2 * Math.PI / 36);
-var baseHeight = 0.2;
+var baseHeight = 0.075;
 var baseDepth = 0.03;
 
 var glassHeight = railHeight - (2*baseHeight);
@@ -247,8 +268,6 @@ function createStakeComponent(self) {
     
     material = new THREE.MeshPhongMaterial( { map: brassBaseTexture,
         side:THREE.FrontSide,
-        bumpMap: brassBumpTexture,
-        normalMap: brassNormalTexture,
         // reflectivity: self.data.reflectivity,
         // color: 0x552811,
         specular: 0x222222,
@@ -288,7 +307,9 @@ AFRAME.registerComponent('stake-component', {
         y: { type: 'number', default: 0},
         z: { type: 'number', default: 0},
         opacity: { type: 'number', default: 0.2} ,
-        rotation: { type: 'number', default: 0 } //degrees
+        rotation: { type: 'number', default: 0 }, //degrees
+        withBump: { default: false },
+        withNormal: { default: false }
     },
 
     multiple: true,
@@ -384,7 +405,8 @@ AFRAME.registerComponent('diorama-component', {
         metalness: { type: 'number', default: 0.0 },
         reflectivity: { type: 'number', default: 0.5 },
         roughness: { type: 'number', default: 0.2 },
-        withBump: { default: true },
+        withBump: { default: false },
+        withNormal: { default: false },
         cyl: { default: false },
         helper: { default: false }
     },
@@ -459,14 +481,15 @@ AFRAME.registerPrimitive( 'a-diorama-cyl', {
             'radius': columnRadius, 'height': columnHeight, 'depth': columnRadius,
             'x': -(glassWidth/2), },
         'diorama-component__base': { 'cyl': true, 'geo': 'ex-box', 'mat': 'wood',
-            'width': baseWidth, 'height': baseHeight, 'depth': baseDepth },
+            'width': baseWidth, 'height': baseHeight, 'depth': baseDepth,
+            'repeatU': 1, 'repeatV': 1 },
         'diorama-component__trim_base_front': { 'cyl': true, 'geo': 'box', 'mat': 'brass',
             'width': glassWidth, 'height': trimHeight, 'depth': trimDepth,
             'y': baseHeight, 'z': glassDepth
         },
         'diorama-component__trim_base_back': { 'cyl': true, 'geo': 'box', 'mat': 'brass',
             'width': glassWidth, 'height': trimHeight, 'depth': trimDepth,
-            'y': baseHeight, 'z': -glassDepth
+            'y': baseHeight, 'z': -glassDepth,
         },
         'diorama-component__trim_top_front': { 'cyl': true, 'geo': 'box', 'mat': 'brass',
             'width': glassWidth, 'height': trimHeight, 'depth': trimDepth,
@@ -478,7 +501,8 @@ AFRAME.registerPrimitive( 'a-diorama-cyl', {
         },
         'diorama-component__top': { 'cyl': true, 'geo': 'ex-box', 'mat': 'wood',
             'width': glassWidth, 'height': baseHeight, 'depth': baseDepth,
-            'y': baseHeight + glassHeight - bevelThickness//'0.99'
+            'y': baseHeight + glassHeight - bevelThickness,//'0.99'
+            'repeatU': 1, 'repeatV': 1 
         },
         'diorama-component__glass': { 'cyl': true, 'geo': 'ex-box', 'mat': 'glass',
             'width': glassWidth, 'height': glassHeight, 'depth': glassDepth,
