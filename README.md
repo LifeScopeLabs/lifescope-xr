@@ -10,13 +10,11 @@ npm install
 
 ### build
 
-npm run build
-
-npm run build-server
+npm run build-dev
 
 ### start server w/ dev credentials
 
-NODE_ENV=dev npm run start
+npm run dev
 
 ## Deployment
 
@@ -32,7 +30,7 @@ npm install
 
 ### build
 
-npm run build
+npm run build-prod
 
 ### test site works with only production dependencies
 
