@@ -7,9 +7,6 @@
         <!-- Floor -->
         <a-wooden-floor radius='6.1'></a-wooden-floor>
 
-        <!-- Rail -->
-        <a-diorama-cyl radius='6' position="0 0 0"></a-diorama-cyl>
-
         <!-- Carousel -->
         <gallery-carousel :LSObjs='LSObjs' :roomConfig='roomConfig' />
       
