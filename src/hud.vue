@@ -11,16 +11,35 @@
             </div>
       </div>
       <div class="help-menu" :style="helpStyleObject">
-          <h2> Controls </h2>
-          <ul>
-            <li> <b>H - </b> toggle help menu </li>
+          <div class="help-controls">
+            <h2> Controls </h2>
+            <ul>
+                <li> <b>H - </b> toggle help menu </li>
 
-            <li> <b> WASD - </b> movement controls </li>
+                <li> <b> WASD - </b> movement controls </li>
 
-            <li> <b> click and drag </b> to look around </li>
+                <li> <b> click and drag </b> to look around </li>
 
-            <li> <b> hover room name </b> to select new room </li>
-            </ul>
+                <li> <b> hover room name </b> to select new room </li>
+                </ul>
+          </div>
+
+          <div class="help-settings">
+
+            <h2> Settings </h2>
+            <h3> Sky </h3>
+            <div>
+                <input type="radio" id="sky-setting-stars" name="sky" value="stars"
+                        checked v-model="skySetting">
+                <label for="sky-setting-stars">Stars</label>
+            </div>
+
+            <div>
+                <input type="radio" id="sky-setting-sun" name="sky" value="sun"
+                    v-model="skySetting">
+                <label for="sky-setting-sun">Sun</label>
+            </div>
+          </div>
         </div>
   </div>
 </template>
@@ -32,12 +51,20 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            skySetting: 'stars',
             helpStyleObject: {
                 visibility: 'visible',
             },
             roomName: 'ls-room',
             roomConfig: {},
-            rooms: []
+            rooms: [],
+            time: 11, // 24 hours
+        }
+    },
+
+    watch: {
+        skySetting: function (newVals, oldVals) {
+            this.changeSky(newVals);
         }
     },
 
@@ -106,6 +133,41 @@ export default {
                 return { rooms: rooms }
             })
         },
+
+        changeSky(val) {
+            if (val == 'sun') {
+                this.removeStars();
+                this.addSun();
+            }
+            else if (val == 'stars') {
+                this.removeSun();
+                this.addStars();
+            }
+        },
+        removeStars() {
+            var stars = document.querySelector('#starsky');
+            stars.parentElement.removeChild(stars);
+        },
+        addStars() {
+            var stars = document.createElement('a-sky');
+            stars.setAttribute('id', 'starsky');
+            stars.setAttribute('src', '#sky')
+            stars.object3D.rotation.x += Math.PI/2;
+            stars.object3D.rotation.z += Math.PI/2;
+            AFRAME.scenes[0].appendChild(stars);
+        },
+        removeSun() {
+            var sun = document.querySelector('#sunsky');
+            sun.parentElement.removeChild(sun);
+        },
+        addSun() {
+            var sun = document.createElement('a-sun-sky');
+            sun.setAttribute('id', 'sunsky');
+            sun.setAttribute('material', {side: 'back'})
+            sun.setAttribute('sun-sky-position', {time: 11});
+            AFRAME.scenes[0].appendChild(sun);
+        },
+
 
     },
 }

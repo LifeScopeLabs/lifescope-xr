@@ -23,8 +23,9 @@
     <gallery :LSObjs='LSObjs' :rooms='rooms' :roomConfig='roomConfig'/>
 
     <!-- Sky id="Sky" -->
-    <a-sky src="#sky" rotation="90 0 90">
+    <a-sky id="starsky" src="#sky" rotation="90 0 90">
     </a-sky>
+    <!-- <a-sun-sky id="sunsky" material="side: back" :sun-sky-position="'time: ' + time"></a-sun-sky> -->
 
   </a-scene>
 </template>
@@ -49,7 +50,8 @@ export default {
         rooms: [],
         roomConfig: {},
         roomName: 'ls-room',
-        avatar: {}
+        avatar: {},
+        time: 11, // 24 hours
       }
     },
 

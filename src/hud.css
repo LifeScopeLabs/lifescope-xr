@@ -16,6 +16,9 @@
 }
 
 .help-menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
     border: 1px solid #7b7b7b;
     border-radius: 12px;
     background-color: #2A2A2A;
@@ -26,7 +29,7 @@
     top: 6%;
     left: 22.5%;
     width: 55%;
-    height: 55%;
+    height: 60%;
     box-sizing: border-box;
     align-self: center;
     margin-left: auto;
@@ -35,6 +38,14 @@
     pointer-events: visible;
     box-shadow: 0 0 5px 1px #edeeee;
     overflow: scroll;
+}
+
+.help-menu .help-controls {
+    grid-column: 1;
+}
+
+.help-menu .help-settings {
+    grid-column: 2;
 }
 
 .help-menu h2 {
