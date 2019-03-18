@@ -50,30 +50,20 @@ const contentTypes = {
 };
 
 s3.listObjects(bucketParams, function(err, data) {
-    //console.log("s3.listObjects");
     if (err) {console.log(err, err.stack);}
     else {
         //debugger;
 
         for (var content of data.Contents) {
-            //console.log(content);
-            var re_ext=/\.([0-9a-z]+)$/i;
-            //var re_name = /\/([0-9a-zA-Z\-\s]+)\.[0-9a-zA-Z]+$/i; 
-            //var re_room=/^test\/content\/([0-9a-z\-]+\/)+/i;
             var room_name = "";
-
             var re = /\/([0-9a-zA-Z\-_,\s]+)\.(.*)/i;
 
             if (content.Key.startsWith(BUCKET_PATH) && !content.Key.endsWith('/')) {
-                //console.log(content);
-
                 room_name = content.Key.slice(BUCKET_PATH.length).split('/')[0];
 
-                    if (!gallery_content[room_name]) {
-                        gallery_content[room_name] = [];
-                    }
-                
-                //console.log(content.Key.match(re));
+                if (!gallery_content[room_name]) {
+                    gallery_content[room_name] = [];
+                }
 
                 var result = {
                     id: content.Key.match(re)[1].replace(new RegExp(' ', 'g'), '-'),
@@ -82,7 +72,6 @@ s3.listObjects(bucketParams, function(err, data) {
                     ext: content.Key.match(re)[2],
                     type: contentTypes[content.Key.match(re)[2]]
                 };
-                //console.log(result);
                 gallery_content[room_name].push(result);
             }
         }
@@ -96,7 +85,6 @@ Promise.resolve()
     global.env = {
         iceServers: ICE_SERVERS
     };
-
 
     // CORS
     server.use(function(req, res, next) {

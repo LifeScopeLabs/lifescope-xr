@@ -39,13 +39,7 @@
     "bucket_route": "https://s3.amazonaws.com",
     "BUCKET_NAME": "lifescope-static",
     "BUCKET_PATH": "test/content/",
-    "ROOM_NAME": "ls-room",
-    "floor": "",
-    "wall": "",
-    "sky": "",
-    "wallWidth": 400,
-    "wallHeight": 4,
-    "hallWidth": 8
+    "ROOM_NAME": "ls-room"
   },
 
   "DEBUG": false

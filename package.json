@@ -5,12 +5,11 @@
     "author": "(https://lifescope.io)",
     "scripts": {
         "build": "webpack && babel ./src/server.js --out-file ./dist/server.js",
+        "build-dev": "cross-env NODE_ENV=dev webpack && babel ./src/server.js --out-file ./dist/server.js",
+        "build-prod": "cross-env NODE_ENV=prod webpack && babel ./src/server.js --out-file ./dist/server.js",
         "start": "node ./dist/server.js",
-        "dev-build": "cross-env NODE_ENV=dev webpack && babel ./src/server.js --out-file ./dist/server.js",
-        "prod-build": "cross-env NODE_ENV=prod webpack && babel ./src/server.js --out-file ./dist/server.js",
         "dev": "cross-env NODE_ENV=dev node ./dist/server.js",
-        "debug": "babel-node ./dist/server.js --inspect-brk=localhost:8080",
-        "dev-start": "webpack-dev-server"
+        "debug": "babel-node ./dist/server.js --inspect-brk=localhost:8080"
     },
     "engines": {
         "node": "8.11.1"

@@ -5,43 +5,16 @@
 
 <script>
 
-import carouselItem from "./components/carousel-item.vue";
-
 import Vue from 'vue';
 
-if (CONFIG.DEBUG) {console.log("from carousel.vue <script>")}
 export default {
-    data () {
-        return {
-            carouselDim: {
-                wallEdgeOffset: 1,
-                itemsPerWall: 18,
-                layoutMargin: 1,
-                contentHeight: 2,
-                top: 1.5,
-                lineSeparation: 0.1,
-                columnWidth: 1,
-                iconOffset: 0.5,
-                iconWidth: 0.1,
-                backgroundWidth: 0.8,
-                backgroundHeight: 1.5,
-                displayDegrees: 30,
-			    truncateText: 30
-            }
-        }
+
+    props: ['LSObjs', 'roomConfig'],
+
+    mounted() {
+        this.createRail();
     },
 
-    props: {'LSObjs': {
-                default: []},
-            'roomConfig': {},
-            'hallWidth': {
-                default: 20},
-            'hallDepth': {
-                default: 20}
-    },
-    components: {
-        carouselItem
-    },
     computed: {
         sortedLSObjs() {
             var sorted = this.LSObjs;
@@ -58,6 +31,28 @@ export default {
         imageSrc: function (image) {
             return this.roomConfig.bucket_route + '/' + this.roomConfig.BUCKET_NAME + '/' + image.route;
         },
+        createRail: function() {
+            if (CONFIG.DEBUG) {console.log("createRail")};
+            var scene = document.querySelector('a-scene');
+            for ( var i = 0; i < 36; i ++ ) {
+                var u = i / 36 + 0.5 / 36; // 0.5/36 to get to the post
+                var theta = u * Math.PI * 2 + 0;
+                var sinTheta = Math.sin( theta );
+                var cosTheta = Math.cos( theta );
+
+                // create rail
+                var segx = 6 * sinTheta;
+                var segz = 6 * cosTheta;
+                var segRoty = theta * (180/Math.PI) + 5;
+                var segRotx = 0;
+
+                var rail = document.createElement("a-rail");
+                rail.setAttribute('rotation', segRotx + ' ' + segRoty + ' 0');
+                rail.setAttribute('position', segx + ' 0 ' + segz);
+                this.$el.appendChild(rail);
+            }
+        },
+
         createImages: function() {
             if (CONFIG.DEBUG) {console.log("createImages")};
             var scene = document.querySelector('a-scene');
@@ -66,15 +61,15 @@ export default {
                 var theta = u * Math.PI * 2 + 0;
                 var sinTheta = Math.sin( theta );
                 var cosTheta = Math.cos( theta );
-                var segx = 6.2 * sinTheta;
-                var segz = 6.2 * cosTheta;
+                var imgx = 6.2 * sinTheta;
+                var imgz = 6.2 * cosTheta;
 
                 var img = document.createElement("a-custom-image");
                 img.setAttribute('src', this.imageSrc(this.items[i]));
                 var roty = theta * (180/Math.PI); // 
                 var rotx = 0;
                 img.setAttribute('rotation', rotx + ' ' + roty + ' 0');
-                img.setAttribute('position', segx + ' 1.5 ' + segz);
+                img.setAttribute('position', imgx + ' 1.5 ' + imgz);
                 this.$el.appendChild(img);
             }
         }
