@@ -20,7 +20,7 @@
     </a-assets>
 
     <!-- gallery -->
-    <gallery :LSObjs='LSObjs' :rooms='rooms' :roomConfig='roomConfig'/>
+    <gallery/>
 
     <!-- Sky id="Sky" -->
     <a-sky id="starsky" src="#sky" rotation="90 0 90">
@@ -31,6 +31,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import axios from 'axios';
 
 import socketIO from 'socket.io-client';
@@ -46,14 +48,13 @@ export default {
     },
     data() {
       return {
-        LSObjs: [],
-        rooms: [],
-        roomConfig: {},
-        roomName: 'ls-room',
-        avatar: {},
-        time: 11, // 24 hours
+        avatar: {}
       }
     },
+
+    computed: mapState([
+        'roomName',
+    ]),
 
     mounted () {
       if (CONFIG.DEBUG) {console.log("App.vue mounted");};
@@ -82,16 +83,15 @@ export default {
       });
       
 
-      this.getRoomConfig().then((res) => {
-          if (CONFIG.DEBUG) {console.log("getRoomConfig().then")};
+      if (!this.$route.query.room){
+        this.$route.query.room = 'ls-room';
+      }
+          
+      var queryRoom = this.$route.query.room || 'ls-room';
 
-          this.roomConfig = res.roomConfig;
-
-          this.getObjs().then((res) => {
-            console.log("getObjs");
-            this.LSObjs = res.LSObjs;
-            this.rooms = res.rooms;
-
+      this.$store.dispatch('setRoomName', queryRoom).then(() => {
+        this.$store.dispatch('getRoomConfig').then(() => {
+          this.$store.dispatch('getObjs').then(() => {
             var avatar = new Avatar();
             this.avatar = avatar;
             avatar.createAvatarRigTemplate();
@@ -106,9 +106,10 @@ export default {
             } else {
               self.setupDesktop();
             }
-          });
-        }
-      );
+          })
+        });
+      });
+      
     },
 
 
@@ -162,36 +163,6 @@ export default {
         if (CONFIG.DEBUG) {console.log("!isMobile");};
         var playerRig = document.getElementById('playerRig');
         playerRig.setAttribute("look-controls", 'reverseMouseDrag', true);
-      },
-
-      getRoomConfig () {
-        if (CONFIG.DEBUG) {console.log("getRoomConfig");};
-        return axios.get("/roomconfig")
-        .then((res) => {
-          return {roomConfig: res.data}
-        })
-      },
-
-      getObjs () {
-        if (CONFIG.DEBUG) {console.log("getObjs");};
-        
-        var x = '/' + this.roomConfig.BUCKET_PATH;
-
-        if (!this.$route.query.room){
-          this.$route.query.room = 'ls-room';
-        }
-
-        this.roomName = this.$route.query.room || 'ls-room';
-
-        return axios.get(x)
-        .then((res) => {
-          var result = [];
-          var rooms = Object.keys(res.data);
-          var someData = res.data[this.roomName].forEach(element => {
-            result.push(element);
-          });
-          return { LSObjs: result, rooms: rooms }
-        })
       },
 
     }

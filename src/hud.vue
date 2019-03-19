@@ -46,6 +46,8 @@
 
 <script>
 import Vue from 'vue';
+import { mapState } from 'vuex';
+
 import axios from 'axios';
 
 export default {
@@ -55,12 +57,15 @@ export default {
             helpStyleObject: {
                 visibility: 'visible',
             },
-            roomName: 'ls-room',
-            roomConfig: {},
-            rooms: [],
             time: 11, // 24 hours
         }
     },
+
+    computed: mapState([
+        'roomName',
+        'roomConfig',
+        'rooms',
+    ]),
 
     watch: {
         skySetting: function (newVals, oldVals) {
@@ -71,7 +76,7 @@ export default {
     mounted() {
         var self = this;
 
-        this.roomName = this.$route.query.room || 'ls-room';
+        // this.roomName = this.$route.query.room || 'ls-room';
 
         document.body.addEventListener('keypress', function(evt) {
             //console.log(evt.key)
@@ -80,17 +85,9 @@ export default {
             }
         });
 
-        this.getRoomConfig().then((res) => {
-          if (CONFIG.DEBUG) {console.log("getRoomConfig().then")};
-
-          this.roomConfig = res.roomConfig;
-
-          this.getRooms().then((res) => {
-            console.log("getRooms");
-            this.rooms = res.rooms;
-          });
-        });
-
+        // this.$store.dispatch('getRoomConfig').then(() => {
+        //     this.$store.dispatch('getObjs');
+        // });
     },
 
     methods: {
@@ -104,34 +101,6 @@ export default {
 
         link: function (room) {
             return '?room=' + room;
-        },
-
-        getRoomConfig () {
-            if (CONFIG.DEBUG) {console.log("getRoomConfig");};
-                return axios.get("/roomconfig")
-                .then((res) => {
-                return {roomConfig: res.data}
-            })
-        },
-
-        getRooms () {
-            if (CONFIG.DEBUG) {console.log("getObjs");};
-            
-            var x = '/' + this.roomConfig.BUCKET_PATH;
-
-            if (!this.$route.query.room){
-                this.$route.query.room = 'ls-room';
-            }
-
-            this.roomName = this.$route.query.room || 'ls-room';
-
-            return axios.get(x)
-            .then((res) => {
-                var result = [];
-                var rooms = Object.keys(res.data);
-                //console.log(rooms);
-                return { rooms: rooms }
-            })
         },
 
         changeSky(val) {
