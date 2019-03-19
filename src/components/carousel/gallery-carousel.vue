@@ -61,15 +61,15 @@ export default {
                 var theta = u * Math.PI * 2 + 0;
                 var sinTheta = Math.sin( theta );
                 var cosTheta = Math.cos( theta );
-                var imgx = 6.2 * sinTheta;
-                var imgz = 6.2 * cosTheta;
+                var segx = 6.2 * sinTheta;
+                var segz = 6.2 * cosTheta;
 
                 var img = document.createElement("a-custom-image");
                 img.setAttribute('src', this.imageSrc(this.items[i]));
                 var roty = theta * (180/Math.PI); // 
                 var rotx = 0;
                 img.setAttribute('rotation', rotx + ' ' + roty + ' 0');
-                img.setAttribute('position', imgx + ' 1.5 ' + imgz);
+                img.setAttribute('position', segx + ' 1.5 ' + segz);
                 this.$el.appendChild(img);
             }
         }
