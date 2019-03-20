@@ -60,6 +60,13 @@ export default {
       if (CONFIG.DEBUG) {console.log("App.vue mounted");};
       var self = this;
 
+      var scene = document.querySelector('a-scene');  
+      if (scene.hasLoaded) {
+        self.onSceneLoaded();
+      } else {
+        scene.addEventListener('loaded', self.onSceneLoaded);
+      }
+
       document.body.addEventListener('enter-vr', function (evt) {
         self.onEnterVR();
         document.body.addEventListener('exit-vr', function (event) {
@@ -81,10 +88,9 @@ export default {
           document.getElementsByClassName('player')[0].getElementsByClassName('head')[0].setAttribute('visible', 'false');
         }
       });
-      
 
-      if (!this.$route.query.room){
-        this.$route.query.room = 'ls-room';
+      if (!self.$route.query.room){
+          self.$route.query.room = 'ls-room';
       }
           
       var queryRoom = this.$route.query.room || 'ls-room';
@@ -92,14 +98,8 @@ export default {
       this.$store.dispatch('setRoomName', queryRoom).then(() => {
         this.$store.dispatch('getRoomConfig').then(() => {
           this.$store.dispatch('getObjs').then(() => {
-            var avatar = new Avatar();
-            this.avatar = avatar;
-            avatar.createAvatarRigTemplate();
-            avatar.addAvatarRigTemplate();
-            avatar.createNetworkedPlayer();
 
-            var avatarCreatedEvent = new Event('avatarCreated');
-            document.body.dispatchEvent(avatarCreatedEvent);
+            self.setupAvatar();
 
             if (AFRAME.utils.device.isMobile()) {
               self.setupMobile();
@@ -114,6 +114,13 @@ export default {
 
 
     methods: {
+      onSceneLoaded () {
+        if (CONFIG.DEBUG) {console.log("onSceneLoaded");}
+        var self = this;
+        self.$store.commit('SET_SCENELOADED');
+        self.$store.commit('SET_ISMOBILE');
+      },
+
       onEnterVR () {
         var self = this;
         if (CONFIG.DEBUG) {console.log('entered vr');};
@@ -163,6 +170,19 @@ export default {
         if (CONFIG.DEBUG) {console.log("!isMobile");};
         var playerRig = document.getElementById('playerRig');
         playerRig.setAttribute("look-controls", 'reverseMouseDrag', true);
+      },
+
+      setupAvatar () {
+        if (CONFIG.DEBUG) {console.log("setupAvatar");};
+
+        var avatar = new Avatar();
+        this.avatar = avatar;
+        avatar.createAvatarRigTemplate();
+        avatar.addAvatarRigTemplate();
+        avatar.createNetworkedPlayer();
+
+        var avatarCreatedEvent = new Event('avatarCreated');
+        document.body.dispatchEvent(avatarCreatedEvent);
       },
 
     }

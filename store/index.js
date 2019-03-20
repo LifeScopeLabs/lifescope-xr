@@ -12,6 +12,7 @@ const store = () => new Vuex.Store({
         roomConfig: {},
         roomName: 'ls-room',
         rooms: [],
+        sceneLoaded: false,
         isMobile: false,
         browser: '',
 	},
@@ -21,21 +22,40 @@ const store = () => new Vuex.Store({
 
 	mutations: {
         SET_LSOBJS: function(state, objs) {
-            console.log('SET_LSOBJS');
+            if (CONFIG.DEBUG) {console.log('SET_LSOBJS');}
             state.LSObjs = objs;
             state.LSObjsLoaded = true;
         },
         SET_ROOMS: function(state, rooms) {
-            console.log('SET_ROOMS');
+            if (CONFIG.DEBUG) {console.log('SET_ROOMS');}
             state.rooms = rooms;
         },
         SET_ROOMCONFIG: function(state, roomConfig) {
-            console.log('SET_ROOMCONFIG');
+            if (CONFIG.DEBUG) {console.log('SET_ROOMCONFIG');}
             state.roomConfig = roomConfig;
         },
         SET_ROOMNAME: function(state, name) {
-            console.log('SET_ROOMNAME');
+            if (CONFIG.DEBUG) {console.log('SET_ROOMNAME');}
             state.roomName = name;
+        },
+        SET_SCENELOADED: function(state) {
+            if (CONFIG.DEBUG) {console.log('SET_SCENELOADED');}
+            if (AFRAME == undefined) {
+                state.sceneLoaded = false;
+            }
+            else {
+                var scene = AFRAME.scenes[0];
+                state.sceneLoaded = scene == undefined ? false : scene.hasLoaded;
+            }
+        },
+        SET_ISMOBILE: function(state) {
+            if (CONFIG.DEBUG) {console.log('SET_ISMOBILE');}
+            if (AFRAME == undefined) {
+                console.log("Cannto call SET_ISMOBILE before AFRAME is loaded");
+            }
+            else {
+                state.isMobile = AFRAME.utils.device.isMobile();
+            }
         }
 	},
 
