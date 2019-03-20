@@ -47,6 +47,7 @@
     "dependencies": {
         "aframe": "^0.9.0",
         "aframe-extras": "^4.1.2",
+        "aframe-forcegraph-component": "^2.15.1",
         "aframe-geojson-component": "^1.2.4",
         "aframe-input-mapping-component": "^0.1.3",
         "aframe-src-fit-component": "git+https://git@github.com/lifescopelabs/aframe-src-fit-component",

@@ -23,7 +23,7 @@
     <gallery/>
 
     <!-- Sky id="Sky" -->
-    <a-sky id="starsky" src="#sky" rotation="90 0 90">
+    <a-sky id="starssky" src="#sky" rotation="90 0 90">
     </a-sky>
     <!-- <a-sun-sky id="sunsky" material="side: back" :sun-sky-position="'time: ' + time"></a-sun-sky> -->
 
