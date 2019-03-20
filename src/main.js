@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import store from '../store';
 
 // disable warn
 //console.warn = function() {};
@@ -54,6 +55,7 @@ Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity',
 //var app = new Vue(Vue.util.extend({ router }, App)).$mount('#app');
 var app = new Vue({
     el: '#app',
+    store,
     router: router,
     render: h => h(App)
   });

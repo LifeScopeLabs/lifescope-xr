@@ -50,6 +50,7 @@
 import galleryCarousel from "./carousel/gallery-carousel.vue";
 
 import Vue from 'vue';
+import { mapState } from 'vuex';
 
 export default {
 
@@ -57,16 +58,9 @@ export default {
         galleryCarousel
     },
 
-    props: ['LSObjs', 'rooms', 'roomConfig'],
-    
-    computed: {
-        sortedRooms() {
-            var sorted = this.rooms;
-            sorted.sort(function (a, b) {
-                return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
-            });
-            return sorted;
-        }
-    },
+    computed: mapState([
+        'LSObjs',
+        'roomConfig',
+    ]),
 }
 </script>
