@@ -52,7 +52,8 @@ export default {
       }
     },
 
-    computed: mapState([
+    computed: mapState('xr',
+    [
         'roomName',
     ]),
 
@@ -95,9 +96,9 @@ export default {
           
       var queryRoom = this.$route.query.room || 'ls-room';
 
-      this.$store.dispatch('setRoomName', queryRoom).then(() => {
-        this.$store.dispatch('getRoomConfig').then(() => {
-          this.$store.dispatch('getObjs').then(() => {
+      this.$store.dispatch('xr/setRoomName', queryRoom).then(() => {
+        this.$store.dispatch('xr/getRoomConfig').then(() => {
+          this.$store.dispatch('xr/getObjs').then(() => {
 
             self.setupAvatar();
 
@@ -117,8 +118,8 @@ export default {
       onSceneLoaded () {
         if (CONFIG.DEBUG) {console.log("onSceneLoaded");}
         var self = this;
-        self.$store.commit('SET_SCENELOADED');
-        self.$store.commit('SET_ISMOBILE');
+        self.$store.commit('xr/SET_SCENELOADED');
+        self.$store.commit('xr/SET_ISMOBILE');
       },
 
       onEnterVR () {

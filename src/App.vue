@@ -19,9 +19,10 @@ export default {
         hud
     },
 
-    computed: mapState([
-        'sceneLoaded',
-        'isMobile',
+    computed: mapState('xr',
+    [
+      'sceneLoaded',
+      'isMobile',
     ]),
 
 }

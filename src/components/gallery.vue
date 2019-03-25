@@ -58,7 +58,8 @@ export default {
         galleryCarousel
     },
 
-    computed: mapState([
+    computed: mapState('xr',
+    [
         'LSObjs',
         'roomConfig',
     ]),

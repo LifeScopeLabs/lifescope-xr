@@ -61,7 +61,8 @@ export default {
         }
     },
 
-    computed: mapState([
+    computed: mapState('xr',
+    [
         'roomName',
         'roomConfig',
         'rooms',
@@ -76,18 +77,12 @@ export default {
     mounted() {
         var self = this;
 
-        // this.roomName = this.$route.query.room || 'ls-room';
-
         document.body.addEventListener('keypress', function(evt) {
             //console.log(evt.key)
             if (evt.key == 'h') {
                 self.toggleHelpVisibility();
             }
         });
-
-        // this.$store.dispatch('getRoomConfig').then(() => {
-        //     this.$store.dispatch('getObjs');
-        // });
     },
 
     methods: {
