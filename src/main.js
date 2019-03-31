@@ -5,7 +5,7 @@ import store from '../store';
 // disable warn
 //console.warn = function() {};
 
-import 'three';
+import './lib/three';
 // must import aframe here to load components
 import 'aframe';
 import 'networked-aframe';

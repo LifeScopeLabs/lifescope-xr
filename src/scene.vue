@@ -22,6 +22,8 @@
     <!-- gallery -->
     <gallery/>
 
+    <avatarcomp ref="avatar"/>
+
     <!-- Sky id="Sky" -->
     <a-sky id="starsky" src="#sky" rotation="90 0 90">
     </a-sky>
@@ -41,10 +43,12 @@ import easyrtc from '../static/easyrtc/easyrtc.js';
 import gallery from "./components/gallery.vue";
 
 import Avatar from "./avatar.js";
+import avatarcomp from "./avatar.vue";
 
 export default {
     components: {
-        gallery
+        gallery,
+        avatarcomp
     },
     data() {
       return {
@@ -100,8 +104,6 @@ export default {
         this.$store.dispatch('xr/getRoomConfig').then(() => {
           this.$store.dispatch('xr/getObjs').then(() => {
 
-            self.setupAvatar();
-
             if (AFRAME.utils.device.isMobile()) {
               self.setupMobile();
             } else {
@@ -151,41 +153,23 @@ export default {
 
       setupMobile () {
         if (CONFIG.DEBUG) {console.log("isMobile");};
-        var playerRig = document.getElementById('playerRig');
-        playerRig.setAttribute("virtual-gamepad-controls", {});
-        var camera = document.getElementById('player-camera');
-        var sceneEl = document.getElementsByTagName('a-scene')[0];
-        sceneEl.setAttribute("look-on-mobile", "camera", camera);
-        sceneEl.setAttribute("look-on-mobile", "verticalLookSpeedRatio", 3);
+        this.$refs.avatar.setupMobile();
       },
 
       teardownMobile () {
         if (CONFIG.DEBUG) {console.log("teardownMobile");};
         var playerRig = document.getElementById('playerRig');
-        playerRig.removeAttribute('virtual-gamepad-controls');
+        if (playerRig) {
+          playerRig.removeAttribute('virtual-gamepad-controls');
+        }
         var sceneEl = document.getElementsByTagName('a-scene')[0];
         sceneEl.removeAttribute('look-on-mobile');
       },
 
       setupDesktop () {
         if (CONFIG.DEBUG) {console.log("!isMobile");};
-        var playerRig = document.getElementById('playerRig');
-        playerRig.setAttribute("look-controls", 'reverseMouseDrag', true);
+        this.$refs.avatar.setupDesktop();
       },
-
-      setupAvatar () {
-        if (CONFIG.DEBUG) {console.log("setupAvatar");};
-
-        var avatar = new Avatar();
-        this.avatar = avatar;
-        avatar.createAvatarRigTemplate();
-        avatar.addAvatarRigTemplate();
-        avatar.createNetworkedPlayer();
-
-        var avatarCreatedEvent = new Event('avatarCreated');
-        document.body.dispatchEvent(avatarCreatedEvent);
-      },
-
     }
   }
 </script>
