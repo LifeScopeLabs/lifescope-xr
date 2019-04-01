@@ -1,18 +1,25 @@
 <template>
     <a-entity class="gallery-carousel">
+        <a-rail v-for="n in numberOfSegments"
+            :key="'railSegment' + n"
+            :rotation="railRotation(n)"
+            :position="railPosition(n)"/>
+        <a-custom-image v-for="n in numberOfSegments"
+            :key="'carouselImage' + n"
+            :src="imageSrc(items[n])"
+            :rotation="dioramaRotation(n)"
+            :position="dioramaPosition(n)"/>
     </a-entity>
 </template>
 
 <script>
 
-import Vue from 'vue';
-
 export default {
 
-    props: ['LSObjs', 'roomConfig'],
-
-    mounted() {
-        this.createRail();
+    data() {
+      return {
+        numberOfSegments: 36
+      }
     },
 
     computed: {
@@ -24,65 +31,68 @@ export default {
             return sorted;
         },
         items() {
-            return this.sortedLSObjs.slice(0, 36);
+            return this.sortedLSObjs.slice(0, this.numberOfSegments);
+        },
+        LSObjs() {
+            return this.$store.state.xr.LSObjs;
+        },
+        roomConfig() {
+            return this.$store.state.xr.roomConfig;
         }
     },
     methods: {
         imageSrc: function (image) {
-            return this.roomConfig.bucket_route + '/' + this.roomConfig.BUCKET_NAME + '/' + image.route;
+            if(!image)
+                return '';
+            else
+                return this.roomConfig.bucket_route + '/' + this.roomConfig.BUCKET_NAME + '/' + image.route;
         },
-        createRail: function() {
-            if (CONFIG.DEBUG) {console.log("createRail")};
-            var scene = document.querySelector('a-scene');
-            for ( var i = 0; i < 36; i ++ ) {
-                var u = i / 36 + 0.5 / 36; // 0.5/36 to get to the post
-                var theta = u * Math.PI * 2 + 0;
-                var sinTheta = Math.sin( theta );
-                var cosTheta = Math.cos( theta );
+        railRotation: function(segment) {
+            var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
+            // 0.5/36 to get to the post
+            var theta = u * Math.PI * 2 + 0;
 
-                // create rail
-                var segx = 6 * sinTheta;
-                var segz = 6 * cosTheta;
-                var segRoty = theta * (180/Math.PI) + 5;
-                var segRotx = 0;
+            var roty = theta * (180/Math.PI) + 5;
+            var rotx = 0;
 
-                var rail = document.createElement("a-rail");
-                rail.setAttribute('rotation', segRotx + ' ' + segRoty + ' 0');
-                rail.setAttribute('position', segx + ' 0 ' + segz);
-                this.$el.appendChild(rail);
-            }
+            return `${rotx} ${roty} 0`;
         },
+        railPosition: function(segment) {
+            var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
+            // 0.5/36 to get to the post
+            var theta = u * Math.PI * 2 + 0;
 
-        createImages: function() {
-            if (CONFIG.DEBUG) {console.log("createImages")};
-            var scene = document.querySelector('a-scene');
-            for ( var i = 0; i < this.items.length; i ++ ) {
-                var u = i / 36 + 0.5 / 36; // 0.5/36 to get to the post
-                var theta = u * Math.PI * 2 + 0;
-                var sinTheta = Math.sin( theta );
-                var cosTheta = Math.cos( theta );
-                var imgx = 6.2 * sinTheta;
-                var imgz = 6.2 * cosTheta;
+            var sinTheta = Math.sin( theta );
+            var cosTheta = Math.cos( theta );
 
-                var img = document.createElement("a-custom-image");
-                img.setAttribute('src', this.imageSrc(this.items[i]));
-                var roty = theta * (180/Math.PI); // 
-                var rotx = 0;
-                img.setAttribute('rotation', rotx + ' ' + roty + ' 0');
-                img.setAttribute('position', imgx + ' 1.5 ' + imgz);
-                this.$el.appendChild(img);
-            }
-        }
-    },
+            var x = 6 * sinTheta;
+            var z = 6 * cosTheta;
 
-    watch: {
-        LSObjs: function (newVals, oldVals) {
-            if(typeof newVals != "undefined" && newVals != null
-                && newVals.length != null && newVals.length > 0
-                && oldVals.length == 0) {
-                this.createImages();
-            }
-        }
+            return `${x} 0 ${z}`;
+        },
+        dioramaRotation: function(segment) {
+            var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
+            // 0.5/36 to get to the post
+            var theta = u * Math.PI * 2;
+
+            var roty = theta * (180/Math.PI);
+            var rotx = 0;
+
+            return `${rotx} ${roty} 0`;
+        },
+        dioramaPosition: function(segment) {
+            var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
+            // 0.5/36 to get to the post
+            var theta = u * Math.PI * 2;
+
+            var sinTheta = Math.sin( theta );
+            var cosTheta = Math.cos( theta );
+
+            var x = 6.2 * sinTheta;
+            var z = 6.2 * cosTheta;
+
+            return `${x} 1.5 ${z}`;
+        },
     },
   }
 </script>
