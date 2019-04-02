@@ -340,16 +340,16 @@ function createImageComponent(self) {
         ];
         mesh = new THREE.Mesh(geom, materials);
 
-        var group = self.el.getObject3D('group') || new THREE.Group();
+        var group = self.el.getObject3D('image') || new THREE.Group();
         // group.add(new THREE.BoxHelper(mesh, 0xffff00));
         group.add(mesh);
-        self.el.setObject3D('group', group);   
+        self.el.setObject3D('image', group);   
     } );
 }
 
 AFRAME.registerComponent('image-component', {
     schema: {
-        imageURL: {type: 'string', default: 'https://i.imgur.com/gmem7Ca.jpg'},
+        imageURL: {type: 'string', default: 'https://s3.amazonaws.com/lifescope-static/test/content/ls-room/10-Solved.png'},
         height: { type: 'number', default: 0},
         width: { type: 'number', default: 0 },
         depth: { type: 'number', default: 0.0},
@@ -365,12 +365,18 @@ AFRAME.registerComponent('image-component', {
     init: function() {
         var self = this;
         createImageComponent(self);
+    },
+
+    update: function() {
+        var self = this;
+        self.el.removeObject3D('image');
+        createImageComponent(self);
     }
 });
 
 AFRAME.registerPrimitive('a-custom-image', {
     defaultComponents: {
-        'image-component': {imageURL: 'https://i.imgur.com/gmem7Ca.jpg',
+        'image-component': {
             'width': imagePlackWidth -0.1, 'height': imagePlackHeight,
             'depth': imagePlackDepth,
             'x': 0, 'y': 0, 'z' : -0.2 + -0.15,

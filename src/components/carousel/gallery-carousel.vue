@@ -15,13 +15,6 @@
 <script>
 
 export default {
-
-    data() {
-      return {
-        numberOfSegments: 36
-      }
-    },
-
     computed: {
         sortedLSObjs() {
             var sorted = this.LSObjs;
@@ -31,13 +24,23 @@ export default {
             return sorted;
         },
         items() {
-            return this.sortedLSObjs.slice(0, this.numberOfSegments);
+            return this.sortedLSObjs.slice(this.pageStart, this.pageStart + this.numberOfSegments);
         },
+        totalItems() {
+            return this.LSObjs.length;
+        },
+        // vuex store
         LSObjs() {
             return this.$store.state.xr.LSObjs;
         },
         roomConfig() {
             return this.$store.state.xr.roomConfig;
+        },
+        pageStart() {
+            return this.$store.state.xr.pageStart;
+        },
+        numberOfSegments() {
+            return this.$store.state.xr.numberOfSegments;
         }
     },
     methods: {

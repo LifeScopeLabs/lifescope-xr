@@ -41,6 +41,15 @@
             </div>
           </div>
         </div>
+
+        <div class="paginator" >
+            <div class="pageLeft" @click="pageLeft">
+            </div>
+            <div class="paginatorFill">
+            </div>
+            <div class="pageRight" @click="pageRight">
+            </div>
+        </div>
   </div>
 </template>
 
@@ -132,6 +141,14 @@ export default {
             AFRAME.scenes[0].appendChild(sun);
         },
 
+        pageLeft() {
+            console.log("hud pageLeft");
+            this.$store.commit('xr/PAGE_LEFT');
+        },
+        pageRight() {
+            console.log("hud pageLeft");
+            this.$store.commit('xr/PAGE_RIGHT');
+        }
 
     },
 }
