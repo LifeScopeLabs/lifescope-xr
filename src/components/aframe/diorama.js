@@ -347,6 +347,118 @@ function createImageComponent(self) {
     } );
 }
 
+function formatTextDashes(text, boardWidth, maxChars) {
+    if (text.length > maxChars) {
+        text = text.substring(0,maxChars-3) + "..."
+    }
+    var charPixelRatio = 1.0;
+    var charsPerRow = boardWidth / charPixelRatio;
+
+    // if (text.length < charsPerRow) {
+    //     return text;
+    // }
+
+    var i = 0;
+    var formattedText = "";
+    while (i < text.length - charsPerRow) {
+        if (text.substring(i+charsPerRow-1,i+charsPerRow) == "." || text.substring(i+charsPerRow-1,i+charsPerRow) == " ") {
+            formattedText += text.substring(i,i+charsPerRow) + "\n";
+            if (text.substring(i+charsPerRow,i+charsPerRow+1) == " ") {
+                i += 1; //skip space on new line
+            }
+            i += charsPerRow;
+        }
+        else {
+            formattedText += text.substring(i,i+charsPerRow-1) + "-\n";
+            i += charsPerRow-1;
+        }
+    }
+    formattedText += text.substring(i, i+charsPerRow);
+
+    return formattedText;
+}
+
+function formatTextNewlines(text, boardWidth, maxChars) {
+    if (text.length > maxChars) {
+        text = text.substring(0,maxChars-3) + "..."
+    }
+    var charPixelRatio = 1.0;
+    var charsPerRow = boardWidth / charPixelRatio;
+
+    var words = text.split(" ");
+
+    var curNumChars = 0;
+    var formattedText = "";
+    for (var i = 0; i < words.length; i++) {
+        if (words[i].length > boardWidth) {
+            formattedText += words[i].substring(0, boardWidth - curNumChars) + "-\n"; // no other choice but to use -
+            words[i] = words[i].substring(boardWidth - curNumChars, words[i].length);
+            i -= 1; //keep trying this word until done with it
+            curNumChars = 0; //because now on new line
+        }
+        else {
+            if (boardWidth - curNumChars >= words[i].length) { // have room for full next word
+                formattedText += words[i] + " ";
+                curNumChars += words[i].length;
+            }
+            else {
+                formattedText += "\n" + words[i] + " ";
+                curNumChars = 0 + words[i].length; 
+            }
+        }
+    }
+    return formattedText;
+}
+
+function createTextComponent(self) {
+    var material, geom, mesh;
+
+    console.log('creating text geometry');
+    console.log('self.data.rotation = ' + self.data.rotation);
+    var fontLoader = new THREE.FontLoader();
+    
+    var font = fontLoader.load( self.data.font, //anonymous regular is monospace    
+        function ( font ) {
+            var charsPerRow = 29;
+            var maxChars = 200;
+            var text = formatTextNewlines(self.data.text, charsPerRow, maxChars)
+
+            var shapes = font.generateShapes( text, 0.02 );
+            
+            var textGeom = new THREE.ShapeBufferGeometry( shapes );
+            textGeom.computeBoundingBox();
+            textGeom.rotateX((2 * Math.PI * self.data.rotation / 360));
+            textGeom.rotateY(Math.PI);
+            textGeom.rotateX((2 * Math.PI * 60 / 360)); // why 60?
+            
+            textGeom.translate(self.data.x, self.data.y, self.data.z);
+            textGeom.translate(0,0,-0.02); //so it's not right inside the plank
+
+            var textMat = new THREE.MeshPhongMaterial( { color: 0x000 } );
+
+            mesh = new THREE.Mesh( textGeom, textMat );
+
+                
+            var group = self.el.getObject3D('group') || new THREE.Group();
+            // group.add(new THREE.BoxHelper(mesh, 0xffff00));
+
+            group.add(mesh);
+
+            self.el.setObject3D('group', group);
+        },
+        // onProgress callback
+        function ( xhr ) {
+            console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+        },
+        
+        // onError callback
+        function ( err ) {
+            console.log( 'An error happened: ' + err );
+        }
+    );
+
+}
+
 AFRAME.registerComponent('image-component', {
     schema: {
         imageURL: {type: 'string', default: 'https://s3.amazonaws.com/lifescope-static/test/content/ls-room/10-Solved.png'},
@@ -371,6 +483,24 @@ AFRAME.registerComponent('image-component', {
         var self = this;
         self.el.removeObject3D('image');
         createImageComponent(self);
+    }
+});
+
+AFRAME.registerComponent('text-component', {
+    schema: {
+        text: { type: 'string', default: "Hello, my friends. I am back with a new tutorial. Yes, you heard me correctly."},
+        font: { type: 'string', default: '/static/fonts/Anonymous_Regular.json'},
+        x: { type: 'number', default: 0},
+        y: { type: 'number', default: 0},
+        z: { type: 'number', default: 0},
+        opacity: { type: 'number', default: 1 },
+    },
+
+    multiple: true,
+
+    init: function() {
+        var self = this;
+        createTextComponent(self);
     }
 });
 

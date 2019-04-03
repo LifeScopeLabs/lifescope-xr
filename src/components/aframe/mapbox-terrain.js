@@ -39,23 +39,103 @@ AFRAME.registerComponent('mapbox-terrain', {
 		var tileX = long2tile(mapLongitude, mapZoomLevel);
 		var tileY = lat2tile(mapLatitude, mapZoomLevel);
 
-	
-		var texture = buildTerrainTexture();
+		var meshOffset = 4;
+		var scale = 4;
 
-		// var geometry	= new THREE.PlaneGeometry(1,1);
-		var geometry	= buildElevationPlaneGeometry();
-		var material	= new THREE.MeshPhongMaterial({
+		var ctr = 1;
+		var dx = 0;
+		var dy = 0;
+		var addX = 1;
+		var addY = -1;
+		var N = 1;
+		var tileGeom;
+		var geometries = [];
+
+		var tilesPerRow = parseInt(Math.sqrt(this.data.tiles));
+		
+		var canvas = document.createElement('canvas');
+			canvas.width  = 512*scale*tilesPerRow;
+		canvas.height = 512*scale*tilesPerRow;
+		console.log(canvas.width + " | " + canvas.height);
+		var context = canvas.getContext('2d');
+		var texture = new THREE.Texture(canvas);
+		texture.needsUpdate = true;
+
+		var middleX = parseInt((tilesPerRow-1)/2);
+		var middleY = parseInt((tilesPerRow)/2);
+
+
+		function callbackClosureDebug(dx, dy, ctr, callback) {
+			return function() {
+				return callback(dx, dy, ctr);
+			}
+		}
+
+		callbackClosureDebug(dx, dy, 0, function (dx, dy, ctr) {
+			buildTerrainTexture(tileX+dx, tileY+dy, function (image) {
+				context.drawImage(image, (middleX+dx)*512*scale,(middleY+dy)*512*scale,512*scale,512*scale); // (image, x, y, width, height)
+				texture.needsUpdate = true;
+			});
+		})();
+		tileGeom = drawTile(tileX + dx, tileY + dy, meshOffset);
+		geometries.push(tileGeom);
+
+		while (ctr < this.data.tiles) {
+			for (var i = 0; i < N && ctr < this.data.tiles; i++) {
+				dx += addX;
+				callbackClosureDebug(dx, dy, ctr, function (dx, dy, ctr) {
+					buildTerrainTexture(tileX+dx, tileY+dy, function (image) {
+						context.drawImage(image, (middleX+dx)*512*scale,(middleY+dy)*512*scale,512*scale,512*scale); // (image, x, y, width, height)
+						texture.needsUpdate = true;
+					});
+				})();
+				tileGeom = drawTile(tileX + dx, tileY + dy, meshOffset);
+				geometries.push(tileGeom);
+				ctr += 1;
+			}
+			for (var i = 0; i < N && ctr < this.data.tiles; i++) {
+				dy += addY;
+				callbackClosureDebug(dx, dy, ctr, function (dx, dy, ctr) {
+					buildTerrainTexture(tileX+dx, tileY+dy, function (image) {
+						context.drawImage(image, (middleX+dx)*512*scale,(middleY+dy)*512*scale,512*scale,512*scale); // (image, x, y, width, height)
+						texture.needsUpdate = true;
+					});
+				})();
+				tileGeom = drawTile(tileX + dx, tileY + dy, meshOffset);
+				geometries.push(tileGeom);
+				ctr += 1;
+			}
+			N += 1;
+			addX *= -1;
+			addY *= -1;
+		}
+
+		var material = new THREE.MeshPhongMaterial({
 			map: texture,
 			// wireframe: true
-		}); 
+		});
+		
+		var mergedMapGeometry = THREE.BufferGeometryUtils.mergeBufferGeometries(geometries, false); //new THREE.PlaneBufferGeometry
+		mergedMapGeometry = new THREE.PlaneBufferGeometry(tilesPerRow,tilesPerRow);
+		mergedMapGeometry.rotateX(2 * Math.PI * -90 / 360);
 
-		var mesh	= new THREE.Mesh( geometry, material );
-		mesh.rotation.x = -Math.PI/2;
-		mesh.receiveShadow = true;
-		mesh.castShadow = true;
- 
-		mesh.scale.multiplyScalar(4);
-		this.el.object3D.add(mesh);
+		var mapMesh = new THREE.Mesh(mergedMapGeometry, material);
+
+		mapMesh.receiveShadow = true;
+		mapMesh.castShadow = true;
+		this.el.setObject3D("meshMain", mapMesh);
+		
+
+		function drawTile(tileX, tileY, dx, dy, meshOffset) {
+			var geometry = buildElevationPlaneGeometry(tileX + dx, tileY + dy);
+
+			geometry.rotateX(-Math.PI / 2);
+			geometry.scale(4,4,4);
+			geometry.translate(meshOffset*dx, 0, meshOffset*dy);
+
+			return geometry;
+		}
+
 		
 		// http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
 		function long2tile(lon,zoom) { return (Math.floor((lon+180)/360*Math.pow(2,zoom))); }
@@ -95,17 +175,12 @@ AFRAME.registerComponent('mapbox-terrain', {
 
 			return geometry
 		}
-		function buildTerrainTexture(){
+		function buildTerrainTexture(tileX, tileY, callback) {
 			var restURL = `https://api.mapbox.com/v4/mapbox.${type}/${mapZoomLevel}/${tileX}/${tileY}@2x.png?access_token=${access_token}`
-			// var restURL = `https://api.mapbox.com/v4/mapbox.satellite/${mapZoomLevel}/${tileX}/${tileY}@2x.png?access_token=${access_token}`
-
-			var texture = new THREE.Texture()
-			loadImage(restURL, function(image){
-				texture.image = image
-				texture.needsUpdate = true
-			})
-
-			return texture
+			
+			loadImage(restURL, function (image) {
+				callback(image);
+			});
 		}
 		function loadImage(imageURL, onLoad) {
 			var image = document.createElement('img')

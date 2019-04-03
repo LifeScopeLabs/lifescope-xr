@@ -13,6 +13,7 @@ import 'aframe-input-mapping-component';
 import 'aframe-teleport-controls';
 import 'aframe-extras';
 import 'aframe-sun-sky';
+import 'aframe-forcegraph-component'
 import 'nipplejs';
 import './components/aframe/play-gaze.js';
 import './components/aframe/dynamic-autoplay.js';
