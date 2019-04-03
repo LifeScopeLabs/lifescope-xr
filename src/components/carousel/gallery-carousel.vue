@@ -2,13 +2,13 @@
     <a-entity class="gallery-carousel">
         <a-rail v-for="n in numberOfSegments"
             :key="'railSegment' + n"
-            :rotation="railRotation(n)"
-            :position="railPosition(n)"/>
-        <a-custom-image v-for="n in numberOfSegments"
+            :rotation="railRotation(n-1)"
+            :position="railPosition(n-1)"/>
+        <a-custom-image v-for="n in numberOfItemsToDisplay"
             :key="'carouselImage' + n"
-            :src="imageSrc(items[n])"
-            :rotation="dioramaRotation(n)"
-            :position="dioramaPosition(n)"/>
+            :src="imageSrc(items[n-1])"
+            :rotation="dioramaRotation(n-1)"
+            :position="dioramaPosition(n-1)"/>
     </a-entity>
 </template>
 
@@ -28,6 +28,9 @@ export default {
         },
         totalItems() {
             return this.LSObjs.length;
+        },
+        numberOfItemsToDisplay() {
+            return Math.min(this.numberOfSegments, this.items.length);
         },
         // vuex store
         LSObjs() {
@@ -53,7 +56,7 @@ export default {
         railRotation: function(segment) {
             var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
             // 0.5/36 to get to the post
-            var theta = u * Math.PI * 2 + 0;
+            var theta =  (-3*Math.PI/4) - (u * Math.PI * 2);
 
             var roty = theta * (180/Math.PI) + 5;
             var rotx = 0;
@@ -63,7 +66,7 @@ export default {
         railPosition: function(segment) {
             var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
             // 0.5/36 to get to the post
-            var theta = u * Math.PI * 2 + 0;
+            var theta = (-3*Math.PI/4) - (u * Math.PI * 2);
 
             var sinTheta = Math.sin( theta );
             var cosTheta = Math.cos( theta );
@@ -76,7 +79,7 @@ export default {
         dioramaRotation: function(segment) {
             var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
             // 0.5/36 to get to the post
-            var theta = u * Math.PI * 2;
+            var theta =  (-3*Math.PI/4) - (u * Math.PI * 2);
 
             var roty = theta * (180/Math.PI);
             var rotx = 0;
@@ -86,7 +89,7 @@ export default {
         dioramaPosition: function(segment) {
             var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
             // 0.5/36 to get to the post
-            var theta = u * Math.PI * 2;
+            var theta = (-3*Math.PI/4) - (u * Math.PI * 2);
 
             var sinTheta = Math.sin( theta );
             var cosTheta = Math.cos( theta );
