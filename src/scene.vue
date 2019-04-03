@@ -22,6 +22,8 @@
     <!-- gallery -->
     <gallery/>
 
+    <avatarcomp ref="avatar"/>
+
     <!-- Sky id="Sky" -->
     <a-sky id="starssky" src="#sky" rotation="90 0 90">
     </a-sky>
@@ -41,10 +43,12 @@ import easyrtc from '../static/easyrtc/easyrtc.js';
 import gallery from "./components/gallery.vue";
 
 import Avatar from "./avatar.js";
+import avatarcomp from "./avatar.vue";
 
 export default {
     components: {
-        gallery
+        gallery,
+        avatarcomp
     },
     data() {
       return {
@@ -52,13 +56,21 @@ export default {
       }
     },
 
-    computed: mapState([
+    computed: mapState('xr',
+    [
         'roomName',
     ]),
 
     mounted () {
       if (CONFIG.DEBUG) {console.log("App.vue mounted");};
       var self = this;
+
+      var scene = document.querySelector('a-scene');  
+      if (scene.hasLoaded) {
+        self.onSceneLoaded();
+      } else {
+        scene.addEventListener('loaded', self.onSceneLoaded);
+      }
 
       document.body.addEventListener('enter-vr', function (evt) {
         self.onEnterVR();
@@ -81,25 +93,16 @@ export default {
           document.getElementsByClassName('player')[0].getElementsByClassName('head')[0].setAttribute('visible', 'false');
         }
       });
-      
 
-      if (!this.$route.query.room){
-        this.$route.query.room = 'ls-room';
+      if (!self.$route.query.room){
+          self.$route.query.room = 'ls-room';
       }
           
       var queryRoom = this.$route.query.room || 'ls-room';
 
-      this.$store.dispatch('setRoomName', queryRoom).then(() => {
-        this.$store.dispatch('getRoomConfig').then(() => {
-          this.$store.dispatch('getObjs').then(() => {
-            var avatar = new Avatar();
-            this.avatar = avatar;
-            avatar.createAvatarRigTemplate();
-            avatar.addAvatarRigTemplate();
-            avatar.createNetworkedPlayer();
-
-            var avatarCreatedEvent = new Event('avatarCreated');
-            document.body.dispatchEvent(avatarCreatedEvent);
+      this.$store.dispatch('xr/setRoomName', queryRoom).then(() => {
+        this.$store.dispatch('xr/getRoomConfig').then(() => {
+          this.$store.dispatch('xr/getObjs').then(() => {
 
             if (AFRAME.utils.device.isMobile()) {
               self.setupMobile();
@@ -114,6 +117,13 @@ export default {
 
 
     methods: {
+      onSceneLoaded () {
+        if (CONFIG.DEBUG) {console.log("onSceneLoaded");}
+        var self = this;
+        self.$store.commit('xr/SET_SCENELOADED');
+        self.$store.commit('xr/SET_ISMOBILE');
+      },
+
       onEnterVR () {
         var self = this;
         if (CONFIG.DEBUG) {console.log('entered vr');};
@@ -143,28 +153,23 @@ export default {
 
       setupMobile () {
         if (CONFIG.DEBUG) {console.log("isMobile");};
-        var playerRig = document.getElementById('playerRig');
-        playerRig.setAttribute("virtual-gamepad-controls", {});
-        var camera = document.getElementById('player-camera');
-        var sceneEl = document.getElementsByTagName('a-scene')[0];
-        sceneEl.setAttribute("look-on-mobile", "camera", camera);
-        sceneEl.setAttribute("look-on-mobile", "verticalLookSpeedRatio", 3);
+        this.$refs.avatar.setupMobile();
       },
 
       teardownMobile () {
         if (CONFIG.DEBUG) {console.log("teardownMobile");};
         var playerRig = document.getElementById('playerRig');
-        playerRig.removeAttribute('virtual-gamepad-controls');
+        if (playerRig) {
+          playerRig.removeAttribute('virtual-gamepad-controls');
+        }
         var sceneEl = document.getElementsByTagName('a-scene')[0];
         sceneEl.removeAttribute('look-on-mobile');
       },
 
       setupDesktop () {
         if (CONFIG.DEBUG) {console.log("!isMobile");};
-        var playerRig = document.getElementById('playerRig');
-        playerRig.setAttribute("look-controls", 'reverseMouseDrag', true);
+        this.$refs.avatar.setupDesktop();
       },
-
     }
   }
 </script>

@@ -8,7 +8,7 @@
         <a-wooden-floor radius='6.1'></a-wooden-floor>
 
         <!-- Carousel -->
-        <gallery-carousel :LSObjs='LSObjs' :roomConfig='roomConfig' />
+        <gallery-carousel />
       
         <!-- Earth -->
         <a-sphere id="Earth" class="boundry"
@@ -49,18 +49,10 @@
 <script>
 import galleryCarousel from "./carousel/gallery-carousel.vue";
 
-import Vue from 'vue';
-import { mapState } from 'vuex';
-
 export default {
 
     components: {
         galleryCarousel
     },
-
-    computed: mapState([
-        'LSObjs',
-        'roomConfig',
-    ]),
 }
 </script>

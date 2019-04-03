@@ -1,11 +1,13 @@
 <template>
   <div id="app">
     <aframe-scene></aframe-scene>
-    <hud></hud>
+    <hud v-if="sceneLoaded && !isMobile"></hud>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import axios from 'axios';
 
 import aframeScene from './scene.vue';
@@ -16,5 +18,11 @@ export default {
         aframeScene,
         hud
     },
+
+    computed: mapState('xr',
+    [
+      'sceneLoaded',
+      'isMobile',
+    ])
 }
 </script>

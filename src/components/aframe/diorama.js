@@ -340,10 +340,10 @@ function createImageComponent(self) {
         ];
         mesh = new THREE.Mesh(geom, materials);
 
-        var group = self.el.getObject3D('group') || new THREE.Group();
+        var group = self.el.getObject3D('image') || new THREE.Group();
         // group.add(new THREE.BoxHelper(mesh, 0xffff00));
         group.add(mesh);
-        self.el.setObject3D('group', group);   
+        self.el.setObject3D('image', group);   
     } );
 }
 
@@ -461,7 +461,7 @@ function createTextComponent(self) {
 
 AFRAME.registerComponent('image-component', {
     schema: {
-        imageURL: {type: 'string', default: 'https://i.imgur.com/gmem7Ca.jpg'},
+        imageURL: {type: 'string', default: 'https://s3.amazonaws.com/lifescope-static/test/content/ls-room/10-Solved.png'},
         height: { type: 'number', default: 0},
         width: { type: 'number', default: 0 },
         depth: { type: 'number', default: 0.0},
@@ -476,6 +476,12 @@ AFRAME.registerComponent('image-component', {
 
     init: function() {
         var self = this;
+        createImageComponent(self);
+    },
+
+    update: function() {
+        var self = this;
+        self.el.removeObject3D('image');
         createImageComponent(self);
     }
 });
@@ -500,13 +506,7 @@ AFRAME.registerComponent('text-component', {
 
 AFRAME.registerPrimitive('a-custom-image', {
     defaultComponents: {
-        'text-component': {
-            'x': imagePlackWidth/2, 'y': imagePlackHeight/4, 'z' : -0.2 + -0.15 + 0.08,
-            'rotation': imagePlackRotation,
-            'text': "This is a contrived test paragraph. Hopefully this covers the necessary corner cases, but I'm not exactly sure what they might be... Good attempt, I hope. Here is another sentence to test the way the line cuts off.",
-            'geo' : 'text'
-        },
-        'image-component': {imageURL: 'https://i.imgur.com/gmem7Ca.jpg',
+        'image-component': {
             'width': imagePlackWidth -0.1, 'height': imagePlackHeight,
             'depth': imagePlackDepth,
             'x': 0, 'y': 0, 'z' : -0.2 + -0.15,

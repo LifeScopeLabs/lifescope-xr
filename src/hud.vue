@@ -41,6 +41,15 @@
             </div>
           </div>
         </div>
+
+        <div class="paginator" >
+            <div class="pageLeft" @click="pageLeft">
+            </div>
+            <div class="paginatorFill">
+            </div>
+            <div class="pageRight" @click="pageRight">
+            </div>
+        </div>
   </div>
 </template>
 
@@ -61,7 +70,8 @@ export default {
         }
     },
 
-    computed: mapState([
+    computed: mapState('xr',
+    [
         'roomName',
         'roomConfig',
         'rooms',
@@ -76,18 +86,12 @@ export default {
     mounted() {
         var self = this;
 
-        // this.roomName = this.$route.query.room || 'ls-room';
-
         document.body.addEventListener('keypress', function(evt) {
             //console.log(evt.key)
             if (evt.key == 'h') {
                 self.toggleHelpVisibility();
             }
         });
-
-        // this.$store.dispatch('getRoomConfig').then(() => {
-        //     this.$store.dispatch('getObjs');
-        // });
     },
 
     methods: {
@@ -137,6 +141,14 @@ export default {
             AFRAME.scenes[0].appendChild(sun);
         },
 
+        pageLeft() {
+            console.log("hud pageLeft");
+            this.$store.commit('xr/PAGE_LEFT');
+        },
+        pageRight() {
+            console.log("hud pageLeft");
+            this.$store.commit('xr/PAGE_RIGHT');
+        }
 
     },
 }
