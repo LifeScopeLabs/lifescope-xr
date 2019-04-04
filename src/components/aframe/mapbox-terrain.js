@@ -27,6 +27,10 @@ AFRAME.registerComponent('mapbox-terrain', {
 			type: 'string',
 			default: 'satellite',
 		},
+		tiles: {
+			type: 'number',
+			default: 9
+		}
 	},
 	init: function () {
 		// https://www.mapbox.com/studio/account/tokens/
@@ -56,7 +60,6 @@ AFRAME.registerComponent('mapbox-terrain', {
 		var canvas = document.createElement('canvas');
 			canvas.width  = 512*scale*tilesPerRow;
 		canvas.height = 512*scale*tilesPerRow;
-		console.log(canvas.width + " | " + canvas.height);
 		var context = canvas.getContext('2d');
 		var texture = new THREE.Texture(canvas);
 		texture.needsUpdate = true;
@@ -217,5 +220,6 @@ AFRAME.registerPrimitive('a-mapbox-terrain', AFRAME.utils.extendDeep({}, AFRAME.
 		'latitude': 'mapbox-terrain.latitude',
 		'longitude': 'mapbox-terrain.longitude',
 		'zoom-level': 'mapbox-terrain.zoom-level',
+		'tiles': 'mapbox-terrain.tiles'
 	}
 }))

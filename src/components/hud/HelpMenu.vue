@@ -33,7 +33,6 @@ export default {
         var self = this;
 
         document.body.addEventListener('keypress', function(evt) {
-            if (CONFIG.DEBUG) {console.log(evt.key);}
             if (evt.key == 'h') {
                 self.toggleHelpVisibility();
             }

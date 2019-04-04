@@ -20,6 +20,32 @@
                 v-model="skySetting">
             <label for="sky-setting-sun">Sun</label>
         </div>
+        
+
+        <h3> Map </h3>
+        <!-- <div>
+            <input type="number" id="map-setting-lat" name="lat"
+                    v-model="mapLatitude"
+                    min="-90" max="90">
+            <label for="map-setting-lat">Latitude</label>
+
+            <input type="number" id="map-setting-long" name="long"
+                    v-model="mapLongitude"
+                    min="-180" max="180">
+            <label for="map-setting-long">Longitude</label>
+        </div> -->
+        <div>
+            <input type="checkbox" id="map-setting-floor" name="floor"
+                    v-model="mapFloorSetting">
+            <label for="map-setting-floor">Floor Map</label>
+        </div>
+
+        <div>
+            <input type="checkbox" id="map-setting-world" name="world"
+                v-model="mapWorldSetting">
+            <label for="map-setting-world">World Map</label>
+        </div>
+
         </div>
     </div>
 
@@ -39,10 +65,29 @@ export default {
         }
     },
 
-    watch: {
-        skySetting: function (newVals, oldVals) {
-            this.changeSky(newVals);
+    computed: {
+        mapFloorSetting: {
+            get () { return this.$store.state.xr.mapFloorSetting;},
+            set (val) { this.$store.commit('xr/SET_FLOOR_MAP_ACTIVE', val); }
+        },
+        mapWorldSetting: {
+            get () { return this.$store.state.xr.mapWorldSetting;},
+            set (val) { this.$store.commit('xr/SET_WORLD_MAP_ACTIVE', val); }
+        },
+        mapLatitude: {
+            get () { return this.$store.state.xr.mapLatitude;},
+            set (val) { this.$store.commit('xr/SET_MAP_LATITUDE', val); }
+        },
+        mapLongitude: {
+            get () { return this.$store.state.xr.mapLongitude;},
+            set (val) { this.$store.commit('xr/SET_MAP_LONGITUDE', val); }
         }
+    },
+
+    watch: {
+        skySetting: function (newVal, oldVal) {
+            this.changeSky(newVal);
+        },
     },
 
     methods: {

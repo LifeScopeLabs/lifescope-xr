@@ -5,7 +5,9 @@ import store from '../store';
 // disable warn
 //console.warn = function() {};
 
-import './lib/three';
+import './lib/three/three';
+import BufferGeometryUtils from './lib/three/BufferGeometryUtils';
+THREE.BufferGeometryUtils = BufferGeometryUtils;
 // must import aframe here to load components
 import 'aframe';
 import 'networked-aframe';
@@ -13,7 +15,7 @@ import 'aframe-input-mapping-component';
 import 'aframe-teleport-controls';
 import 'aframe-extras';
 import 'aframe-sun-sky';
-import 'aframe-forcegraph-component'
+// import 'aframe-forcegraph-component';
 import 'nipplejs';
 import './components/aframe/play-gaze.js';
 import './components/aframe/dynamic-autoplay.js';
@@ -33,6 +35,7 @@ import {mappings, inputActions} from './controls/input-mappings';
 import { runInThisContext } from 'vm';
 
 import App from './App.vue';
+import textureLoaderHelper from './util/textureLoaderHelper';
 
 
 //console.log(mappings);
