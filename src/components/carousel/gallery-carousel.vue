@@ -40,10 +40,10 @@ export default {
             return this.$store.state.xr.roomConfig;
         },
         pageStart() {
-            return this.$store.state.xr.pageStart;
+            return this.$store.state.xr.carousel.pageStart;
         },
         numberOfSegments() {
-            return this.$store.state.xr.numberOfSegments;
+            return this.$store.state.xr.carousel.numberOfSegments;
         }
     },
     methods: {

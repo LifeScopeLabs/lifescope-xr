@@ -1,8 +1,15 @@
 import axios from 'axios';
-import { StepFunctions } from 'aws-sdk';
+
+import graphicsModule from './modules/graphics';
+import carouselModule from './modules/carousel';
 
 const xrModule = {
     namespaced: true,
+
+    modules: {
+        graphics: graphicsModule,
+        carousel: carouselModule
+    },
 
     state: { 
         LSObjs: [],
@@ -12,13 +19,7 @@ const xrModule = {
         rooms: [],
         sceneLoaded: false,
         isMobile: false,
-        pageStart: 0,
-        pageStep: 5,
-        numberOfSegments: 36,
-        floorMapActive: false,
-        worldMapActive: false,
-        mapLatitude: 34.023552,
-        mapLongitude: -118.286189 },
+     },
 
     mutations: {
         SET_LSOBJS: function(state, objs) {
@@ -55,47 +56,6 @@ const xrModule = {
             }
             else {
                 state.isMobile = AFRAME.utils.device.isMobile();
-            }
-        },
-        SET_FLOOR_MAP_ACTIVE: function(state, active=true) {
-            if (CONFIG.DEBUG) {console.log("SET_FLOOR_MAP_ACTIVE")}
-            state.floorMapActive = new Boolean(active);
-        },
-        SET_WORLD_MAP_ACTIVE: function(state, active=true) {
-            if (CONFIG.DEBUG) {console.log("SET_WORLD_MAP_ACTIVE")}
-            state.worldMapActive = new Boolean(active);
-        },
-        SET_MAP_LATITUDE: function(state, val) {
-            if (CONFIG.DEBUG) {console.log("SET_MAP_LATITUDE")}
-            var num = new Number(val);
-            if (num < -90) {num = -90;}
-            if (num > 90) {num = 90;}
-            state.mapLatitude = num;
-        },
-        SET_MAP_LONGITUDE: function(state, val) {
-            if (CONFIG.DEBUG) {console.log("SET_MAP_LONGITUDE")}
-            var num = new Number(val);
-            if (num < -180) {num = -180;}
-            if (num > 180) {num = 180;}
-            state.mapLongitude = num;
-        },
-
-        PAGE_LEFT: function(state) {
-            if (CONFIG.DEBUG) {console.log("PAGE_LEFT");}
-            if (state.pageStart - state.pageStep >= 0) {
-                state.pageStart -= state.pageStep;
-            }
-            else {
-                state.pageStart = 0;
-            }
-        },
-        PAGE_RIGHT: function(state) {
-            if (CONFIG.DEBUG) {console.log("PAGE_RIGHT");}
-            if (state.pageStep + state.pageStart + state.numberOfSegments < state.LSObjs.length) {
-                state.pageStart += state.pageStep;
-            }
-            else {
-                state.pageStart = state.LSObjs.length - state.numberOfSegments;
             }
         },
      },

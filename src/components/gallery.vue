@@ -60,7 +60,7 @@ export default {
         galleryCarousel
     },
 
-    computed: mapState('xr',
+    computed: mapState('xr/graphics',
     [
         'floorMapActive',
         'worldMapActive',

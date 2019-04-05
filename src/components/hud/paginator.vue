@@ -15,11 +15,11 @@ export default {
     methods: {
         pageLeft() {
             if(CONFIG.DEBUG) {console.log("hud pageLeft");}
-            this.$store.commit('xr/PAGE_LEFT');
+            this.$store.dispatch('xr/carousel/pageLeft');
         },
         pageRight() {
-            if(CONFIG.DEBUG) {console.log("hud pageLeft");}
-            this.$store.commit('xr/PAGE_RIGHT');
+            if(CONFIG.DEBUG) {console.log("hud pageRight");}
+            this.$store.dispatch('xr/carousel/pageRight');
         }
     },
 }
