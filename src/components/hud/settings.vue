@@ -39,7 +39,7 @@
             <div class="input-map">
                 <div>
                     <input type="checkbox" id="map-setting-floor" name="floor"
-                            v-model="mapFloorSetting">
+                            v-model="mapFloorCheck">
                     <label for="map-setting-floor">Floor Map</label>
                 </div>
 
@@ -50,6 +50,20 @@
                 </div>
             </div>
 
+            <h3> Textures </h3>
+            <div class="input-textures">
+                <div>
+                    <input type="checkbox" id="textures-setting-bump" name="bump"
+                            v-model="bump">
+                    <label for="textures-setting-bump">Bumpmap</label>
+                </div>
+
+                <div>
+                    <input type="checkbox" id="textures-setting-normal" name="normal"
+                        v-model="normal">
+                    <label for="textures-setting-normal">Normals</label>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -66,7 +80,8 @@ export default {
             skySetting: 'STARS',
             settingsStyleObject: {
                 visibility: 'hidden',
-            }
+            },
+            mapFloorCheck: false,
         }
     },
 
@@ -86,13 +101,19 @@ export default {
         mapLongitude: {
             get () { return this.$store.state.xr.graphics.mapLongitude;},
             set (val) { this.$store.commit('xr/graphics/SET_MAP_LONGITUDE', val); }
+        },
+        bump: {
+            get () { return this.$store.state.xr.graphics.bump;},
+            set (val) { this.$store.commit('xr/graphics/SET_BUMP', val); }
+        },
+        normal: {
+            get () { return this.$store.state.xr.graphics.normal;},
+            set (val) { this.$store.commit('xr/graphics/SET_NORMAL', val); }
         }
     },
 
     watch: {
         skySetting: function (newVal, oldVal) {
-            console.log(`skySetting: ${newVal}`);
-            console.log(SkyboxEnum.hasOwnProperty(newVal));
             if (SkyboxEnum.hasOwnProperty(newVal)) {
                 this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
             }
@@ -100,6 +121,13 @@ export default {
                 console.log(`couldn't change skySetting: ${newVal} is not a SkyboxEnum`);
             }
         },
+        mapFloorCheck: function (newVal, oldVal) {
+            console.log(`mapFloorCheck: ${newVal}`);
+            // this.mapFloorSetting.set(newVal);
+            this.toggleLoadingVisibility();
+            this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', newVal);
+            this.toggleLoadingVisibility();
+        }
     },
 
     methods: {

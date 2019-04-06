@@ -12,7 +12,9 @@ const graphicsModule = {
         mapLatitude: 34.023552,
         mapLongitude: -118.286189,
         skybox: SkyboxEnum.STARS,
-        skytime: 11 // 24 hours
+        skytime: 11, // 24 hours
+        bump: false,
+        normal: false
     },
 
     mutations: {
@@ -46,7 +48,15 @@ const graphicsModule = {
             else {
                 console.log(`cannot set skybox, ${val} is not a SkyboxEnum`);
             }
-        }
+        },
+        SET_BUMP: function(state, active=true) {
+            if (CONFIG.DEBUG) {console.log(`SET_BUMP: ${active}`)}
+            state.bump = active ? true : false;//new Boolean(active);
+        },
+        SET_NORMAL: function(state, active=true) {
+            if (CONFIG.DEBUG) {console.log(`SET_NORMAL: ${active}`)}
+            state.normal = active ? true : false;//new Boolean(active);
+        },
      }
   }
 

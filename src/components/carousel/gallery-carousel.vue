@@ -3,12 +3,16 @@
         <a-rail v-for="n in numberOfSegments"
             :key="'railSegment' + n"
             :rotation="railRotation(n-1)"
-            :position="railPosition(n-1)"/>
+            :position="railPosition(n-1)"
+            :bump="bump"
+            :normal="normal"/>
         <a-custom-image v-for="n in numberOfItemsToDisplay"
             :key="'carouselImage' + n"
             :src="imageSrc(items[n-1])"
             :rotation="dioramaRotation(n-1)"
-            :position="dioramaPosition(n-1)"/>
+            :position="dioramaPosition(n-1)"
+            :bump="bump"
+            :normal="normal"/>
     </a-entity>
 </template>
 
@@ -44,7 +48,9 @@ export default {
         },
         numberOfSegments() {
             return this.$store.state.xr.carousel.numberOfSegments;
-        }
+        },
+        bump() {return this.$store.state.xr.graphics.bump;},
+        normal() { return this.$store.state.xr.graphics.normal;}
     },
     methods: {
         imageSrc: function (image) {

@@ -1,5 +1,8 @@
+.loading {
+    z-index: 10010;
+}
 .xr-settings {
-    z-index:10005;
+    z-index: 10005;
 }
 
 .settings-toggle {
@@ -30,6 +33,8 @@
     width: 55%;
     height: 60%;
     box-sizing: border-box;
+
+    column-count: 2;
 
     align-self: center;
     margin-left: auto;
