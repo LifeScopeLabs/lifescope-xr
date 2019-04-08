@@ -53,7 +53,7 @@ function createDioramaComponent(self) {
     var tlHelper = new textureLoaderHelper();
 
     if (self.data.mat == 'brass') {
-        brassBaseTexture = tlHelper.getOrLoadTexture( 'bronze', 'base', 'jpg',
+        brassBaseTexture = tlHelper.loadTexture( 'bronze', 'base', 'jpg',
             function (texture) {
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                 texture.offset.set( 0, 0 );
@@ -69,19 +69,25 @@ function createDioramaComponent(self) {
             } );
 
         if (self.data.withBump) {
-            brassBumpTexture = tlHelper.getOrLoadTexture( 'bronze', 'height' );
-            material.bumpMap = brassBumpTexture;
-            material.bumpScale = 1;
+            brassBumpTexture = tlHelper.loadTexture( 'bronze', 'height',
+                function (texture) {
+                    material.bumpMap = texture;
+                    material.bumpScale = 1;
+                }
+            );
         }
         if (self.data.withNormal) {
-            brassNormalTexture = tlHelper.getOrLoadTexture( 'bronze', 'normal' );
-            material.normalMap = brassNormalTexture;
+            brassNormalTexture = tlHelper.loadTexture( 'bronze', 'normal',
+                function (texture) {
+                    material.normalMap = texture;
+                }
+            );
         }
     }
 
     else if (self.data.mat == 'wood') {
 
-        woodBaseTexture = tlHelper.getOrLoadTexture( 'wood-panel', 'base', 'jpg',
+        woodBaseTexture = tlHelper.loadTexture( 'wood-panel', 'base', 'jpg',
             function (texture) {
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                 texture.offset.set( 0, 0 );
@@ -98,13 +104,19 @@ function createDioramaComponent(self) {
             bumpScale: 1} );
 
         if (self.data.withBump) {
-            woodBumpTexture = tlHelper.getOrLoadTexture( 'wood-panel', 'height' );
-            material.bumpMap = woodBumpTexture;
-            material.bumpScale = 1;
+            woodBumpTexture = tlHelper.loadTexture( 'wood-panel', 'height',
+                function (texture) {
+                    material.bumpMap = texture;
+                    material.bumpScale = 1;
+                }
+            );
         }
         if (self.data.withNormal) {
-            woodNormalTexture = tlHelper.getOrLoadTexture( 'wood-panel', 'normal' );
-            material.normalMap = woodNormalTexture;
+            woodNormalTexture = tlHelper.loadTexture( 'wood-panel', 'normal',
+                function (texture) {
+                    material.normalMap = texture;
+                }
+            );
         }
 
     }
@@ -188,11 +200,11 @@ function createDioramaComponent(self) {
     mesh = new THREE.Mesh(geom, material);
 
 
-    var group = self.el.getObject3D('group') || new THREE.Group();
+    var group = self.el.getObject3D(self.id) || new THREE.Group();
     //if (self.data.helper) {group.add(new THREE.BoxHelper(floor, HELPER_COLOR));}
     // group.add(new THREE.BoxHelper(mesh, 0xffff00));
     group.add(mesh);
-    self.el.setObject3D('group', group);        
+    self.el.setObject3D(self.id, group);        
 }
 
 AFRAME.registerComponent('diorama-component', {
@@ -226,10 +238,10 @@ AFRAME.registerComponent('diorama-component', {
 
     multiple: true,
   
-    init: function () {
+    update: function() {
         var self = this;
-
-        createDioramaComponent(self);    
+        self.el.removeObject3D(self.id);
+        createDioramaComponent(self); 
     }
 });
 
@@ -469,15 +481,12 @@ AFRAME.registerComponent('image-component', {
         y: { type: 'number', default: 0},
         z: { type: 'number', default: 0},
         opacity: { type: 'number', default: 0.2 },
-        srcFit: { type: 'string', default: 'width' }
+        srcFit: { type: 'string', default: 'width' },
+        rotation: { type: 'number', default: 0}
     },
 
     multiple: true,
 
-    init: function() {
-        var self = this;
-        createImageComponent(self);
-    },
 
     update: function() {
         var self = this;
@@ -538,7 +547,9 @@ AFRAME.registerPrimitive('a-custom-image', {
             'rotation': imagePlackRotation },
     },
     mappings: {
-        'src': 'image-component.imageURL'
+        'src': 'image-component.imageURL',
+        'bump': 'diorama-component.withBump',
+        'normal': 'diorama-component.withNormal'
     }
 });
 
@@ -581,6 +592,8 @@ AFRAME.registerPrimitive( 'a-rail', {
             'y': baseHeight },
     },
     mappings: {
-        'radius': 'diorama-component.cylradius'
+        'radius': 'diorama-component.cylradius',
+        'bump': 'diorama-component.withBump',
+        'normal': 'diorama-component.withNormal'
     }
 });

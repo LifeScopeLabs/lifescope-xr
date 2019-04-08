@@ -14,18 +14,23 @@ AFRAME.registerComponent('wooden-floor', {
       repeatU: { type: 'number', default: 10},
       repeatV: { type: 'number', default: 40},
       reflectivity: { type: 'number', default: 0.5 },
-      withBump: { default: false },
-      withNormal: { default: false },
+      withBump: { type: 'boolean', default: false },
+      withNormal: { type: 'boolean', default: false },
       helper: { default: false }
     },
-  
-    init: function () {
 
+    update: function() {
+        this.el.removeObject3D('group');
+        this._createWoodenFloor();
+    },
+
+    _createWoodenFloor: function() {
+        if (CONFIG.DEBUG) {console.log("_createWoodenFloor");}
         var self = this;
         var tlHelper = new textureLoaderHelper();
         const baseUrl = 'https://s3.amazonaws.com/lifescope-static/static/xr/textures/WoodenFloor/wood_';
 
-        var baseTexture = tlHelper.getOrLoadTexture( 'wood', 'base', 'jpg',
+        var baseTexture = tlHelper.loadTexture( 'wood', 'base', 'jpg',
             function (texture) {
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                 texture.offset.set( 0, 0 );
@@ -42,13 +47,19 @@ AFRAME.registerComponent('wooden-floor', {
         var floorGeometry = new THREE.CircleBufferGeometry(self.data.radius, self.data.radialsegments);
 
         if (self.data.withBump) {
-            var bumpTexture = tlHelper.getOrLoadTexture( 'wood-panel', 'height' );
-            material.bumpMap = bumpTexture;
-            material.bumpScale = 1;
+            var bumpTexture = tlHelper.loadTexture( 'wood-panel', 'height', 'jpg',
+                function (texture) {
+                    floorMaterial.bumpMap = texture;
+                    floorMaterial.bumpScale = 1;
+                }
+            );
+            
         }
         if (self.data.withNormal) {
-            var normalTexture = tlHelper.getOrLoadTexture( 'wood-panel', 'normal' );
-            material.normalMap = normalTexture;
+            var normalTexture = tlHelper.loadTexture( 'wood-panel', 'normal', 'jpg',
+                function (texture) {
+                    floorMaterial.normalMap = texture;
+                } );
         }
             
         var floor = new THREE.Mesh(floorGeometry, floorMaterial);
@@ -62,7 +73,6 @@ AFRAME.registerComponent('wooden-floor', {
         //if (this.data.helper) {group.add(new THREE.BoxHelper(floor, HELPER_COLOR));}
         group.add(floor);
         self.el.setObject3D('group', group);
-        
     }
 });
 
@@ -72,8 +82,10 @@ AFRAME.registerPrimitive( 'a-wooden-floor', {
     },
     mappings: {
         'radius': 'wooden-floor.radius',
-        'x': 'envmap-sphere.x',
-        'y': 'envmap-sphere.y',
-        'z': 'envmap-sphere.z',
+        'x': 'wooden-floor.x',
+        'y': 'wooden-floor.y',
+        'z': 'wooden-floor.z',
+        'bump': 'wooden-floor.withBump',
+        'normal': 'wooden-floor.withNormal'
     }
 });

@@ -2,13 +2,17 @@
     <a-entity class="gallery-carousel">
         <a-rail v-for="n in numberOfSegments"
             :key="'railSegment' + n"
-            :rotation="railRotation(n)"
-            :position="railPosition(n)"/>
-        <a-custom-image v-for="n in numberOfSegments"
+            :rotation="railRotation(n-1)"
+            :position="railPosition(n-1)"
+            :bump="bump"
+            :normal="normal"/>
+        <a-custom-image v-for="n in numberOfItemsToDisplay"
             :key="'carouselImage' + n"
-            :src="imageSrc(items[n])"
-            :rotation="dioramaRotation(n)"
-            :position="dioramaPosition(n)"/>
+            :src="imageSrc(items[n-1])"
+            :rotation="dioramaRotation(n-1)"
+            :position="dioramaPosition(n-1)"
+            :bump="bump"
+            :normal="normal"/>
     </a-entity>
 </template>
 
@@ -29,6 +33,9 @@ export default {
         totalItems() {
             return this.LSObjs.length;
         },
+        numberOfItemsToDisplay() {
+            return Math.min(this.numberOfSegments, this.items.length);
+        },
         // vuex store
         LSObjs() {
             return this.$store.state.xr.LSObjs;
@@ -37,11 +44,13 @@ export default {
             return this.$store.state.xr.roomConfig;
         },
         pageStart() {
-            return this.$store.state.xr.pageStart;
+            return this.$store.state.xr.carousel.pageStart;
         },
         numberOfSegments() {
-            return this.$store.state.xr.numberOfSegments;
-        }
+            return this.$store.state.xr.carousel.numberOfSegments;
+        },
+        bump() {return this.$store.state.xr.graphics.bump;},
+        normal() { return this.$store.state.xr.graphics.normal;}
     },
     methods: {
         imageSrc: function (image) {
@@ -53,7 +62,7 @@ export default {
         railRotation: function(segment) {
             var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
             // 0.5/36 to get to the post
-            var theta = u * Math.PI * 2 + 0;
+            var theta =  (-3*Math.PI/4) - (u * Math.PI * 2);
 
             var roty = theta * (180/Math.PI) + 5;
             var rotx = 0;
@@ -63,7 +72,7 @@ export default {
         railPosition: function(segment) {
             var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
             // 0.5/36 to get to the post
-            var theta = u * Math.PI * 2 + 0;
+            var theta = (-3*Math.PI/4) - (u * Math.PI * 2);
 
             var sinTheta = Math.sin( theta );
             var cosTheta = Math.cos( theta );
@@ -76,7 +85,7 @@ export default {
         dioramaRotation: function(segment) {
             var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
             // 0.5/36 to get to the post
-            var theta = u * Math.PI * 2;
+            var theta =  (-3*Math.PI/4) - (u * Math.PI * 2);
 
             var roty = theta * (180/Math.PI);
             var rotx = 0;
@@ -86,7 +95,7 @@ export default {
         dioramaPosition: function(segment) {
             var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
             // 0.5/36 to get to the post
-            var theta = u * Math.PI * 2;
+            var theta = (-3*Math.PI/4) - (u * Math.PI * 2);
 
             var sinTheta = Math.sin( theta );
             var cosTheta = Math.cos( theta );

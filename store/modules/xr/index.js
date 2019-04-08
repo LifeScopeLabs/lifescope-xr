@@ -1,7 +1,15 @@
 import axios from 'axios';
 
+import graphicsModule from './modules/graphics';
+import carouselModule from './modules/carousel';
+
 const xrModule = {
     namespaced: true,
+
+    modules: {
+        graphics: graphicsModule,
+        carousel: carouselModule
+    },
 
     state: { 
         LSObjs: [],
@@ -11,9 +19,7 @@ const xrModule = {
         rooms: [],
         sceneLoaded: false,
         isMobile: false,
-        pageStart: 0,
-        pageStep: 5,
-        numberOfSegments: 36 },
+     },
 
     mutations: {
         SET_LSOBJS: function(state, objs) {
@@ -50,24 +56,6 @@ const xrModule = {
             }
             else {
                 state.isMobile = AFRAME.utils.device.isMobile();
-            }
-        },
-        PAGE_LEFT: function(state) {
-            if (CONFIG.DEBUG) {console.log("PAGE_LEFT");}
-            if (state.pageStart - state.pageStep >= 0) {
-                state.pageStart -= state.pageStep;
-            }
-            else {
-                state.pageStart = 0;
-            }
-        },
-        PAGE_RIGHT: function(state) {
-            if (CONFIG.DEBUG) {console.log("PAGE_RIGHT");}
-            if (state.pageStep + state.pageStart + state.numberOfSegments < state.LSObjs.length) {
-                state.pageStart += state.pageStep;
-            }
-            else {
-                state.pageStart = state.LSObjs.length - state.numberOfSegments;
             }
         },
      },

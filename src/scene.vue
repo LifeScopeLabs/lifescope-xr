@@ -25,9 +25,12 @@
     <avatarcomp ref="avatar"/>
 
     <!-- Sky id="Sky" -->
-    <a-sky id="starssky" src="#sky" rotation="90 0 90">
+    <a-sky v-if="skybox==SkyboxEnum.STARS"
+      id="starsky" src="#sky" rotation="90 0 90">
     </a-sky>
-    <!-- <a-sun-sky id="sunsky" material="side: back" :sun-sky-position="'time: ' + time"></a-sun-sky> -->
+    <a-sun-sky v-else-if="skybox==SkyboxEnum.SUN"
+      id="sunsky" material="side: back" :sun-sky-position="'time: ' + skytime">
+    </a-sun-sky>
 
   </a-scene>
 </template>
@@ -45,6 +48,8 @@ import gallery from "./components/gallery.vue";
 import Avatar from "./avatar.js";
 import avatarcomp from "./avatar.vue";
 
+import { SkyboxEnum } from '../store/modules/xr/modules/graphics';
+
 export default {
     components: {
         gallery,
@@ -52,14 +57,16 @@ export default {
     },
     data() {
       return {
-        avatar: {}
+        avatar: {},
+        SkyboxEnum: SkyboxEnum
       }
     },
 
-    computed: mapState('xr',
-    [
-        'roomName',
-    ]),
+    computed: {
+      roomName() { return this.$store.state.xr.roomName; },
+      skybox() { return this.$store.state.xr.graphics.skybox; },
+      skytime() { return this.$store.state.xr.graphics.skytime; }
+    },
 
     mounted () {
       if (CONFIG.DEBUG) {console.log("App.vue mounted");};

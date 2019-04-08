@@ -5,7 +5,7 @@
             <a-entity id="dirLight" light="type: directional; color: #FFF; intensity: 0.8" position="1 1 1"></a-entity>
 
         <!-- Floor -->
-        <a-wooden-floor radius='6.1'></a-wooden-floor>
+        <a-wooden-floor radius='6.1' :bump="bump" :normal="normal"></a-wooden-floor>
 
         <!-- Carousel -->
         <gallery-carousel />
@@ -39,14 +39,19 @@
 
     <!-- Demo Map -->
     <!-- Floor -->
-    <!-- <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 0 -10" zoom-level="11"></a-mapbox-terrain> -->
+    <a-mapbox-terrain v-if="floorMapActive == true"
+        :latitude="mapLatitude" :longitude="mapLongitude" position="0 0.1 0" zoom-level="11"
+        tiles="25"></a-mapbox-terrain>
     <!-- World -->
-    <!-- <a-mapbox-terrain latitude="34.023552" longitude="-118.286189" position="0 -4 0" zoom-level="11" scale="45 5 45"></a-mapbox-terrain> -->
+    <a-mapbox-terrain v-if="worldMapActive == true"
+        :latitude="mapLatitude" :longitude="mapLongitude" position="0 -4 0" zoom-level="11" scale="45 5 45"></a-mapbox-terrain>
 
   </a-entity>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import galleryCarousel from "./carousel/gallery-carousel.vue";
 
 export default {
@@ -54,5 +59,15 @@ export default {
     components: {
         galleryCarousel
     },
+
+    computed: mapState('xr/graphics',
+    [
+        'floorMapActive',
+        'worldMapActive',
+        'mapLatitude',
+        'mapLongitude',
+        'bump',
+        'normal'
+    ]),
 }
 </script>

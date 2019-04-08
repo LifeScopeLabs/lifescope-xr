@@ -7,7 +7,7 @@ if (typeof AFRAME === 'undefined') {
   
 AFRAME.registerComponent('sun-sky-position', {
     schema: {
-        time: {type: 'number', default: '10'},
+        time: {type: 'number', default: 10},
     },
     update: function () {
         var self = this;

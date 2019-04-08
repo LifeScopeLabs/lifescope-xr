@@ -11,7 +11,7 @@ import { mapState } from 'vuex';
 import axios from 'axios';
 
 import aframeScene from './scene.vue';
-import hud from './hud.vue';
+import hud from './components/hud/hud.vue';
 
 export default {
     components: {

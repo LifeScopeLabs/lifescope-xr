@@ -12,10 +12,19 @@ export default class textureLoaderHelper {
           };
     }
 
+    loadTexture(material, type='base', ext='jpg', success) {
+        const url = this.materialUrls[material] + type + '.' + ext;
+        // console.log(`loadTexture: ${url}`);
+        return new THREE.TextureLoader().load( url, success );
+    }
+
     getOrLoadTexture(material, type='base', ext='jpg', success) {
         const url = this.materialUrls[material] + type + '.' + ext;
         
         var texture =  THREE.Cache.files[url];
+        if (texture !== undefined) {
+            success(texture);
+        }
         return texture !== undefined ?
             texture : new THREE.TextureLoader().load( url, success );
     }

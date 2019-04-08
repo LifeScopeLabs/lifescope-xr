@@ -42,6 +42,7 @@
     "ROOM_NAME": "ls-room"
   },
 
-  "DEBUG": false
+  "DEBUG": false,
 
+  "mapboxAcessToken": ""
 }
