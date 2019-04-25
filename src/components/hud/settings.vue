@@ -25,7 +25,7 @@
             
 
             <h3> Map </h3>
-            <!-- <div class="latlong">
+            <div class="latlong">
                 <input type="number" id="map-setting-lat" name="lat"
                         v-model="mapLatitude"
                         min="-90" max="90">
@@ -35,11 +35,11 @@
                         v-model="mapLongitude"
                         min="-180" max="180">
                 <label for="map-setting-long">Longitude</label>
-            </div> -->
+            </div>
             <div class="input-map">
                 <div>
                     <input type="checkbox" id="map-setting-floor" name="floor"
-                            v-model="mapFloorCheck">
+                            v-model="mapFloorSetting">
                     <label for="map-setting-floor">Floor Map</label>
                 </div>
 
@@ -124,9 +124,9 @@ export default {
         mapFloorCheck: function (newVal, oldVal) {
             console.log(`mapFloorCheck: ${newVal}`);
             // this.mapFloorSetting.set(newVal);
-            this.toggleLoadingVisibility();
+            // this.toggleLoadingVisibility();
             this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', newVal);
-            this.toggleLoadingVisibility();
+            // this.toggleLoadingVisibility();
         }
     },
 

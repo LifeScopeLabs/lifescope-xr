@@ -1,5 +1,7 @@
 <template>
-  <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; adapter: easyrtc; connectOnLoad: true;'">
+  <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; adapter: easyrtc; connectOnLoad: true;'"
+  fog="type: exponential; color: white; density: 0.025;"
+    >
 
     <!-- Load assets -->
     <a-assets class="aframe-assets">
@@ -17,19 +19,32 @@
       <a-gltf-model id="logo" src="https://s3.amazonaws.com/lifescope-static/static/xr/logo/logo.gltf"
                     crossorigin="anonymous">
       </a-gltf-model>
+
+      <a-gltf-model  v-for="(av, index) of avatars" :key="av.name"
+        :src="av.src"
+        :id="'avatar-' + index"
+        crossorigin="anonymous">
+      </a-gltf-model>
     </a-assets>
 
     <!-- gallery -->
     <gallery/>
 
-    <avatarcomp ref="avatar"/>
+    <!-- <avatarcomp ref="avatar"/> -->
+    <a-entity
+      id="commercial-camera"
+      class="camera"
+      camera
+      >
+    </a-entity>
 
     <!-- Sky id="Sky" -->
     <a-sky v-if="skybox==SkyboxEnum.STARS"
       id="starsky" src="#sky" rotation="90 0 90">
     </a-sky>
     <a-sun-sky v-else-if="skybox==SkyboxEnum.SUN"
-      id="sunsky" material="side: back" :sun-sky-position="'time: ' + skytime">
+      rotation="0 0 90"
+      id="sunsky" material="side: back" :sun-sky-position="'time: ' + sky.time">
     </a-sun-sky>
 
   </a-scene>
@@ -58,14 +73,31 @@ export default {
     data() {
       return {
         avatar: {},
-        SkyboxEnum: SkyboxEnum
+        SkyboxEnum: SkyboxEnum,
+        skytime: 11,
+        sky: {
+            time: 0
+        },
+        comCam: {
+          position: {
+            x: -5,
+            y: 1.5,
+            z: 0,
+          }
+        },
+        position: {
+            x: -5,
+            y: 1.5,
+            z: 0,
+          }
       }
     },
 
     computed: {
       roomName() { return this.$store.state.xr.roomName; },
       skybox() { return this.$store.state.xr.graphics.skybox; },
-      skytime() { return this.$store.state.xr.graphics.skytime; }
+      // skytime() { return this.$store.state.xr.graphics.skytime; },
+      avatars() { return this.$store.state.xr.avatars; }
     },
 
     mounted () {
@@ -107,6 +139,7 @@ export default {
           
       var queryRoom = this.$route.query.room || 'ls-room';
 
+      this.$store.dispatch('xr/getAvatars');
       this.$store.dispatch('xr/setRoomName', queryRoom).then(() => {
         this.$store.dispatch('xr/getRoomConfig').then(() => {
           this.$store.dispatch('xr/getObjs').then(() => {
@@ -120,6 +153,25 @@ export default {
         });
       });
       
+      AFRAME.ANIME({
+            targets: self.sky,   
+            easing: 'linear',
+            time: 24,
+            loop: true,
+            duration: 1000,
+        })
+
+      var camera = document.querySelector("#commercial-camera");
+      AFRAME.ANIME({
+            targets: camera.object3D.position,
+            easing: 'linear',
+            y: [1.5, 5],
+            z: 20,
+            loop: true,
+            duration: 4*1000,
+            delay: 1* 1000
+      })
+
     },
 
 
@@ -160,7 +212,7 @@ export default {
 
       setupMobile () {
         if (CONFIG.DEBUG) {console.log("isMobile");};
-        this.$refs.avatar.setupMobile();
+        // this.$refs.avatar.setupMobile();
       },
 
       teardownMobile () {
@@ -175,7 +227,7 @@ export default {
 
       setupDesktop () {
         if (CONFIG.DEBUG) {console.log("!isMobile");};
-        this.$refs.avatar.setupDesktop();
+        // this.$refs.avatar.setupDesktop();
       },
     }
   }

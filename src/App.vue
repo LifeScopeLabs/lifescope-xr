@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <aframe-scene></aframe-scene>
-    <hud v-if="sceneLoaded && !isMobile"></hud>
+    <hud v-if="sceneLoaded && !isMobile && !isCommercial"></hud>
   </div>
 </template>
 
@@ -19,10 +19,10 @@ export default {
         hud
     },
 
-    computed: mapState('xr',
-    [
-      'sceneLoaded',
-      'isMobile',
-    ])
+    computed: {
+      sceneLoaded() { this.$store.state.xr.sceneLoaded },
+      isMobile() { this.$store.state.xr.isMobile },
+      isCommercial() { this.$store.state.xr.commercial.isCommercial }
+    }
 }
 </script>

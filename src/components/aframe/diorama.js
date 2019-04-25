@@ -240,7 +240,9 @@ AFRAME.registerComponent('diorama-component', {
   
     update: function() {
         var self = this;
-        self.el.removeObject3D(self.id);
+        if(self.el.object3DMap[self.id] !== undefined) {
+            self.el.removeObject3D(self.id);
+        }
         createDioramaComponent(self); 
     }
 });
@@ -254,14 +256,14 @@ function createStakeComponent(self) {
     var material, mesh1, mesh2, mesh3;
 
     //load brass texture once
-    brassBaseTexture = tlHelper.getOrLoadTexture( 'bronze', 'base', 'jpg',
+    brassBaseTexture = tlHelper.loadTexture( 'bronze', 'base', 'jpg',
         function (texture) {
             texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
             texture.offset.set( 0, 0 );
             texture.repeat.set( self.data.repeatU, self.data.repeatV );
     });
-    brassBumpTexture = tlHelper.getOrLoadTexture( 'bronze', 'height' );
-    brassNormalTexture = tlHelper.getOrLoadTexture( 'bronze', 'normal' );
+    brassBumpTexture = tlHelper.loadTexture( 'bronze', 'height' );
+    brassNormalTexture = tlHelper.loadTexture( 'bronze', 'normal' );
     
     material = new THREE.MeshPhongMaterial( { map: brassBaseTexture,
         side:THREE.FrontSide,

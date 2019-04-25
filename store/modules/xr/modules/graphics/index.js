@@ -7,14 +7,14 @@ const graphicsModule = {
     namespaced: true,
 
     state: { 
-        floorMapActive: false,
-        worldMapActive: false,
-        mapLatitude: 34.023552,
-        mapLongitude: -118.286189,
-        skybox: SkyboxEnum.STARS,
+        floorMapActive: true,
+        worldMapActive: true,
+        mapLatitude: 38.870934,
+        mapLongitude: -77.056101,
+        skybox: SkyboxEnum.SUN,
         skytime: 11, // 24 hours
-        bump: false,
-        normal: false
+        bump: true,
+        normal: true
     },
 
     mutations: {

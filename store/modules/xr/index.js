@@ -2,13 +2,15 @@ import axios from 'axios';
 
 import graphicsModule from './modules/graphics';
 import carouselModule from './modules/carousel';
+import commercialModule from './modules/commercial';
 
 const xrModule = {
     namespaced: true,
 
     modules: {
         graphics: graphicsModule,
-        carousel: carouselModule
+        carousel: carouselModule,
+        commercial: commercialModule
     },
 
     state: { 
@@ -17,6 +19,7 @@ const xrModule = {
         roomConfig: {},
         roomName: 'ls-room',
         rooms: [],
+        avatars: [],
         sceneLoaded: false,
         isMobile: false,
      },
@@ -38,6 +41,13 @@ const xrModule = {
         SET_ROOMNAME: function(state, name) {
             if (CONFIG.DEBUG) {console.log('SET_ROOMNAME');}
             state.roomName = name;
+        },
+        SET_AVATARS: function(state, objs) {
+            if (CONFIG.DEBUG) {console.log('SET_AVATARS');}
+            state.avatars = objs;
+            for (var avatar of objs) {
+                console.log(avatar.name);
+            }
         },
         SET_SCENELOADED: function(state) {
             if (CONFIG.DEBUG) {console.log('SET_SCENELOADED');}
@@ -73,6 +83,14 @@ const xrModule = {
             })
         },
 
+        getAvatars ({ commit }) {
+            if (CONFIG.DEBUG) {console.log("getAvatars action");};
+            return axios.get("/avatars")
+            .then((res) => {
+                commit('SET_AVATARS', res.data);
+            })
+        },
+
         getObjs (context) {
             if (CONFIG.DEBUG) {console.log("getObjs action");};
 
@@ -82,7 +100,7 @@ const xrModule = {
     
             return axios.get(x)
             .then((res) => {
-                console.log("getObjs action then");
+                if (CONFIG.DEBUG) {console.log("getObjs action then");};
                 var objs = [];
                 var rooms = Object.keys(res.data);
                 var someData = res.data[context.state.roomName].forEach(element => {
