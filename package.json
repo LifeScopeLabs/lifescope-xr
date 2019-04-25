@@ -57,6 +57,7 @@
         "async": "^2.6.1",
         "aws-sdk": "^2.244.1",
         "axios": "^0.18.0",
+        "babel-plugin-transform-object-rest-spread": "^6.26.0",
         "colors": "^1.3.0",
         "config": "^3.0.1",
         "easyrtc": "^1.1.0",

@@ -3,10 +3,10 @@
 //////////////////////////////////////////////////////////////////////////////
 
 if (typeof AFRAME === 'undefined') {
-    throw new Error('Component attempted to register before AFRAME was available.');
-  }
-  else {
-    if (CONFIG.DEBUG) {console.log("Registering mapbox-terrain...");}
+	throw new Error('Component attempted to register before AFRAME was available.');
+}
+else {
+	if (CONFIG.DEBUG) {console.log("Registering mapbox-terrain...");}
 }
 
 AFRAME.registerComponent('mapbox-terrain', {
@@ -49,51 +49,39 @@ AFRAME.registerComponent('mapbox-terrain', {
 		var tileX = this._long2tile(mapLongitude, mapZoomLevel);
 		var tileY = this._lat2tile(mapLatitude, mapZoomLevel);
 
-		var meshOffset = 4;
-		var scale = 4;
-
-		var tileGeom;
-		var geometries = [];
+		var scale = 1;
 
 		var tilesPerRow = parseInt(Math.sqrt(this.data.tiles));
-		
-		var canvas = document.createElement('canvas');
-		canvas.width  = 512*scale*tilesPerRow;
-		canvas.height = 512*scale*tilesPerRow;
-		var context = canvas.getContext('2d');
-		var texture = new THREE.Texture(canvas);
-		texture.needsUpdate = true;
 
-		var middleX = parseInt((tilesPerRow-1)/2);
-		var middleY = parseInt((tilesPerRow)/2);
+		var leftX = (tilesPerRow % 2) ? parseInt((tilesPerRow-1)/2) : parseInt((tilesPerRow)/2);
+		var rightX = (tilesPerRow % 2) ? parseInt((tilesPerRow-1)/2) : parseInt((tilesPerRow)/2 - 1);
 
-		for (var dx = -middleX; dx<=middleX; dx++) {
-			for (var dy = -middleX; dy<=middleX; dy++) {
+		for (var dx = -leftX; dx<=rightX; dx++) {
+			for (var dy = -leftX; dy<=rightX; dy++) {
 				this._callbackClosureDebug(dx, dy, 0, function (dx, dy) {
 					self._buildTerrainTexture(tileX+dx, tileY+dy, function (image) {
-						context.drawImage(image, (middleX+dx)*512*scale,(middleY+dy)*512*scale,512*scale,512*scale); // (image, x, y, width, height)
-						texture.needsUpdate = true;
+						var canvas = document.createElement('canvas');
+						canvas.width  = 512;//*scale*tilesPerRow;
+						canvas.height = 512;//*scale*tilesPerRow;
+						var context = canvas.getContext('2d');
+
+						context.drawImage(image, 0, 0, 512*scale, 512*scale); // (image, x, y, width, height)
+						var tex = new THREE.Texture(canvas);
+						tex.needsUpdate = true;
+						var mat = new THREE.MeshPhongMaterial({ map: tex });
+
+						var geo = new THREE.PlaneBufferGeometry(1, 1);//512*scale, 512*scale);
+						geo.rotateX(2 * Math.PI * -90 / 360);
+						geo.translate(dx, 0, dy);
+
+						var mesh = new THREE.Mesh(geo, mat);
+						var group = self.el.getObject3D('mapmesh') || new THREE.Group();
+						group.add(mesh);
+						self.el.setObject3D('mapmesh', group);  
 					});
 				})();
-				tileGeom = this._drawTile(tileX, tileY, dx, dy, meshOffset);
-				geometries.push(tileGeom);
 			}
 		}
-
-		var material = new THREE.MeshPhongMaterial({
-			map: texture,
-			// wireframe: true
-		});
-		
-		var mergedMapGeometry = THREE.BufferGeometryUtils.mergeBufferGeometries(geometries, false); //new THREE.PlaneBufferGeometry
-		mergedMapGeometry = new THREE.PlaneBufferGeometry(tilesPerRow,tilesPerRow);
-		mergedMapGeometry.rotateX(2 * Math.PI * -90 / 360);
-
-		var mapMesh = new THREE.Mesh(mergedMapGeometry, material);
-
-		mapMesh.receiveShadow = true;
-		mapMesh.castShadow = true;
-		this.el.setObject3D("meshMain", mapMesh);
 	},
 
 	_callbackClosureDebug: function(dx, dy, ctr, callback) {
@@ -117,15 +105,26 @@ AFRAME.registerComponent('mapbox-terrain', {
 		});
 	},
 
+	_buildPlaneGeometry: function(tileX, tileY){
+		// console.log("_buildPlaneGeometry");
+		var geometry	= new THREE.PlaneBufferGeometry( 1, 1, 512-1, 512-1 );
+
+		return geometry;
+	},
+
 	_loadImage: function(imageURL, onLoad) {
 		var request = new XMLHttpRequest();
 		request.addEventListener('load', function() {
+			// console.log(`${imageURL} loaded`);
 			var fileReader = new FileReader();
 			fileReader.addEventListener('loadend', function(){
+				// console.log(fileReader);
 				var dataUrl = fileReader.result
+				// console.log(`${imageURL} loaded`);
 				var image = document.createElement('img')
 				image.src = dataUrl
-				image.addEventListener('load', function(){						
+				image.addEventListener('load', function(){			
+					// console.log(`${dataUrl} image loaded`);
 					onLoad(image)
 				})
 			})
@@ -138,7 +137,8 @@ AFRAME.registerComponent('mapbox-terrain', {
 
 	_drawTile: function(tileX, tileY, dx, dy, meshOffset) {
 		// console.log(`_drawTile(${tileX}, ${tileY}, ${dx}, ${dy}, ${meshOffset})`);
-		var geometry = this._buildElevationPlaneGeometry(tileX + dx, tileY + dy);
+		// var geometry = this._buildElevationPlaneGeometry(tileX + dx, tileY + dy);
+		var geometry = this._buildPlaneGeometry(tileX + dx, tileY + dy);
 
 		geometry.rotateX(-Math.PI / 2);
 		geometry.scale(4,4,4);

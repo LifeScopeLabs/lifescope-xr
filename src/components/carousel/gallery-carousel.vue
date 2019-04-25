@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 
 export default {
     computed: {
@@ -37,20 +38,24 @@ export default {
             return Math.min(this.numberOfSegments, this.items.length);
         },
         // vuex store
-        LSObjs() {
-            return this.$store.state.xr.LSObjs;
-        },
-        roomConfig() {
-            return this.$store.state.xr.roomConfig;
-        },
-        pageStart() {
-            return this.$store.state.xr.carousel.pageStart;
-        },
-        numberOfSegments() {
-            return this.$store.state.xr.carousel.numberOfSegments;
-        },
-        bump() {return this.$store.state.xr.graphics.bump;},
-        normal() { return this.$store.state.xr.graphics.normal;}
+        ...mapState('xr',
+            [
+                'LSObjs',
+                'roomConfig'
+            ]
+        ),
+        ...mapState('xr/carousel',
+            [
+                'pageStart',
+                'numberOfSegments'
+            ]
+        ),
+        ...mapState('xr/graphics',
+            [
+                'bump',
+                'normal'
+            ]
+        ),
     },
     methods: {
         imageSrc: function (image) {

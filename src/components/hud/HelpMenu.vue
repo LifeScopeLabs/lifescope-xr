@@ -5,6 +5,8 @@
         <ul>
             <li> <b>H - </b> toggle help menu </li>
 
+            <li> <b>G - </b> toggle graphics settings menu </li>
+
             <li> <b> WASD - </b> movement controls </li>
 
             <li> <b> click and drag </b> to look around </li>

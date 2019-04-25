@@ -2,6 +2,8 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
 
+    z-index: 10015;
+
     border: 1px solid #7b7b7b;
     border-radius: 12px;
     background-color: #2A2A2A;

@@ -19,10 +19,12 @@ export default {
         hud
     },
 
-    computed: mapState('xr',
-    [
-      'sceneLoaded',
-      'isMobile',
-    ])
+    computed: {
+      ...mapState('xr',
+      [
+        'sceneLoaded',
+        'isMobile',
+      ])
+    }
 }
 </script>

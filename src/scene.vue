@@ -48,7 +48,7 @@ import gallery from "./components/gallery.vue";
 import Avatar from "./avatar.js";
 import avatarcomp from "./avatar.vue";
 
-import { SkyboxEnum } from '../store/modules/xr/modules/graphics';
+import { SkyboxEnum } from './store/modules/xr/modules/graphics';
 
 export default {
     components: {
@@ -63,9 +63,16 @@ export default {
     },
 
     computed: {
-      roomName() { return this.$store.state.xr.roomName; },
-      skybox() { return this.$store.state.xr.graphics.skybox; },
-      skytime() { return this.$store.state.xr.graphics.skytime; }
+      ...mapState('xr',
+        ['roomName']
+      ),
+
+      ...mapState('xr/graphics',
+        [
+          'skybox',
+          'skytime'
+        ]
+      )
     },
 
     mounted () {

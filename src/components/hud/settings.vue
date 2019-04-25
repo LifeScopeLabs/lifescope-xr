@@ -71,7 +71,7 @@
 
 <script>
 
-import { SkyboxEnum } from '../../../store/modules/xr/modules/graphics';
+import { SkyboxEnum } from '../../store/modules/xr/modules/graphics';
 
 export default {
 
@@ -130,6 +130,14 @@ export default {
         }
     },
 
+    mounted() {
+        var self = this;
+        document.body.addEventListener('keypress', function(evt) {
+            if (evt.key == 'g') {
+                self.toggleSettingsVisibility();
+            }
+        });
+    },
     methods: {
         toggleSettingsVisibility() {
             if (CONFIG.DEBUG) {console.log("toggleSettingsVisibility");}
