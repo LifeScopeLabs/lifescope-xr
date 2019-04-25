@@ -99,11 +99,18 @@ export default {
     computed: {
         mapFloorSetting: {
             get () { return this.$store.state.xr.graphics.mapFloorSetting;},
-            set (val) { this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', val); }
+            set (val) { 
+                // console.log(this.$store.state.xr.graphics.mapFloorSetting);
+                this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', val);
+                // console.log(this.$store.state.xr.graphics.mapFloorSetting);
+                 }
         },
         mapWorldSetting: {
-            get () { return this.$store.state.xr.graphics.mapWorldSetting;},
-            set (val) { this.$store.commit('xr/graphics/SET_WORLD_MAP_ACTIVE', val); }
+            get () { return this.$store.state.xr.graphics.worldMapActive;},
+            set (val) { 
+                // console.log(this.$store.state.xr.graphics)
+                this.$store.commit('xr/graphics/SET_WORLD_MAP_ACTIVE', val);
+                }
         },
         // mapLatitude: {
         //     get () { return this.$store.state.xr.graphics.mapLatitude;},
@@ -156,6 +163,7 @@ export default {
         },
         mapFloorCheck: function (newVal, oldVal) {
             console.log(`mapFloorCheck: ${newVal}`);
+            console.log(this.$store.state.xr.graphics.mapFloorSetting);
             // this.mapFloorSetting.set(newVal);
             this.toggleLoadingVisibility();
             this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', newVal);
