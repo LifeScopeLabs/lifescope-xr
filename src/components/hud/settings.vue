@@ -25,7 +25,7 @@
             
 
             <h3> Map </h3>
-            <!-- <div class="latlong">
+            <div class="latlong">
                 <input type="number" id="map-setting-lat" name="lat"
                         v-model="mapLatitude"
                         min="-90" max="90">
@@ -35,7 +35,16 @@
                         v-model="mapLongitude"
                         min="-180" max="180">
                 <label for="map-setting-long">Longitude</label>
-            </div> -->
+            </div>
+
+
+
+
+
+            <!-- <h3> Set coordinates </h3> -->
+            <input type="button" v-on:click="setCoords" id="map-setting-latlon" name="coords"></button>
+            
+
             <div class="input-map">
                 <div>
                     <input type="checkbox" id="map-setting-floor" name="floor"
@@ -82,26 +91,57 @@ export default {
                 visibility: 'hidden',
             },
             mapFloorCheck: false,
+            lat: 0,
+            lon: 0,
         }
     },
 
     computed: {
         mapFloorSetting: {
             get () { return this.$store.state.xr.graphics.mapFloorSetting;},
-            set (val) { this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', val); }
+            set (val) { 
+                // console.log(this.$store.state.xr.graphics.mapFloorSetting);
+                this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', val);
+                // console.log(this.$store.state.xr.graphics.mapFloorSetting);
+                 }
         },
         mapWorldSetting: {
-            get () { return this.$store.state.xr.graphics.mapWorldSetting;},
-            set (val) { this.$store.commit('xr/graphics/SET_WORLD_MAP_ACTIVE', val); }
+            get () { return this.$store.state.xr.graphics.worldMapActive;},
+            set (val) { 
+                // console.log(this.$store.state.xr.graphics)
+                this.$store.commit('xr/graphics/SET_WORLD_MAP_ACTIVE', val);
+                }
         },
+        // mapLatitude: {
+        //     get () { return this.$store.state.xr.graphics.mapLatitude;},
+        //     set (val) { this.$store.commit('xr/graphics/SET_MAP_LATITUDE', val); }
+        // },
+        // mapLongitude: {
+        //     get () { return this.$store.state.xr.graphics.mapLongitude;},
+        //     set (val) { this.$store.commit('xr/graphics/SET_MAP_LONGITUDE', val); }
+        // },
         mapLatitude: {
-            get () { return this.$store.state.xr.graphics.mapLatitude;},
-            set (val) { this.$store.commit('xr/graphics/SET_MAP_LATITUDE', val); }
+            get () { return this.lat},
+            set (val) { this.lat = val }
         },
         mapLongitude: {
-            get () { return this.$store.state.xr.graphics.mapLongitude;},
-            set (val) { this.$store.commit('xr/graphics/SET_MAP_LONGITUDE', val); }
+            get () { return this.lon},
+            set (val) { this.lon = val }
         },
+        mapLatLon: {
+            get () {
+                // return [9,24]
+                return [this.lat, this.lon]
+                // return [this.$store.state.xr.graphics.mapLatitude, this.$store.state.xr.graphics.mapLongitude];
+            },
+            set(val1) {
+                alert('hello');
+                console.log('no error');
+                // this.$store.commit('xr/graphics/SET_MAP_LATITUDE', this.lat);
+                // this.$store.commit('xr/graphics/SET_MAP_LONGITUDE', this.lon);
+            }
+        },
+
         bump: {
             get () { return this.$store.state.xr.graphics.bump;},
             set (val) { this.$store.commit('xr/graphics/SET_BUMP', val); }
@@ -123,6 +163,7 @@ export default {
         },
         mapFloorCheck: function (newVal, oldVal) {
             console.log(`mapFloorCheck: ${newVal}`);
+            console.log(this.$store.state.xr.graphics.mapFloorSetting);
             // this.mapFloorSetting.set(newVal);
             this.toggleLoadingVisibility();
             this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', newVal);
@@ -145,6 +186,10 @@ export default {
                 this.settingsStyleObject.visibility == 'visible' ?
                 'hidden' : 'visible';
         },
+        setCoords() {
+            this.$store.commit('xr/graphics/SET_MAP_LATITUDE', this.lat);
+            this.$store.commit('xr/graphics/SET_MAP_LONGITUDE', this.lon);
+        }
     },
 }
 </script>

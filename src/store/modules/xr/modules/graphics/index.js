@@ -20,11 +20,13 @@ const graphicsModule = {
     mutations: {
         SET_FLOOR_MAP_ACTIVE: function(state, active=true) {
             if (CONFIG.DEBUG) {console.log("SET_FLOOR_MAP_ACTIVE")}
-            state.floorMapActive = new Boolean(active);
+            console.log('before_FLOOR');
+            state.floorMapActive = active;
+            console.log('after_FLOOR');
         },
         SET_WORLD_MAP_ACTIVE: function(state, active=true) {
             if (CONFIG.DEBUG) {console.log("SET_WORLD_MAP_ACTIVE")}
-            state.worldMapActive = new Boolean(active);
+            state.worldMapActive = active;
         },
         SET_MAP_LATITUDE: function(state, val) {
             if (CONFIG.DEBUG) {console.log("SET_MAP_LATITUDE")}
