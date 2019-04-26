@@ -46,7 +46,7 @@
         "webrtc-adapter": "^6.2.1"
     },
     "dependencies": {
-        "aframe": "^0.9.0",
+        "aframe": "^0.9.1",
         "aframe-extras": "^4.1.2",
         "aframe-forcegraph-component": "^2.15.1",
         "aframe-geojson-component": "^1.2.4",

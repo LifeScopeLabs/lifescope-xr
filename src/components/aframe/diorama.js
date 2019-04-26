@@ -240,7 +240,9 @@ AFRAME.registerComponent('diorama-component', {
   
     update: function() {
         var self = this;
-        self.el.removeObject3D(self.id);
+        if (self.el.object3DMap.hasOwnProperty(self.id)) {
+            self.el.removeObject3D(self.id);
+        }
         createDioramaComponent(self); 
     }
 });
@@ -490,7 +492,9 @@ AFRAME.registerComponent('image-component', {
 
     update: function() {
         var self = this;
-        self.el.removeObject3D('image');
+        if (self.el.object3DMap.hasOwnProperty('image')) {
+            self.el.removeObject3D('image');
+        }
         createImageComponent(self);
     }
 });

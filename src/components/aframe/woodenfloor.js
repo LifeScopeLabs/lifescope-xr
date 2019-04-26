@@ -20,7 +20,9 @@ AFRAME.registerComponent('wooden-floor', {
     },
 
     update: function() {
-        this.el.removeObject3D('group');
+        if (this.el.object3DMap.hasOwnProperty('group')) {
+            this.el.removeObject3D('group');
+        }
         this._createWoodenFloor();
     },
 
