@@ -1,5 +1,5 @@
 <template>
-    <div class="xr-settings">
+    <div class="xr-settings" :class="{ 'desktop-hud': !isMobile, 'mobile-hud': isMobile }">
 
         <div class="settings-toggle">
             <div class="fas fa-cog" @click="toggleSettingsVisibility"></div>
@@ -79,6 +79,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 
 import { SkyboxEnum } from '../../store/modules/xr/modules/graphics';
 
@@ -149,7 +150,11 @@ export default {
         normal: {
             get () { return this.$store.state.xr.graphics.normal;},
             set (val) { this.$store.commit('xr/graphics/SET_NORMAL', val); }
-        }
+        },
+        ...mapState('xr',
+        [
+            'isMobile',
+        ])
     },
 
     watch: {

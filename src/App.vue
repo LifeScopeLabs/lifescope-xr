@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <aframe-scene></aframe-scene>
-    <hud v-if="sceneLoaded && !isMobile"></hud>
+    <hud v-if="sceneLoaded"></hud>
   </div>
 </template>
 

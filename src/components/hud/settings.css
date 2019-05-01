@@ -10,11 +10,19 @@
 
     position: absolute;
     top: 1%;
-    left: 97.5%;
     width: 5%;
     height: 5%;
 
     color:    #aeaeae;
+}
+
+.desktop-hud .settings-toggle {
+    left: 97.5%;
+}
+
+.mobile-hud .settings-toggle {
+    left: 92.5%;
+    font-size: 20px;
 }
 
 .help-settings {

@@ -1,5 +1,5 @@
 <template>
-    <div class="paginator" >
+    <div class="paginator" :class="{ 'desktop-menu': !isMobile, 'mobile-menu': isMobile }">
         <div class="pageLeft" @click="pageLeft">
         </div>
         <div class="paginatorFill">
@@ -10,8 +10,17 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 
 export default {
+
+    computed: {
+      ...mapState('xr',
+      [
+        'isMobile',
+      ])
+    },
+
     methods: {
         pageLeft() {
             if(CONFIG.DEBUG) {console.log("hud pageLeft");}

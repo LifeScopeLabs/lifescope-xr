@@ -57,3 +57,7 @@
 .room-display:hover .room-links {
     display: block;
 }
+
+.mobile-hud {
+    font-size: 12px;
+}

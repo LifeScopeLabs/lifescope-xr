@@ -1,25 +1,38 @@
 <template>
-    <div class="help-menu" :style="helpStyleObject">
+    <div class="help-menu" :style="helpStyleObject" :class="{ 'desktop-menu': !isMobile, 'mobile-menu': isMobile }">
         <div class="help-controls">
-        <h2> Controls </h2>
-        <ul>
-            <li> <b>H - </b> toggle help menu </li>
+            <ul class="desktop-controls" v-if="!isMobile">
+                <h2> Controls </h2>
+                <li> <b>H - </b> toggle help menu </li>
 
-            <li> <b>G - </b> toggle graphics settings menu </li>
+                <li> <b>G - </b> toggle graphics settings menu </li>
 
-            <li> <b> WASD - </b> movement controls </li>
+                <li> <b> WASD - </b> movement controls </li>
 
-            <li> <b> click and drag </b> to look around </li>
+                <li> <b> click and drag </b> to look around </li>
 
-            <li> <b> hover room name </b> to select new room </li>
+                <li> <b> hover room name </b> to select new room </li>
+            </ul>
+
+            <ul class="mobile-controls" v-if="isMobile" >
+                <h2> Controls </h2>
+                <li> <b> swipe up/down </b> toggle help menu </li>
+
+                <!-- <li> <b> swipe up </b> toggle graphics settings menu </li> -->
+
+                <li> <b> joysticks at bottom of screen </b> movement controls </li>
+
+                <li> <b> rotate mobile device </b> to look around </li>
+
             </ul>
         </div>
 
-    </div>
+    </div> 
 
 </template>
 
 <script>
+import { mapState } from 'vuex';
 
 export default {
 
@@ -29,6 +42,13 @@ export default {
                 visibility: 'visible',
             },
         }
+    },
+
+    computed: {
+      ...mapState('xr',
+      [
+        'isMobile',
+      ])
     },
 
     mounted() {
@@ -47,7 +67,7 @@ export default {
             this.helpStyleObject.visibility = 
                 this.helpStyleObject.visibility == 'visible' ?
                 'hidden' : 'visible';
-        },
+        }
     },
 }
 </script>

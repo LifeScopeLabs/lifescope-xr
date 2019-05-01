@@ -1,5 +1,5 @@
 <template>
-    <div class="room-display">
+    <div class="room-display" :class="{ 'desktop-hud': !isMobile, 'mobile-hud': isMobile }">
           <div class="current-room">
               {{ roomName }}
             </div>
@@ -21,6 +21,7 @@ export default {
         'roomName',
         'roomConfig',
         'rooms',
+        'isMobile',
     ]),
     methods: {
         link: function (room) {

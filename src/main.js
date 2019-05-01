@@ -1,9 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import store from './store';
-
-// disable warn
-//console.warn = function() {};
+import { VueHammer } from 'vue2-hammer';
 
 import './lib/three/three';
 import BufferGeometryUtils from './lib/three/BufferGeometryUtils';
@@ -55,6 +53,9 @@ var router = new VueRouter({
 Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere',
  'a-animation', 'a-sky', 'a-mapbox-terrain', 'a-wooden-floor', 'a-diorama-cyl',
  'a-sun-sky', 'a-rail', 'a-custom-image'];
+
+// mobile swipe controls
+Vue.use(VueHammer);
 
 //var app = new Vue(Vue.util.extend({ router }, App)).$mount('#app');
 var app = new Vue({
