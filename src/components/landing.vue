@@ -24,8 +24,8 @@
                         />
         </a-entity>
 
-        <a-sky src="#sky" rotation="90 0 90">
-        </a-sky>
+        <!-- <a-sky src="#sky" rotation="90 0 90">
+        </a-sky> -->
 
       </a-entity>
 

@@ -1,5 +1,6 @@
 import config from 'config';
 import http from "http";
+import path from 'path';
 import easyRTC from "easyrtc";
 import express from 'express';
 import socketIO from "socket.io";
@@ -105,7 +106,7 @@ Promise.resolve()
       });
 
     // serve static files
-    server.use('/static', express.static('static'));
+    server.use('/static', express.static(path.join(__dirname,'../static')));
     server.use(express.static('./dist'));
     server.use('/dist', express.static('./dist'));
 

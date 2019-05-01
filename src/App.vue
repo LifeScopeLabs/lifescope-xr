@@ -16,17 +16,6 @@
       <a-gltf-model id="logo" src="https://s3.amazonaws.com/lifescope-static/static/xr/logo/logo.gltf"
                     crossorigin="anonymous">
       </a-gltf-model>
-      <!-- 360 video -->
-      <!-- <video id="cable-car" autoplay loop="true" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/test/content/video360/CABLE_CAR_360_optimized.mp4"/>
-      <video id="dog-cam" autoplay loop="true" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/test/content/video360/DOG_CAM_360_optimized.mp4"/>
-      <video id="golden-gate" autoplay loop="true" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/test/content/video360/GOLDEN_GATE_360_optimized.mp4"/>
-      <video id="ice-skating-day" autoplay loop="true" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/test/content/video360/ICE_SKATING_DAY_360_optimized.mp4"/>
-      <video id="ice-skating-night" autoplay loop="true" crossorigin="anonymous" src="https://s3.amazonaws.com/lifescope-static/test/content/video360/ICE_SKATING_NIGHT_360_optimized.mp4"/> -->
-      <!-- <video id="cable-car" preload="auto" loop="true" crossorigin="anonymous" src="../static/video360/CABLE_CAR_360_optimized.mp4"/> -->
-      <!-- <video id="dog-cam" autoplay loop="true" crossorigin="anonymous" src="../static/video360/DOG_CAM_360_optimized.mp4"/>
-      <video id="golden-gate" autoplay loop="true" crossorigin="anonymous" src="../static/video360/GOLDEN_GATE_360_optimized.mp4"/>
-      <video id="ice-skating-day" autoplay loop="true" crossorigin="anonymous" src="../static/video360/ICE_SKATING_DAY_360_optimized.mp4"/>
-      <video id="ice-skating-night" autoplay loop="true" crossorigin="anonymous" src="../static/video360/ICE_SKATING_NIGHT_360_optimized.mp4"/> -->
     </a-assets>
 
 

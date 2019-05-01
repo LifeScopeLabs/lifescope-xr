@@ -1,16 +1,8 @@
 <template>
   <a-entity class="theater">
-      <!-- Floor -->
-      <!-- <a-entity id="floor" class="boundry"
-                :geometry="'primitive: plane; width:' + hallWidth + '; height: ' + hallDepth + ''"
-                :material="'src:#floor; repeat: ' + hallWidth + ' ' + -hallDepth"
-                rotation="-90 0 0"
-                :position="'0 0 ' + -hallWidth/2">
-      </a-entity> -->
-
-    <!-- <a-videosphere autoplay loop="true" src="#cable-car"/> -->
-    <!-- <a-videosphere id="video-sphere" src="#cable-car"/> -->
-
+     <!-- loading background -->
+     <!-- <a-sky src="#sky" id="asky" rotation="90 0 90">
+    </a-sky> -->
   </a-entity>
 </template>
 
@@ -18,82 +10,59 @@
 
 import Vue from 'vue';
 
-if (CONFIG.DEBUG) {console.log("from gallery.vue <script>")}
+import shaka from '../../lib/shaka-player.compiled.js';
+
 export default {
     data () {
         return {
-            name: "LifeScope"
+            mediaSource: "",
+            sourceBuffer: "",
+            videoEl: "",
+            mimeCodec: "",
+            assetURL: "",
+            chunk: 1
         }
     },
 
-    props: ['LSObjs', 'rooms', 'roomConfig'],
-    
-    
-    
-    // Lifecycle hooks
-    // https://vuejs.org/v2/api/#Options-Lifecycle-Hooks
-    beforeCreate () {
-        if (CONFIG.DEBUG) {console.log("beforeCreate");};
-    },
-    created () {
-        //  data observation, computed properties, methods, watch/event callbacks
-        if (CONFIG.DEBUG) {console.log("created");};
-        //debugger;
-    },
-    beforeMount () {
-        if (CONFIG.DEBUG) {console.log("beforeMount");};
-    },
     mounted () {
-        // el is replaced by the newly created vm.$el
-        if (CONFIG.DEBUG) {console.log("mounted");};
-        if (CONFIG.DEBUG) {console.log("theater360.vue :" + this.LSObjs);};
 
-        this.addVideo("https://s3.amazonaws.com/lifescope-static/test/content/video360/CABLE_CAR_360_optimized.mp4");
+        this.addVideo();
+        // this.MSEVideo();
+        //("https://s3.amazonaws.com/lifescope-static/test/content/video360/CABLE_CAR_360_optimized.mp4");
+        // var manifestUri = '/static/video360/output/stream.mpd';
+        shaka.polyfill.installAll();
+        var manifestUri = '/static/video360/output/stream.mpd';
+
+        var video = document.getElementById('cable-car');
+        var player = new shaka.Player(video);
 
         var vidSph = document.createElement('a-videosphere');
         vidSph.setAttribute('id', 'video-sphere');
-        vidSph.setAttribute('src', '#cabel-car');
-
-        //var vidSph = document.getElementById("video-sphere");
-        var vidSrc = document.getElementById(vidSph.attributes.src.value.substring(1));
+        vidSph.setAttribute('src', '#cable-car');
 
         document.querySelector('a-scene').appendChild(vidSph);
-        vidSrc.play();
+        
+        player.load(manifestUri).then(function() {
+            console.log('The video has now been loaded!');
+            // var video = document.getElementById('cable-car');
+            video.play();
+        });
 
-        this.$nextTick(function () {
-            // Code that will run only after the
-            // entire view has been rendered
-            if (CONFIG.DEBUG) {console.log("mounted nextTick");};
-        })
-    },
-    beforeUpdate () {
-        if (CONFIG.DEBUG) {console.log("beforeUpdate");};
-    },
-    updated () {
-        if (CONFIG.DEBUG) {console.log("updated");};
-    },
-    beforeDestroy () {
-        if (CONFIG.DEBUG) {console.log("beforeDestroy");};
-    },
-    destroyed () {
-        if (CONFIG.DEBUG) {console.log("destroyed");};
     },
 
     methods: {
-        addVideo: function (src) {
+        addVideo: function () {
             console.log('addVideo');
             var assets = document.querySelector('a-assets');
 
-            var videoEl = document.createElement('video');
-            videoEl.setAttribute('src', src);
-            videoEl.setAttribute('preload', "auto");
-            //videoEl.autoplay = true;
-            videoEl.setAttribute('loop', 'true');
+            var videoEl = this.videoEl = document.createElement('video');
             videoEl.setAttribute('crossOrigin', 'anonymous');
-            videoEl.setAttribute('id', "cabel-car");
+            videoEl.setAttribute('id', "cable-car");
+            videoEl.setAttribute('autoplay', true);
 
             assets.appendChild(videoEl);
         },
+
     }
 }
 </script>

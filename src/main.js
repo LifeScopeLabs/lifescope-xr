@@ -32,6 +32,8 @@ import './components/hubs/character-controller.js';
 import './components/hubs/pitch-yaw-rotator.js';
 import './components/hubs/look-on-mobile.js';
 
+import '../lib/shaka-player.compiled.js';
+
 // controls
 import {mappings, inputActions} from './controls/input-mappings';
 import { runInThisContext } from 'vm';
