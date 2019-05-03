@@ -27,10 +27,26 @@ AFRAME.registerComponent('mapbox-terrain', {
 			type: 'string',
 			default: 'satellite',
 		},
-		tiles: {
+		rows: {
 			type: 'number',
-			default: 9
-		}
+			default: 3
+		},
+		innerrow: {
+			type: 'number',
+			default: 0
+		},
+		highdpi: {
+			type: 'boolean',
+			default: true
+		},
+		offsetx: {
+			type: 'number',
+			default: 0
+		},
+		offsety: {
+			type: 'number',
+			default: 0
+		},
 	},
 
 	update: function() {
@@ -46,20 +62,27 @@ AFRAME.registerComponent('mapbox-terrain', {
 		var mapLatitude = this.data.latitude;
 		var mapLongitude = this.data.longitude;
 		var mapZoomLevel = this.data['zoom-level'];
-		var tileX = this._long2tile(mapLongitude, mapZoomLevel);
-		var tileY = this._lat2tile(mapLatitude, mapZoomLevel);
+		var tileX = this._long2tile(mapLongitude, mapZoomLevel) + this.data.offsetx;
+		var tileY = this._lat2tile(mapLatitude, mapZoomLevel) + this.data.offsety;
 
 		var scale = 1;
 
-		var tilesPerRow = parseInt(Math.sqrt(this.data.tiles));
+		var tilesPerRow = this.data.rows;
+		var innerRow = this.data.innerrow;
+		var highDpi = this.data.highdpi;
 
 		var leftX = (tilesPerRow % 2) ? parseInt((tilesPerRow-1)/2) : parseInt((tilesPerRow)/2);
 		var rightX = (tilesPerRow % 2) ? parseInt((tilesPerRow-1)/2) : parseInt((tilesPerRow)/2 - 1);
+		var innerLeftX = (innerRow % 2) ? parseInt((innerRow-1)/2) : parseInt((innerRow)/2);
+		var innerRightX = (innerRow % 2) ? parseInt((innerRow-1)/2) : parseInt((innerRow)/2 - 1);
 
 		for (var dx = -leftX; dx<=rightX; dx++) {
 			for (var dy = -leftX; dy<=rightX; dy++) {
+					if (dy >= -innerLeftX && dy <= innerRightX && dx >= -innerLeftX && dx <= innerRightX) {
+					continue;
+				}
 				this._callbackClosureDebug(dx, dy, 0, function (dx, dy) {
-					self._buildTerrainTexture(tileX+dx, tileY+dy, function (image) {
+					self._buildTerrainTexture(tileX+dx, tileY+dy, highDpi, function (image) {
 						var canvas = document.createElement('canvas');
 						canvas.width  = 512;//*scale*tilesPerRow;
 						canvas.height = 512;//*scale*tilesPerRow;
@@ -95,9 +118,9 @@ AFRAME.registerComponent('mapbox-terrain', {
 
 	_lat2tile: function(lat,zoom)  { return (Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom))); },
 
-	_buildTerrainTexture: function(tileX, tileY, callback) {
-		// console.log(`_buildTerrainTexture(${tileX}, ${tileY})`);
-		var restURL = `https://api.mapbox.com/v4/mapbox.${this.data.type}/${this.data['zoom-level']}/${tileX}/${tileY}@2x.png?access_token=${CONFIG.mapboxAcessToken}`
+	_buildTerrainTexture: function(tileX, tileY, highDpi, callback) {
+		var dpi = highDpi ? '@2x' : '';
+		var restURL = `https://api.mapbox.com/v4/mapbox.${this.data.type}/${this.data['zoom-level']}/${tileX}/${tileY}${dpi}.png?access_token=${CONFIG.mapboxAcessToken}`;
 		
 		this._loadImage(restURL, function (image) {
 			// console.log(`_loadImage(${restURL})`);
@@ -192,6 +215,10 @@ AFRAME.registerPrimitive('a-mapbox-terrain', AFRAME.utils.extendDeep({}, AFRAME.
 		'latitude': 'mapbox-terrain.latitude',
 		'longitude': 'mapbox-terrain.longitude',
 		'zoom-level': 'mapbox-terrain.zoom-level',
-		'tiles': 'mapbox-terrain.tiles'
+		'rows': 'mapbox-terrain.rows',
+		'innerrow': 'mapbox-terrain.innerrow',
+		'highdpi': 'mapbox-terrain.highdpi',
+		'offsetx': 'mapbox-terrain.offsetx',
+		'offsety': 'mapbox-terrain.offsety'
 	}
 }))

@@ -134,10 +134,10 @@ export default {
       });
 
       if (!self.$route.query.room){
-          self.$route.query.room = 'ls-room';
+          self.$route.query.room = 'commercial';
       }
           
-      var queryRoom = this.$route.query.room || 'ls-room';
+      var queryRoom = this.$route.query.room || 'commercial';
 
       this.$store.dispatch('xr/getAvatars');
       this.$store.dispatch('xr/setRoomName', queryRoom).then(() => {
