@@ -48,9 +48,9 @@
         <!-- World -->
         <a-mapbox-terrain v-if="floorMapActive == true"
             :latitude="mapLatitude" :longitude="mapLongitude" position="0 -4 0" zoom-level="11"
-            rows="16"></a-mapbox-terrain>
+            rows="20"></a-mapbox-terrain>
 
-        <a-mapbox-terrain v-if="floorMapActive == true"
+        <!-- <a-mapbox-terrain v-if="floorMapActive == true"
             :latitude="mapLatitude" :longitude="mapLongitude" position="-0.5 -4 -0.5" zoom-level="10" highdpi="false"
             rows="32" innerrow="7" scale="2 1 2"></a-mapbox-terrain>
 
@@ -60,23 +60,27 @@
 
         <a-mapbox-terrain v-if="floorMapActive == true"
             :latitude="mapLatitude" :longitude="mapLongitude" position="2.5 -4 -3.5" zoom-level="8" highdpi="false"
-            rows="54" innerrow="23" scale="8 1 8"></a-mapbox-terrain>
-<!-- 
+            rows="54" innerrow="23" scale="8 1 8"></a-mapbox-terrain> -->
+        
         <a-mapbox-terrain v-if="floorMapActive == true"
-        :latitude="mapLatitude" :longitude="mapLongitude" position="-1.5 0.1 -7.5" zoom-level="7"
-        rows="1" scale="16 1 16"></a-mapbox-terrain>
+            :latitude="mapLatitude" :longitude="mapLongitude" position="2.5 -4 -3.5" zoom-level="8" highdpi="false"
+            rows="18" innerrow="2" scale="8 1 8"></a-mapbox-terrain>
+
+        <!-- <a-mapbox-terrain v-if="floorMapActive == true"
+            :latitude="mapLatitude" :longitude="mapLongitude" position="-1.5 0.1 -7.5" zoom-level="7"
+            rows="1" scale="16 1 16"></a-mapbox-terrain> -->
+
+        <!-- <a-mapbox-terrain v-if="floorMapActive == true"
+            :latitude="mapLatitude" :longitude="mapLongitude" position="6.5 0.1 0.5" zoom-level="6"
+            rows="1" scale="32 1 32"></a-mapbox-terrain> -->
 
         <a-mapbox-terrain v-if="floorMapActive == true"
-        :latitude="mapLatitude" :longitude="mapLongitude" position="6.5 0.1 0.5" zoom-level="6"
-        rows="1" scale="32 1 32"></a-mapbox-terrain>
+            :latitude="mapLatitude" :longitude="mapLongitude" position="22.5 -4 16.5" zoom-level="5" highdpi="false"
+            rows="4"  innerrow="2" scale="64 1 64"></a-mapbox-terrain>
 
-        <a-mapbox-terrain v-if="floorMapActive == true"
-        :latitude="mapLatitude" :longitude="mapLongitude" position="22.5 0.1 16.5" zoom-level="5"
-        rows="1" scale="64 1 64"></a-mapbox-terrain>
-
-        <a-mapbox-terrain v-if="floorMapActive == true"
-        :latitude="mapLatitude" :longitude="mapLongitude" position="-9.75 0.1 48.5" zoom-level="4"
-        rows="1" scale="128 1 128"></a-mapbox-terrain> -->
+        <!-- <a-mapbox-terrain v-if="floorMapActive == true"
+            :latitude="mapLatitude" :longitude="mapLongitude" position="-9.75 -4 48.5" zoom-level="4"
+            rows="1" scale="128 1 128"></a-mapbox-terrain> -->
   </a-entity>
 </template>
 

@@ -13,8 +13,8 @@ const graphicsModule = {
         mapLongitude: -77.056101,
         skybox: SkyboxEnum.SUN,
         skytime: 11, // 24 hours
-        bump: true,
-        normal: true
+        bump: false,
+        normal: false
     },
 
     mutations: {
