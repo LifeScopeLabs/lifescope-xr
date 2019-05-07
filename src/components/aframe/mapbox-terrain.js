@@ -82,26 +82,59 @@ AFRAME.registerComponent('mapbox-terrain', {
 					continue;
 				}
 				this._callbackClosureDebug(dx, dy, 0, function (dx, dy) {
+					// console.log("_callbackClosureDebug callback");
+
 					self._buildTerrainTexture(tileX+dx, tileY+dy, highDpi, function (image) {
-						var canvas = document.createElement('canvas');
-						canvas.width  = 512;//*scale*tilesPerRow;
-						canvas.height = 512;//*scale*tilesPerRow;
-						var context = canvas.getContext('2d');
+							var canvas = document.createElement('canvas');
+							canvas.width  = 512;//*scale*tilesPerRow;
+							canvas.height = 512;//*scale*tilesPerRow;
+							var context = canvas.getContext('2d');
+	
+							context.drawImage(image, 0, 0, 512*scale, 512*scale); // (image, x, y, width, height)
+							var tex = new THREE.Texture(canvas);
+							tex.needsUpdate = true;
+							var mat = new THREE.MeshPhongMaterial({ map: tex });
 
-						context.drawImage(image, 0, 0, 512*scale, 512*scale); // (image, x, y, width, height)
-						var tex = new THREE.Texture(canvas);
-						tex.needsUpdate = true;
-						var mat = new THREE.MeshPhongMaterial({ map: tex });
+							self._buildElevationPlane(tileX + dx, tileY + dy, highDpi, function(imageE){
+								// console.log("_buildElevationPlane callback");
+				
+								var canvasElevation = document.createElement('canvas');
+								canvasElevation.width = 512;
+								canvasElevation.height = 512;
+								var contextElevation = canvasElevation.getContext('2d');
 
-						var geo = new THREE.PlaneBufferGeometry(1, 1);//512*scale, 512*scale);
-						geo.rotateX(2 * Math.PI * -90 / 360);
-						geo.translate(dx, 0, dy);
+								contextElevation.drawImage(imageE, 0, 0, 512*scale, 512*scale);
+								var imageData = contextElevation.getImageData(0, 0, canvasElevation.width, canvasElevation.height);
+								var elevationArray = imageData.data;
+								
+								var geo = new THREE.PlaneBufferGeometry(1, 1, 511, 511);
+								
+								
+								var positions = geo.attributes.position.array;
+					
+								for(var y = 0; y < canvasElevation.height; y++ ){
+									for(var x = 0; x < canvasElevation.width; x++ ){
+										var offset2 = (y*canvasElevation.width + x)*4;
+										var height = -10000 + (elevationArray[offset2+0] *256*256 + elevationArray[offset2+1]*256 + elevationArray[offset2+2]) * 0.1;
+					
+										height /= 10000;
+										height /= 3;
+					
+										var offsetPosition = (y*canvasElevation.width + x)*3;
+										positions[offsetPosition+2] = height;
+									}
+								}
+								geo.attributes.position.needsUpdate = true
+								geo.computeVertexNormals();
+								geo.rotateX(2 * Math.PI * -90 / 360);
+								geo.translate(dx, 0, dy);
 
-						var mesh = new THREE.Mesh(geo, mat);
-						var group = self.el.getObject3D('mapmesh') || new THREE.Group();
-						group.add(mesh);
-						self.el.setObject3D('mapmesh', group);  
-					});
+								var mesh = new THREE.Mesh(geo, mat);
+								var group = self.el.getObject3D('mapmesh') || new THREE.Group();
+								group.add(mesh);
+								self.el.setObject3D('mapmesh', group);
+							});
+						});
 				})();
 			}
 		}
@@ -116,7 +149,7 @@ AFRAME.registerComponent('mapbox-terrain', {
 	// http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
 	_long2tile: function(lon,zoom) { return (Math.floor((lon+180)/360*Math.pow(2,zoom))); },
 
-	_lat2tile: function(lat,zoom)  { return (Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom))); },
+	_lat2tile: function(lat,zoom) { return (Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom))); },
 
 	_buildTerrainTexture: function(tileX, tileY, highDpi, callback) {
 		var dpi = highDpi ? '@2x' : '';
@@ -133,6 +166,18 @@ AFRAME.registerComponent('mapbox-terrain', {
 		var geometry	= new THREE.PlaneBufferGeometry( 1, 1, 512-1, 512-1 );
 
 		return geometry;
+	},
+
+	_buildElevationPlane: function(tileX, tileY, highDpi, callback) {
+		// console.log(`_buildElevationPlaneGeometry(${tileX}, ${tileY})`);
+		// https://blog.mapbox.com/global-elevation-data-6689f1d0ba65
+		var dpi = highDpi ? '@2x' : '';
+		var restURL = `https://api.mapbox.com/v4/mapbox.terrain-rgb/${this.data['zoom-level']}/${tileX}/${tileY}${dpi}.pngraw?access_token=${CONFIG.mapboxAcessToken}`;
+
+		this._loadImage(restURL, function (image) {
+			// console.log(`_loadImage(${restURL})`);
+			callback(image);
+		});
 	},
 
 	_loadImage: function(imageURL, onLoad) {
