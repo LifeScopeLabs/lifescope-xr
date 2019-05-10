@@ -198,12 +198,16 @@ function createDioramaComponent(self) {
     }
 
     mesh = new THREE.Mesh(geom, material);
+    mesh.matrixAutoUpdate = false;
+    mesh.updateMatrix();
 
 
     var group = self.el.getObject3D(self.id) || new THREE.Group();
     //if (self.data.helper) {group.add(new THREE.BoxHelper(floor, HELPER_COLOR));}
     // group.add(new THREE.BoxHelper(mesh, 0xffff00));
     group.add(mesh);
+    group.matrixAutoUpdate = false;
+    group.updateMatrix();
     self.el.setObject3D(self.id, group);        
 }
 
@@ -288,10 +292,14 @@ function createStakeComponent(self) {
 
 
     mesh1 = new THREE.Mesh(stakeGeom1, material);
+    mesh1.matrixAutoUpdate = false;
+    mesh1.updateMatrix();
 
     var group = self.el.getObject3D('group') || new THREE.Group();
     // group.add(new THREE.BoxHelper(mesh1, 0xffff00));
     group.add(mesh1);
+    group.matrixAutoUpdate = false;
+    group.updateMatrix();
     self.el.setObject3D('group', group);   
 
 }
@@ -353,10 +361,14 @@ function createImageComponent(self) {
             imgMaterial         // Back side
         ];
         mesh = new THREE.Mesh(geom, materials);
+        mesh.matrixAutoUpdate = false;
+        mesh.updateMatrix();
 
         var group = self.el.getObject3D('image') || new THREE.Group();
         // group.add(new THREE.BoxHelper(mesh, 0xffff00));
         group.add(mesh);
+        group.matrixAutoUpdate = false;
+        group.updateMatrix();
         self.el.setObject3D('image', group);   
     } );
 }

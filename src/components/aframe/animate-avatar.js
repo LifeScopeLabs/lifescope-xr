@@ -14,7 +14,7 @@ if (typeof AFRAME === 'undefined') {
 
       init: function () {
         if (CONFIG.DEBUG) {
-          console.log('animate-avatar init');
+          // console.log('animate-avatar init');
         }
         var self = this;
         this.animations = [

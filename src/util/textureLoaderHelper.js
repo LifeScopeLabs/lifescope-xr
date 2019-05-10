@@ -3,7 +3,7 @@ export default class textureLoaderHelper {
         this.baseUrl = 'https://s3.amazonaws.com/lifescope-static/static/xr/textures/';
         this.bronzeUrl = this.baseUrl + 'BronzeBare/bronze_';
         this.woodUrl = this.baseUrl + 'WoodenFloor/wood_';
-        this.woodPanelUrl = this.baseUrl + 'WoodenFloor/wood-panel_';
+        this.woodPanelUrl = this.baseUrl + 'WoodenFloor/wood-panel-pot_';
 
         this.materialUrls = {
             'bronze': this.bronzeUrl,

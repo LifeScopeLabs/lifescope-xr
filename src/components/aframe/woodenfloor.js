@@ -68,13 +68,18 @@ AFRAME.registerComponent('wooden-floor', {
         floor.rotation.z = 1 * Math.PI / 36;
 
         floor.position.set(this.data.x, this.data.y, this.data.z);
+        floor.matrixAutoUpdate = false;
+        floor.updateMatrix();
 
         var group = self.el.getObject3D('group') || new THREE.Group();
         //if (this.data.helper) {group.add(new THREE.BoxHelper(floor, HELPER_COLOR));}
         group.add(floor);
+        group.matrixAutoUpdate = false;
+        group.updateMatrix();
         self.el.setObject3D('group', group);
     }
 });
+
 
 AFRAME.registerPrimitive( 'a-wooden-floor', {
     defaultComponents: {
