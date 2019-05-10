@@ -39,6 +39,10 @@ AFRAME.registerComponent('mapbox-terrain', {
 			type: 'boolean',
 			default: true
 		},
+		heightmap: {
+			type: 'boolean',
+			default: false
+		},
 		offsetx: {
 			type: 'number',
 			default: 0
@@ -92,11 +96,17 @@ AFRAME.registerComponent('mapbox-terrain', {
 						if (CONFIG.DEBUG) {console.log('texture loaded');}
 					});
 
-					var mesh = self._buildTerrainMesh(texture, geo, dx, dy);
+					
+					var mat = new THREE.MeshPhongMaterial({ map: texture });
+					if (self.data.heightmap) {
+						geo = self._buildElevationPlaneGeometry(tileX+dx, tileY+dy);
+					}
+					var mesh = new THREE.Mesh(geo, mat);
 					mesh.translateX(dx);//, 0, dy);
 					mesh.translateZ(dy);
 					mesh.matrixAutoUpdate = false;
 					mesh.updateMatrix();
+					
 					
 					var group = self.el.getObject3D('mapmesh') || new THREE.Group();
 					group.add(mesh);
@@ -213,12 +223,13 @@ AFRAME.registerComponent('mapbox-terrain', {
 					height /= 10000
 					height /= 3
 
-					var offsetPosition = (y*canvas.width + x)*3
-					positions[offsetPosition+2] = height
+					var offsetPosition = (y*canvas.width + x)*3;
+					positions[offsetPosition+2] = height;
 				}
 			}
-			geometry.attributes.position.needsUpdate = true
-			geometry.computeVertexNormals()
+			geometry.attributes.position.needsUpdate = true;
+			geometry.computeVertexNormals();
+			geometry.rotateX(2 * Math.PI * -90 / 360);
 		})
 
 		return geometry
@@ -237,6 +248,7 @@ AFRAME.registerPrimitive('a-mapbox-terrain', AFRAME.utils.extendDeep({}, AFRAME.
 		'rows': 'mapbox-terrain.rows',
 		'innerrow': 'mapbox-terrain.innerrow',
 		'highdpi': 'mapbox-terrain.highdpi',
+		'heightmap': 'mapbox-terrain.heightmap',
 		'offsetx': 'mapbox-terrain.offsetx',
 		'offsety': 'mapbox-terrain.offsety'
 	}

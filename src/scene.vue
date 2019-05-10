@@ -38,11 +38,12 @@
       >
     </a-entity>
 
-    <!-- Sky id="Sky" -->
-    <a-sky v-if="skybox==SkyboxEnum.STARS"
+    <!-- Sky id="Sky" v-if="skybox==SkyboxEnum.STARS" -->
+    <a-sky visible="false"
       id="starsky" src="#sky" rotation="90 0 90">
     </a-sky>
-    <a-sun-sky v-else-if="skybox==SkyboxEnum.SUN"
+    <!-- v-else-if="skybox==SkyboxEnum.SUN" -->
+    <a-sun-sky visible="true"
       rotation="0 0 90"
       id="sunsky" material="side: back" :sun-sky-position="'time: ' + sky.time">
     </a-sun-sky>
@@ -160,6 +161,32 @@ export default {
             loop: true,
             duration: 1000,
         })
+
+      // var flipSky = function(sunvis) {
+      //   var sun = document.querySelector('#sunsky');
+      //   var stars = document.querySelector('#starsky');
+
+      //   if(sunvis) {
+      //     sun.setAttribute('visible', false);
+      //     stars.setAttribute('visible', true);
+      //     setTimeout( function() {
+      //       flipSky(false);
+      //     }, 500);
+      //   }
+      //   else {
+      //     sun.setAttribute('visible', true);
+      //     stars.setAttribute('visible', false);
+      //     setTimeout( function() {
+      //       flipSky(true);
+      //     }, 500);
+      //   }
+      // }
+      
+      // setTimeout(
+      //   flipSky(true),
+      //   250
+      // );
+
 
       var camera = document.querySelector("#commercial-camera");
       AFRAME.ANIME({

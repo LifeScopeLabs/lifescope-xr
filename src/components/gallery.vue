@@ -41,13 +41,21 @@
         </a-entity>
 
         <!-- terrain -->
-        <a-mapbox-terrain id="mapbox-floor" v-if="floorMapActive == true"
+        <a-mapbox-terrain id="mapbox-floor" v-if="floorMapActive == true" heightmap="true"
             :latitude="mapLatitude" :longitude="mapLongitude" position="0 0.1 0" zoom-level="9"
             rows="1" scale="4 1 4"></a-mapbox-terrain> 
 
         <a-mapbox-terrain v-if="floorMapActive == true"
-            :latitude="mapLatitude" :longitude="mapLongitude" position="6.5 -4 0.5" zoom-level="6"
-            rows="4" scale="32 1 32"></a-mapbox-terrain>
+            :latitude="mapLatitude" :longitude="mapLongitude" position="0 -4 0" zoom-level="11" heightmap="true"
+            rows="9"></a-mapbox-terrain>
+
+        <a-mapbox-terrain v-if="floorMapActive == true"
+            :latitude="mapLatitude" :longitude="mapLongitude" position="2.5 -4.001 -3.5" zoom-level="8" heightmap="true"
+            rows="8" scale="8 1 8"></a-mapbox-terrain>
+
+        <a-mapbox-terrain v-if="floorMapActive == true"
+            :latitude="mapLatitude" :longitude="mapLongitude" position="22.5 -4.01 16.5" zoom-level="5" heightmap="true"
+            rows="4" scale="64 1 64"></a-mapbox-terrain>
   </a-entity>
 </template>
 
