@@ -22,3 +22,18 @@ body{font-family:Ionicons;}
     overflow: hidden;
     position: absolute !important;
 } 
+
+a-scene {
+    position: absolute
+}
+
+
+.a-enter-vr {
+    height: 100%;
+}
+
+.a-enter-vr-button {
+    z-index: 99999;
+    right: 3%;
+    bottom: 1%;
+}
