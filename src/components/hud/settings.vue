@@ -142,7 +142,12 @@ export default {
         ...mapState('xr',
         [
             'isMobile',
-        ])
+        ]),
+        ...mapState('xr/graphics',
+        [
+            'skytime',
+            'skybox'
+        ]),
     },
 
     watch: {
@@ -172,6 +177,10 @@ export default {
         
         self.inputMapLatitude = self.mapLatitude;
         self.inputMapLongitude = self.mapLongitude;
+
+        document.body.addEventListener('swapsky', function(evt) {
+            self.toggleSky();
+        })
     },
     methods: {
         toggleSettingsVisibility() {
@@ -179,6 +188,11 @@ export default {
             this.settingsStyleObject.visibility = 
                 this.settingsStyleObject.visibility == 'visible' ?
                 'hidden' : 'visible';
+        },
+        toggleSky() {
+            var newVal = this.skybox == SkyboxEnum.STARS ? 'SUN' : 'STARS';
+            this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
+
         },
         setCoords() {
             this.$store.commit('xr/graphics/SET_MAP_LATITUDE', this.lat);

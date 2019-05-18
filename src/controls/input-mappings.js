@@ -21,7 +21,8 @@ var mappings = {
             },
             'windows-motion-controls': {
                 'grip.down': 'teleportstart',
-                'grip.up': 'teleportend'
+                'grip.up': 'teleportend',
+                'menu.up': 'swapsky'
             },
             "gearvr-controls": {
                 trackpaddown: "teleportstart",
