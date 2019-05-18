@@ -141,15 +141,7 @@ export default {
       onEnterVR () {
         var self = this;
         if (CONFIG.DEBUG) {console.log('entered vr');};
-        if (this.avatar !== null) {
-          this.avatar.createRightHandNetworked();
-        }
-        else {
-          document.body.addEventListener('avatarCreated', function(evt) {
-            console.log("avatarCreated");
-            self.avatar.createRightHandNetworked();
-          })
-        }
+        this.$refs.avatar.createRightHandNetworked();
 
         if (AFRAME.utils.device.isMobile()) {
               this.teardownMobile();

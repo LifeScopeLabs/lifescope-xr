@@ -20,8 +20,8 @@ AFRAME.registerComponent('wooden-floor', {
     },
 
     update: function() {
-        if (this.el.object3DMap.hasOwnProperty('group')) {
-            this.el.removeObject3D('group');
+        if (this.el.object3DMap.hasOwnProperty('mesh')) {
+            this.el.removeObject3D('mesh');
         }
         this._createWoodenFloor();
     },
@@ -71,10 +71,10 @@ AFRAME.registerComponent('wooden-floor', {
 
         floor.position.set(this.data.x, this.data.y, this.data.z);
 
-        var group = self.el.getObject3D('group') || new THREE.Group();
-        //if (this.data.helper) {group.add(new THREE.BoxHelper(floor, HELPER_COLOR));}
-        group.add(floor);
-        self.el.setObject3D('group', group);
+        var mesh = self.el.getObject3D('mesh') || new THREE.Group();
+        //if (this.data.helper) {mesh.add(new THREE.BoxHelper(floor, HELPER_COLOR));}
+        mesh.add(floor);
+        self.el.setObject3D('mesh', mesh);
     }
 });
 

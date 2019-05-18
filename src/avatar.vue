@@ -55,6 +55,29 @@ export default {
                 console.log(e);
             }
         },
+
+        createRightHandNetworked() {
+            if (CONFIG.DEBUG) {console.log("creating networked right hand");}
+            // 
+            //  landingNormal: 0 0 1;
+            //  collisionEntities: .boundry;
+            var frag = this.fragmentFromString(`
+            <a-entity id="rightHandController"
+                teleport-controls="cameraRig: #playerRig; teleportOrigin: #player-camera; startEvents: teleportstart; endEvents: teleportend;"
+                windows-motion-controls="hand: right;"
+                >
+            </a-entity>`);
+                // daydream-controls="hand: right;"
+                // oculus-touch-controls="hand: right;"
+                // vive-controls="hand: right;"
+                // gearvr-controls="hand: right;"
+                // oculus-go-controls="hand: right;"
+            document.getElementById('playerRig').appendChild(frag);
+        },
+
+        fragmentFromString(strHTML) {
+            return document.createRange().createContextualFragment(strHTML);
+        }
     }
 }
 </script>

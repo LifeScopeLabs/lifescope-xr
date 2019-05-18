@@ -30,10 +30,12 @@ a-scene {
 
 .a-enter-vr {
     height: 100%;
+    pointer-events: none;
 }
 
 .a-enter-vr-button {
     z-index: 99999;
     right: 3%;
     bottom: 1%;
+    pointer-events: visible;
 }

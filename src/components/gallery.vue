@@ -5,7 +5,7 @@
             <a-entity id="dirLight" light="type: directional; color: #FFF; intensity: 0.8" position="1 1 1"></a-entity>
 
         <!-- Floor -->
-        <a-wooden-floor radius='6.1' :bump="bump" :normal="normal"></a-wooden-floor>
+        <a-wooden-floor class="boundry" radius='6.1' :bump="bump" :normal="normal"></a-wooden-floor>
 
         <!-- Carousel -->
         <gallery-carousel />
