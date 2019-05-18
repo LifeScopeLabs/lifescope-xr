@@ -65,13 +65,13 @@ export default {
             <a-entity id="rightHandController"
                 teleport-controls="cameraRig: #playerRig; teleportOrigin: #player-camera; startEvents: teleportstart; endEvents: teleportend;"
                 windows-motion-controls="hand: right;"
+                oculus-go-controls="hand: right;"
                 >
             </a-entity>`);
                 // daydream-controls="hand: right;"
                 // oculus-touch-controls="hand: right;"
                 // vive-controls="hand: right;"
                 // gearvr-controls="hand: right;"
-                // oculus-go-controls="hand: right;"
             document.getElementById('playerRig').appendChild(frag);
         },
 

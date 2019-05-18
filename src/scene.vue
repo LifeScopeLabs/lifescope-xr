@@ -142,6 +142,8 @@ export default {
         var self = this;
         if (CONFIG.DEBUG) {console.log('entered vr');};
         this.$refs.avatar.createRightHandNetworked();
+        var playerRig = document.querySelector('#playerRig');
+        playerRig.setAttribute('position', 'y', 0.2);
 
         if (AFRAME.utils.device.isMobile()) {
               this.teardownMobile();
