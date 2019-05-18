@@ -27,12 +27,12 @@
             <h3> Map </h3>
             <div class="latlong">
                 <input type="number" id="map-setting-lat" name="lat"
-                        v-model="mapLatitude"
+                        v-model="inputMapLatitude"
                         min="-90" max="90">
                 <label for="map-setting-lat">Latitude</label>
 
                 <input type="number" id="map-setting-long" name="long"
-                        v-model="mapLongitude"
+                        v-model="inputMapLongitude"
                         min="-180" max="180">
                 <label for="map-setting-long">Longitude</label>
             </div>
@@ -42,7 +42,8 @@
 
 
             <!-- <h3> Set coordinates </h3> -->
-            <input type="button" v-on:click="setCoords" id="map-setting-latlon" name="coords"></button>
+            <input type="button" v-on:click="setCoords" id="map-setting-latlon" name="coords"
+                value="Update Coordinates">
             
 
             <div class="input-map">
@@ -113,34 +114,21 @@ export default {
                 this.$store.commit('xr/graphics/SET_WORLD_MAP_ACTIVE', val);
                 }
         },
-        // mapLatitude: {
-        //     get () { return this.$store.state.xr.graphics.mapLatitude;},
-        //     set (val) { this.$store.commit('xr/graphics/SET_MAP_LATITUDE', val); }
-        // },
-        // mapLongitude: {
-        //     get () { return this.$store.state.xr.graphics.mapLongitude;},
-        //     set (val) { this.$store.commit('xr/graphics/SET_MAP_LONGITUDE', val); }
-        // },
         mapLatitude: {
+            get () { return this.$store.state.xr.graphics.mapLatitude;},
+            set (val) { this.$store.commit('xr/graphics/SET_MAP_LATITUDE', val); }
+        },
+        mapLongitude: {
+            get () { return this.$store.state.xr.graphics.mapLongitude;},
+            set (val) { this.$store.commit('xr/graphics/SET_MAP_LONGITUDE', val); }
+        },
+        inputMapLatitude: {
             get () { return this.lat},
             set (val) { this.lat = val }
         },
-        mapLongitude: {
+        inputMapLongitude: {
             get () { return this.lon},
             set (val) { this.lon = val }
-        },
-        mapLatLon: {
-            get () {
-                // return [9,24]
-                return [this.lat, this.lon]
-                // return [this.$store.state.xr.graphics.mapLatitude, this.$store.state.xr.graphics.mapLongitude];
-            },
-            set(val1) {
-                alert('hello');
-                console.log('no error');
-                // this.$store.commit('xr/graphics/SET_MAP_LATITUDE', this.lat);
-                // this.$store.commit('xr/graphics/SET_MAP_LONGITUDE', this.lon);
-            }
         },
 
         bump: {
@@ -170,9 +158,7 @@ export default {
             console.log(`mapFloorCheck: ${newVal}`);
             console.log(this.$store.state.xr.graphics.mapFloorSetting);
             // this.mapFloorSetting.set(newVal);
-            this.toggleLoadingVisibility();
             this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', newVal);
-            this.toggleLoadingVisibility();
         }
     },
 
@@ -183,6 +169,9 @@ export default {
                 self.toggleSettingsVisibility();
             }
         });
+        
+        self.inputMapLatitude = self.mapLatitude;
+        self.inputMapLongitude = self.mapLongitude;
     },
     methods: {
         toggleSettingsVisibility() {
