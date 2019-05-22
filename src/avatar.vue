@@ -14,6 +14,13 @@
 <script>
 
 export default {
+    data () {
+        return {
+            teleporting: false,
+            teleportThreshold: 0.4
+        }
+    },
+
     methods: {
         setupDesktop() {
             if (CONFIG.DEBUG) {console.log("setupDesktop");};
@@ -73,6 +80,28 @@ export default {
                 // vive-controls="hand: right;"
                 // gearvr-controls="hand: right;"
             document.getElementById('playerRig').appendChild(frag);
+        },
+
+        setupControls() {
+            if (CONFIG.DEBUG) {console.log('setupControls');}
+            var self = this;
+            
+            document.addEventListener('thumbstickmoved', function(evt) {
+                if (self.teleporting) {
+                    if (evt.detail.y >= -self.teleportThreshold) {
+                        var controller = document.querySelector('#rightHandController');
+                        controller.emit('teleportend');
+                        self.teleporting = false;
+                    }
+                }
+                else {
+                    if (evt.detail.y <= -self.teleportThreshold) {
+                        var controller = document.querySelector('#rightHandController');
+                        controller.emit('teleportstart');
+                        self.teleporting = true;
+                    }
+                }
+            });
         },
 
         fragmentFromString(strHTML) {

@@ -142,6 +142,7 @@ export default {
         var self = this;
         if (CONFIG.DEBUG) {console.log('entered vr');};
         this.$refs.avatar.createRightHandNetworked();
+        this.$refs.avatar.setupControls();
         var playerRig = document.querySelector('#playerRig');
         playerRig.setAttribute('position', 'y', 0.2);
 
@@ -152,7 +153,11 @@ export default {
       onExitVR () {
         if (CONFIG.DEBUG) {console.log('exited vr');};
         var rightHand = document.getElementById('rightHandController');
-        rightHand.parentElement.removeChild(rightHand);
+        if (rightHand) {
+          rightHand.parentElement.removeChild(rightHand);
+        }
+        var playerRig = document.querySelector('#playerRig');
+        playerRig.setAttribute('position', 'y', 1.6);
 
         if (AFRAME.utils.device.isMobile()) {
           this.setupMobile();
