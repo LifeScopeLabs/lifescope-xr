@@ -47,6 +47,7 @@ AFRAME.registerComponent('wooden-floor', {
             shininess: 25,
             } );
         var floorGeometry = new THREE.CircleBufferGeometry(self.data.radius, self.data.radialsegments);
+        floorGeometry.rotateX(-Math.PI / 2);
 
         if (self.data.withBump) {
             var bumpTexture = tlHelper.loadTexture( 'wood-panel', 'height', 'jpg',
@@ -65,16 +66,13 @@ AFRAME.registerComponent('wooden-floor', {
         }
             
         var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-        floor.rotation.x = Math.PI / 2;
-        // floor.rotation.z = Math.PI / 2;
-        floor.rotation.z = 1 * Math.PI / 36;
 
         floor.position.set(this.data.x, this.data.y, this.data.z);
 
-        var mesh = self.el.getObject3D('mesh') || new THREE.Group();
+        // var mesh = self.el.getObject3D('mesh') || new THREE.Group();
         //if (this.data.helper) {mesh.add(new THREE.BoxHelper(floor, HELPER_COLOR));}
-        mesh.add(floor);
-        self.el.setObject3D('mesh', mesh);
+        // mesh.add(floor);
+        self.el.setObject3D('mesh', floor);
     }
 });
 

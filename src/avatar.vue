@@ -70,7 +70,7 @@ export default {
             //  collisionEntities: .boundry;
             var frag = this.fragmentFromString(`
             <a-entity id="rightHandController"
-                teleport-controls="cameraRig: #playerRig; teleportOrigin: #player-camera; startEvents: teleportstart; endEvents: teleportend;"
+                teleport-controls="cameraRig: #playerRig; teleportOrigin: #player-camera; startEvents: teleportstart; endEvents: teleportend; collisionEntities: .boundry;"
                 windows-motion-controls="hand: right;"
                 oculus-go-controls="hand: right;"
                 >
