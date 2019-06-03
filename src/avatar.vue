@@ -8,6 +8,13 @@
             camera
           >
           </a-entity>
+
+          <a-gui-cursor id="cursor" v-if="cursorActive"
+                raycaster="interval: 1000; objects: gui-interactable, .clickable"
+                fuse="true" fuse-timeout="2000"
+                design="dot"
+            >
+            </a-gui-cursor>
     </a-entity>
 </template>
 
@@ -17,7 +24,8 @@ export default {
     data () {
         return {
             teleporting: false,
-            teleportThreshold: 0.4
+            teleportThreshold: 0.4,
+            cursorActive: true
         }
     },
 
@@ -75,6 +83,7 @@ export default {
                 oculus-go-controls="hand: right;"
                 >
             </a-entity>`);
+            // <a-entity id="rightHandLaser" laser-controls raycaster="objects: .clickable; far: 5"></a-entity>`);
                 // daydream-controls="hand: right;"
                 // oculus-touch-controls="hand: right;"
                 // vive-controls="hand: right;"

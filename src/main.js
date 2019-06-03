@@ -12,6 +12,7 @@ import 'networked-aframe';
 import 'aframe-input-mapping-component';
 import 'aframe-teleport-controls';
 import 'aframe-extras';
+import 'aframe-gui';
 import 'aframe-sun-sky';
 // import 'aframe-forcegraph-component';
 import 'nipplejs';
@@ -52,7 +53,8 @@ var router = new VueRouter({
 // ignore elements for Firefox
 Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere',
  'a-animation', 'a-sky', 'a-mapbox-terrain', 'a-wooden-floor', 'a-diorama-cyl',
- 'a-sun-sky', 'a-rail', 'a-custom-image'];
+ 'a-sun-sky', 'a-rail', 'a-custom-image',
+ 'a-gui-flex-container', 'a-gui-label', 'a-gui-radio', 'a-gui-cursor', 'a-gui-toggle'];
 
 // mobile swipe controls
 Vue.use(VueHammer);

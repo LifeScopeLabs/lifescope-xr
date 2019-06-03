@@ -171,7 +171,7 @@ export default {
         var self = this;
         document.body.addEventListener('keypress', function(evt) {
             if (evt.key == 'g') {
-                self.toggleSettingsVisibility();
+                // self.toggleSettingsVisibility();
             }
         });
         

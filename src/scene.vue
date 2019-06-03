@@ -24,6 +24,9 @@
 
     <avatarcomp ref="avatar"/>
 
+    <hudgui id="scenehud" v-if="hudhelpactive"/>
+    <vrhudsettings id="scenesettingshud" v-if="hudsettingsactive"/>
+
     <!-- Sky id="Sky" -->
     <a-sky v-if="skybox==SkyboxEnum.STARS"
       id="starsky" src="#sky" rotation="90 0 90">
@@ -44,6 +47,8 @@ import socketIO from 'socket.io-client';
 import easyrtc from '../static/easyrtc/easyrtc.js';
 
 import gallery from "./components/gallery.vue";
+import hudgui from "./components/hud/hudgui.vue";
+import vrhudsettings from "./components/hud/vr/settings.vue";
 
 import Avatar from "./avatar.js";
 import avatarcomp from "./avatar.vue";
@@ -53,12 +58,16 @@ import { SkyboxEnum } from './store/modules/xr/modules/graphics';
 export default {
     components: {
         gallery,
-        avatarcomp
+        avatarcomp,
+        hudgui,
+        vrhudsettings
     },
     data() {
       return {
         avatar: {},
-        SkyboxEnum: SkyboxEnum
+        SkyboxEnum: SkyboxEnum,
+        hudhelpactive: false,
+        hudsettingsactive: false,
       }
     },
 
@@ -92,6 +101,15 @@ export default {
           self.onExitVR();
         })
       });
+
+      document.body.addEventListener('keypress', function(evt) {
+            if (evt.key == 'h') {
+                self.toggleHudHelp();
+            }
+            else if (evt.key == 'g') {
+                self.toggleHudSettings();
+            }
+        });
 
 
       document.body.addEventListener('connected', function (evt) {
@@ -183,6 +201,54 @@ export default {
         if (CONFIG.DEBUG) {console.log("!isMobile");};
         this.$refs.avatar.setupDesktop();
       },
+
+      toggleHudHelp () {
+        var self = this;
+        if (self.hudhelpactive) {
+          self.hudhelpactive = false;
+        }
+        else {
+          self.updateHudPosition('#scenehud');
+          self.hudhelpactive = true;
+        }
+      },
+
+      toggleHudSettings () {
+        var self = this;
+        if (self.hudsettingsactive) {
+          self.hudsettingsactive = false;
+        }
+        else {
+          self.updateHudPosition('#scenesettingshud');
+          self.hudsettingsactive = true;
+        }
+      },
+
+      updateHudPosition(selector) {
+        var posentity = document.createElement('a-entity');
+        posentity.setAttribute('id', 'posent');
+        posentity.setAttribute('position', {x: 0, y: 0, z: -1});
+
+        var playerRig = document.getElementById('playerRig')
+        playerRig.appendChild(posentity);
+
+        var posEntity = document.querySelector('#posent');
+        var hud;
+        var position, rotation;
+        var loadedHandler = function() {
+            console.log('posEntity loaded');
+            position = posEntity.object3D.getWorldPosition();
+            rotation = playerRig.object3D.rotation;
+            console.log(position);
+            posEntity.parentElement.removeChild(posEntity);
+            hud = document.querySelector(selector);
+            posEntity.removeEventListener('loaded', loadedHandler);
+            hud.object3D.position.set(position.x, position.y, position.z);
+            hud.object3D.rotation.set(0, rotation.y, 0);
+        }
+        posEntity.addEventListener('loaded', loadedHandler)
+      }
+      
     }
   }
 </script>

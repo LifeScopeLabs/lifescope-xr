@@ -39,7 +39,7 @@ export default {
     data() {
         return {
             helpStyleObject: {
-                visibility: 'visible',
+                visibility: 'hidden'//'visible',
             },
         }
     },
@@ -56,7 +56,7 @@ export default {
 
         document.body.addEventListener('keypress', function(evt) {
             if (evt.key == 'h') {
-                self.toggleHelpVisibility();
+                // self.toggleHelpVisibility();
             }
         });
     },
