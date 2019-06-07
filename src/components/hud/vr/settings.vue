@@ -132,7 +132,6 @@ export default {
     mounted() {
         var self = this;
         self.gui = document.querySelector('#helpgui');
-        console.log(self.gui);
 
         document.body.addEventListener('togglemenu', function(evt) {
             self.toggleHud();
@@ -144,22 +143,22 @@ export default {
         });
 
         self.$el.addEventListener('updatebump', function(evt) {
-            // console.log('updatesky');
+            // console.log('updatebump');
             self.updateBump(evt.detail.value);
         });
 
         self.$el.addEventListener('updatenormal', function(evt) {
-            // console.log('updatesky');
+            // console.log('updatenormal');
             self.updateNormal(evt.detail.value);
         });
 
         self.$el.addEventListener('updatefloormap', function(evt) {
-            // console.log('updatesky');
+            // console.log('updatefloormap');
             self.updateFloorMap(evt.detail.value);
         });
 
         self.$el.addEventListener('updateworldmap', function(evt) {
-            // console.log('updatesky');
+            // console.log('updateworldmap');
             self.updateWorldMap(evt.detail.value);
         });
     },
@@ -172,14 +171,12 @@ export default {
                 'hidden' : 'visible';
         },
         toggleHud() {
-            console.log('toggleHud');
-            console.log(this);
+            // console.log('toggleHud');
             var self = this;
 
             if (self.guiActive) {
                 self.gui.parentElement.removeChild(self.gui);
                 self.guiActive = false;
-                console.log(self.gui);
             }
             else {
                 AFRAME.scenes[0].appendChild(self.gui);
@@ -211,4 +208,4 @@ export default {
 }
 </script>
 
-<!-- <style src="./AframeHud.css"></style> -->
+<!-- <style src="./settings.css"></style> -->

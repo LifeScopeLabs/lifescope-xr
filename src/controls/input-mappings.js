@@ -4,8 +4,8 @@ var mappings = {
             common: {
                 trackpaddown: 'teleportstart',
                 trackpadup: 'teleportend',
-                triggerdown: 'teleportstart',
-                triggerup: 'teleportend'
+                // triggerdown: 'teleportstart',
+                // triggerup: 'teleportend'
             },
             'daydream-controls': {
                 trackpaddown: 'teleportstart',

@@ -65,21 +65,8 @@ export default {
         document.body.addEventListener('togglemenu', function(evt) {
             self.toggleHud();
         });
-
-        // document.body.addEventListener('keypress', function(evt) {
-        //     if (evt.key == 'h') {
-        //         self.toggleHud();
-        //     }
-        // });
     },
 
-    beforeUpdate() {
-        console.log('hudgui beforeUpdate');
-    },
-
-    updated() {
-        console.log('hudgui updated');
-    },
 
     methods: {
         toggleHelpVisibility() {

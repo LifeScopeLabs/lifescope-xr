@@ -1,14 +1,16 @@
 import axios from 'axios';
 
-import graphicsModule from './modules/graphics';
+import avatarModule from './modules/avatar';
 import carouselModule from './modules/carousel';
+import graphicsModule from './modules/graphics';
 
 const xrModule = {
     namespaced: true,
 
     modules: {
+        avatar: avatarModule,
+        carousel: carouselModule,
         graphics: graphicsModule,
-        carousel: carouselModule
     },
 
     state: { 
@@ -19,9 +21,14 @@ const xrModule = {
         rooms: [],
         sceneLoaded: false,
         isMobile: false,
+        inVR: false
      },
 
     mutations: {
+        SET_IN_VR: function(state, active=true) {
+            if (CONFIG.DEBUG) {console.log("SET_IN_VR")}
+            state.inVR = active;
+        },
         SET_LSOBJS: function(state, objs) {
             if (CONFIG.DEBUG) {console.log('SET_LSOBJS');}
             state.LSObjs = objs;
@@ -82,14 +89,19 @@ const xrModule = {
     
             return axios.get(x)
             .then((res) => {
-                console.log("getObjs action then");
                 var objs = [];
                 var rooms = Object.keys(res.data);
-                var someData = res.data[context.state.roomName].forEach(element => {
-                    objs.push(element);
-                });
+                if (res.data[context.state.roomName] !== undefined) {
+                    var someData = res.data[context.state.roomName].forEach(element => {
+                        objs.push(element);
+                    });
+                }
                 context.commit('SET_LSOBJS', objs);
                 context.commit('SET_ROOMS', rooms);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
             })
           }
      }

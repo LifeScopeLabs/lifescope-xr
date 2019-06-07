@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <aframe-scene></aframe-scene>
-    <!-- <hud v-if="sceneLoaded"></hud> -->
+    <hud v-if="sceneLoaded && !inVR"></hud>
   </div>
 </template>
 
@@ -22,6 +22,7 @@ export default {
     computed: {
       ...mapState('xr',
       [
+        'inVR',
         'sceneLoaded',
         'isMobile',
       ])

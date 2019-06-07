@@ -54,14 +54,19 @@ export default {
     mounted() {
         var self = this;
 
-        document.body.addEventListener('keypress', function(evt) {
-            if (evt.key == 'h') {
-                // self.toggleHelpVisibility();
-            }
-        });
+        document.body.addEventListener('keypress', self.keypressListener);
+    },
+
+    beforeDestroy() {
+        document.body.removeEventListener('keypress', this.keypressListener)
     },
 
     methods: {
+        keypressListener(evt) {
+            if (evt.key == 'h') {
+                this.toggleHelpVisibility();
+            }
+        },
         toggleHelpVisibility() {
             if (CONFIG.DEBUG) {console.log("toggleHelpVisibility");}
             this.helpStyleObject.visibility = 

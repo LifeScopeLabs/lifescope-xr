@@ -160,8 +160,6 @@ export default {
             }
         },
         mapFloorCheck: function (newVal, oldVal) {
-            console.log(`mapFloorCheck: ${newVal}`);
-            console.log(this.$store.state.xr.graphics.mapFloorSetting);
             // this.mapFloorSetting.set(newVal);
             this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', newVal);
         }
@@ -169,20 +167,28 @@ export default {
 
     mounted() {
         var self = this;
-        document.body.addEventListener('keypress', function(evt) {
-            if (evt.key == 'g') {
-                // self.toggleSettingsVisibility();
-            }
-        });
+        document.body.addEventListener('keypress', self.keypressListener);
         
         self.inputMapLatitude = self.mapLatitude;
         self.inputMapLongitude = self.mapLongitude;
 
-        document.body.addEventListener('swapsky', function(evt) {
-            self.toggleSky();
-        })
+        document.body.addEventListener('swapsky', self.swapskyListener);
     },
+
+    beforeDestroy() {
+        document.body.removeEventListener('keypress', this.keypressListener);
+        document.body.removeEventListener('swapsky', this.swapskyListener)
+    },
+
     methods: {
+        keypressListener(evt) {
+            if (evt.key == 'g') {
+                this.toggleSettingsVisibility();
+            }
+        },
+        swapskyListener(evt) {
+            this.toggleSky();
+        },
         toggleSettingsVisibility() {
             if (CONFIG.DEBUG) {console.log("toggleSettingsVisibility");}
             this.settingsStyleObject.visibility = 
