@@ -43,6 +43,7 @@ export default {
 
     beforeDestroy() {
         document.body.removeEventListener('keypress', this.keypressHandler);
+        document.body.removeEventListener('cyclehud', this.cycleHud);
     },
 
     methods: {
@@ -119,6 +120,7 @@ export default {
         var position, quaternion;
         var loadedHandler = function() {
             position = posEntity.object3D.getWorldPosition();
+            playerRig.object3D.worldToLocal(position);
             quaternion = playerCamera.object3D.quaternion
             posEntity.parentElement.removeChild(posEntity);
             hud = document.querySelector(selector);
