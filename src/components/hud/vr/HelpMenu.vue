@@ -45,11 +45,10 @@ export default {
                 fontColor: '#aeaeae'
             },
             textList: [
-                'H - toggle help menu',
-                'G - toggle graphics settings menu',
-                'WASD - movement controls',
-                'click and drag to look around',
-                'hover room name to select new room'
+                'Thumbstick forward - begin teleport',
+                'Thumbstick release - teleport',
+                'Menu button - cycle through menus',
+                'Trigger - interact with gui',
             ],
             gui: {},
             guiActive: true

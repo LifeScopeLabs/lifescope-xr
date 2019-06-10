@@ -23,6 +23,8 @@ export default {
         return {
             hudhelpactive: false,
             hudsettingsactive: false,
+            menus: ['','vrhelpmenu', 'vrsettings'],
+            currentMenuIndex: 0
         }
     },
 
@@ -36,6 +38,7 @@ export default {
 
     mounted() {
         document.body.addEventListener('keypress', this.keypressHandler);
+        document.body.addEventListener('cyclehud', this.cycleHud);
     },
 
     beforeDestroy() {
@@ -47,10 +50,12 @@ export default {
         var self = this;
         if (self.hudhelpactive) {
           self.hudhelpactive = false;
+          self.currentMenuIndex = 0;
         }
         else {
           self.updateHudPosition('#vrhud');
           self.hudhelpactive = true;
+          self.currentMenuIndex = 1;
         }
       },
 
@@ -58,10 +63,35 @@ export default {
         var self = this;
         if (self.hudsettingsactive) {
           self.hudsettingsactive = false;
+          self.currentMenuIndex =  0;
         }
         else {
           self.updateHudPosition('#vrhud');
           self.hudsettingsactive = true;
+          self.currentMenuIndex = 2;
+        }
+      },
+
+      cycleHud () {
+        var self = this;
+        self.currentMenuIndex = ((self.currentMenuIndex + 1) % self.menus.length);
+        switch (self.currentMenuIndex) {
+          case 0:
+            self.hudhelpactive = false;
+            self.hudsettingsactive = false;
+            break;
+          case 1:
+            self.hudhelpactive = true;
+            self.hudsettingsactive = false;
+            self.updateHudPosition('#vrhud');
+            break;
+          case 2:
+            self.hudhelpactive = false;
+            self.hudsettingsactive = true;
+            self.updateHudPosition('#vrhud');
+            break;
+          default:
+            break;
         }
       },
 
