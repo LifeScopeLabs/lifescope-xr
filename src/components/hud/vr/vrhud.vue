@@ -116,15 +116,15 @@ export default {
 
         var posEntity = document.querySelector('#posent');
         var hud;
-        var position, rotation;
+        var position, quaternion;
         var loadedHandler = function() {
             position = posEntity.object3D.getWorldPosition();
-            rotation = playerCamera.object3D.rotation;
+            quaternion = playerCamera.object3D.quaternion
             posEntity.parentElement.removeChild(posEntity);
             hud = document.querySelector(selector);
             posEntity.removeEventListener('loaded', loadedHandler);
             hud.object3D.position.set(position.x, position.y, position.z);
-            hud.object3D.rotation.set(0, rotation.y, 0);
+            hud.object3D.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
         }
         posEntity.addEventListener('loaded', loadedHandler)
       }
