@@ -4,16 +4,14 @@ import avatarModule from './modules/avatar';
 import carouselModule from './modules/carousel';
 import graphicsModule from './modules/graphics';
 
-const xrModule = {
-    namespaced: true,
-
-    modules: {
+export const modules = {
         avatar: avatarModule,
         carousel: carouselModule,
         graphics: graphicsModule,
-    },
+};
 
-    state: { 
+export const state = function () {
+    return {
         LSObjs: [],
         LSObjsLoaded: false,
         roomConfig: {},
@@ -22,9 +20,10 @@ const xrModule = {
         sceneLoaded: false,
         isMobile: false,
         inVR: false
-     },
+    }
+};
 
-    mutations: {
+export const mutations = {
         SET_IN_VR: function(state, active=true) {
             if (CONFIG.DEBUG) {console.log("SET_IN_VR")}
             state.inVR = active;
@@ -65,8 +64,8 @@ const xrModule = {
                 state.isMobile = AFRAME.utils.device.isMobile();
             }
         },
-     },
-    actions: {
+};
+export const actions = {
         setRoomName (context, name) {
             if (CONFIG.DEBUG) {console.log(`setRoomName(${name})`);};
             context.commit('SET_ROOMNAME', name);
@@ -103,8 +102,15 @@ const xrModule = {
                 // handle error
                 console.log(error);
             })
-          }
-     }
-  }
+        }
+};
+
+const xrModule = {
+    namespaced: true,
+    modules,
+    state,
+    mutations,
+    actions
+};
 
 export default xrModule;
