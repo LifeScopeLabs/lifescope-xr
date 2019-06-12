@@ -198,11 +198,11 @@ export default {
         },
         updateFloorMap(val) {
             console.log(`updateFloorMap(${val})`)
-            this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', val);
+            this.$store.commit('xr/map/SET_FLOOR_MAP_ACTIVE', val);
         },
         updateWorldMap(val) {
             console.log(`updateWorldMap(${val})`)
-            this.$store.commit('xr/graphics/SET_WORLD_MAP_ACTIVE', val);
+            this.$store.commit('xr/map/SET_WORLD_MAP_ACTIVE', val);
         }
     },
 }

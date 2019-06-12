@@ -3,11 +3,14 @@ import axios from 'axios';
 import avatarModule from './modules/avatar';
 import carouselModule from './modules/carousel';
 import graphicsModule from './modules/graphics';
+import mapModule from './modules/map';
+
 
 export const modules = {
         avatar: avatarModule,
         carousel: carouselModule,
         graphics: graphicsModule,
+        map: mapModule
 };
 
 export const state = function () {

@@ -5,7 +5,8 @@
             :rotation="railRotation(n-1)"
             :position="railPosition(n-1)"
             :bump="bump"
-            :normal="normal"/>
+            :normal="normal"
+            :quality="textureQuality"/>
         <a-custom-image v-for="n in numberOfItemsToDisplay"
             :key="'carouselImage' + n"
             :src="imageSrc(items[n-1])"
@@ -18,6 +19,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import { GraphicsQualityEnum } from '../../store/modules/xr/modules/graphics';
 
 export default {
     computed: {
@@ -37,6 +39,18 @@ export default {
         numberOfItemsToDisplay() {
             return Math.min(this.numberOfSegments, this.items.length);
         },
+        textureQuality() {
+            switch (this.quality) {
+                case GraphicsQualityEnum.LOW:
+                    return 's';
+                case GraphicsQualityEnum.MEDIUM:
+                    return 'm';
+                case GraphicsQualityEnum.HIGH:
+                    return 'l';
+                default:
+                    return 'l';
+            }
+        },
         // vuex store
         ...mapState('xr',
             [
@@ -53,7 +67,8 @@ export default {
         ...mapState('xr/graphics',
             [
                 'bump',
-                'normal'
+                'normal',
+                'quality'
             ]
         ),
     },

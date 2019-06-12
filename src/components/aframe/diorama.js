@@ -53,7 +53,7 @@ function createDioramaComponent(self) {
     var tlHelper = new textureLoaderHelper();
 
     if (self.data.mat == 'brass') {
-        brassBaseTexture = tlHelper.loadTexture( 'bronze', 'base', 'jpg',
+        brassBaseTexture = tlHelper.loadTexture( 'bronze', 'base', self.data.quality, 'jpg',
             function (texture) {
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                 texture.offset.set( 0, 0 );
@@ -69,7 +69,7 @@ function createDioramaComponent(self) {
             } );
 
         if (self.data.withBump) {
-            brassBumpTexture = tlHelper.loadTexture( 'bronze', 'height',
+            brassBumpTexture = tlHelper.loadTexture( 'bronze', 'height', self.data.quality, 'jpg',
                 function (texture) {
                     material.bumpMap = texture;
                     material.bumpScale = 1;
@@ -77,7 +77,7 @@ function createDioramaComponent(self) {
             );
         }
         if (self.data.withNormal) {
-            brassNormalTexture = tlHelper.loadTexture( 'bronze', 'normal',
+            brassNormalTexture = tlHelper.loadTexture( 'bronze', 'normal', self.data.quality, 'jpg',
                 function (texture) {
                     material.normalMap = texture;
                 }
@@ -87,7 +87,7 @@ function createDioramaComponent(self) {
 
     else if (self.data.mat == 'wood') {
 
-        woodBaseTexture = tlHelper.loadTexture( 'wood-panel', 'base', 'jpg',
+        woodBaseTexture = tlHelper.loadTexture( 'wood-panel', 'base', self.data.quality, 'jpg',
             function (texture) {
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                 texture.offset.set( 0, 0 );
@@ -104,7 +104,7 @@ function createDioramaComponent(self) {
             bumpScale: 1} );
 
         if (self.data.withBump) {
-            woodBumpTexture = tlHelper.loadTexture( 'wood-panel', 'height',
+            woodBumpTexture = tlHelper.loadTexture( 'wood-panel', 'height', self.data.quality, 'jpg',
                 function (texture) {
                     material.bumpMap = texture;
                     material.bumpScale = 1;
@@ -112,7 +112,7 @@ function createDioramaComponent(self) {
             );
         }
         if (self.data.withNormal) {
-            woodNormalTexture = tlHelper.loadTexture( 'wood-panel', 'normal',
+            woodNormalTexture = tlHelper.loadTexture( 'wood-panel', 'normal', self.data.quality, 'jpg',
                 function (texture) {
                     material.normalMap = texture;
                 }
@@ -232,6 +232,7 @@ AFRAME.registerComponent('diorama-component', {
         roughness: { type: 'number', default: 0.2 },
         withBump: { default: false },
         withNormal: { default: false },
+        quality: { default: 'l' }, //, oneOf: ['s', 'm', 'l']
         cyl: { default: false },
         helper: { default: false }
     },
@@ -256,14 +257,14 @@ function createStakeComponent(self) {
     var material, mesh1, mesh2, mesh3;
 
     //load brass texture once
-    brassBaseTexture = tlHelper.getOrLoadTexture( 'bronze', 'base', 'jpg',
+    brassBaseTexture = tlHelper.getOrLoadTexture( 'bronze', 'base', self.data.quality, 'jpg',
         function (texture) {
             texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
             texture.offset.set( 0, 0 );
             texture.repeat.set( self.data.repeatU, self.data.repeatV );
     });
-    brassBumpTexture = tlHelper.getOrLoadTexture( 'bronze', 'height' );
-    brassNormalTexture = tlHelper.getOrLoadTexture( 'bronze', 'normal' );
+    brassBumpTexture = tlHelper.getOrLoadTexture( 'bronze', 'height', self.data.quality );
+    brassNormalTexture = tlHelper.getOrLoadTexture( 'bronze', 'normal', self.data.quality );
     
     material = new THREE.MeshPhongMaterial( { map: brassBaseTexture,
         side:THREE.FrontSide,
@@ -553,7 +554,8 @@ AFRAME.registerPrimitive('a-custom-image', {
     mappings: {
         'src': 'image-component.imageURL',
         'bump': 'diorama-component.withBump',
-        'normal': 'diorama-component.withNormal'
+        'normal': 'diorama-component.withNormal',
+        'quality': 'diorama-component.quality'
     }
 });
 
@@ -598,6 +600,7 @@ AFRAME.registerPrimitive( 'a-rail', {
     mappings: {
         'radius': 'diorama-component.cylradius',
         'bump': 'diorama-component.withBump',
-        'normal': 'diorama-component.withNormal'
+        'normal': 'diorama-component.withNormal',
+        'quality': 'diorama-component.quality'
     }
 });

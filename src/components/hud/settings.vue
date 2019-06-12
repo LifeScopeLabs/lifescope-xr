@@ -74,6 +74,28 @@
                     <label for="textures-setting-normal">Normals</label>
                 </div>
             </div>
+
+            <h2> Quality </h2>
+            <div class="input-quality">
+                <div>
+                    <input type="radio" id="quality-setting-low" name="low" value="LOW"
+                            v-model="qualitySetting">
+                    <label for="quality-setting-low">Low</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="quality-setting-med" name="med" value="MEDIUM"
+                            v-model="qualitySetting">
+                    <label for="quality-setting-med">Medium</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="quality-setting-high" name="hiegh" value="HIGH"
+                            checked v-model="qualitySetting">
+                    <label for="quality-setting-high">HIGH</label>
+                </div>
+
+            </div>
         </div>
     </div>
 
@@ -82,13 +104,15 @@
 <script>
 import { mapState } from 'vuex';
 
-import { SkyboxEnum } from '../../store/modules/xr/modules/graphics';
+import { SkyboxEnum, GraphicsQualityEnum } from '../../store/modules/xr/modules/graphics';
+
 
 export default {
 
     data() {
         return {
             skySetting: 'STARS',
+            qualitySetting: 'HIGH',
             settingsStyleObject: {
                 visibility: 'hidden',
             },
@@ -100,27 +124,24 @@ export default {
 
     computed: {
         mapFloorSetting: {
-            get () { return this.$store.state.xr.graphics.mapFloorSetting;},
+            get () { return this.$store.state.xr.map.mapFloorSetting;},
             set (val) { 
-                // console.log(this.$store.state.xr.graphics.mapFloorSetting);
-                this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', val);
-                // console.log(this.$store.state.xr.graphics.mapFloorSetting);
-                 }
+                this.$store.commit('xr/map/SET_FLOOR_MAP_ACTIVE', val);
+            }
         },
         mapWorldSetting: {
-            get () { return this.$store.state.xr.graphics.worldMapActive;},
+            get () { return this.$store.state.xr.map.worldMapActive;},
             set (val) { 
-                // console.log(this.$store.state.xr.graphics)
-                this.$store.commit('xr/graphics/SET_WORLD_MAP_ACTIVE', val);
-                }
+                this.$store.commit('xr/map/SET_WORLD_MAP_ACTIVE', val);
+            }
         },
         mapLatitude: {
-            get () { return this.$store.state.xr.graphics.mapLatitude;},
-            set (val) { this.$store.commit('xr/graphics/SET_MAP_LATITUDE', val); }
+            get () { return this.$store.state.xr.map.mapLatitude;},
+            set (val) { this.$store.commit('xr/map/SET_MAP_LATITUDE', val); }
         },
         mapLongitude: {
-            get () { return this.$store.state.xr.graphics.mapLongitude;},
-            set (val) { this.$store.commit('xr/graphics/SET_MAP_LONGITUDE', val); }
+            get () { return this.$store.state.xr.map.mapLongitude;},
+            set (val) { this.$store.commit('xr/map/SET_MAP_LONGITUDE', val); }
         },
         inputMapLatitude: {
             get () { return this.lat},
@@ -146,7 +167,8 @@ export default {
         ...mapState('xr/graphics',
         [
             'skytime',
-            'skybox'
+            'skybox',
+            'quality'
         ]),
     },
 
@@ -159,9 +181,17 @@ export default {
                 console.log(`couldn't change skySetting: ${newVal} is not a SkyboxEnum`);
             }
         },
+        qualitySetting: function (newVal, oldVal) {
+            if (GraphicsQualityEnum.hasOwnProperty(newVal)) {
+                this.$store.commit('xr/graphics/SET_QUALITY', newVal);
+            }
+            else {
+                console.log(`couldn't change qualitySetting: ${newVal} is not a GraphicsQualityEnum`);
+            }
+        },
         mapFloorCheck: function (newVal, oldVal) {
             // this.mapFloorSetting.set(newVal);
-            this.$store.commit('xr/graphics/SET_FLOOR_MAP_ACTIVE', newVal);
+            this.$store.commit('xr/map/SET_FLOOR_MAP_ACTIVE', newVal);
         }
     },
 
@@ -201,8 +231,8 @@ export default {
 
         },
         setCoords() {
-            this.$store.commit('xr/graphics/SET_MAP_LATITUDE', this.lat);
-            this.$store.commit('xr/graphics/SET_MAP_LONGITUDE', this.lon);
+            this.$store.commit('xr/map/SET_MAP_LATITUDE', this.lat);
+            this.$store.commit('xr/map/SET_MAP_LONGITUDE', this.lon);
         }
     },
 }

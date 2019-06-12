@@ -1,9 +1,9 @@
 export default class textureLoaderHelper {
     constructor() {
         this.baseUrl = 'https://s3.amazonaws.com/lifescope-static/static/xr/textures/';
-        this.bronzeUrl = this.baseUrl + 'BronzeBare/bronze_';
-        this.woodUrl = this.baseUrl + 'WoodenFloor/wood_';
-        this.woodPanelUrl = this.baseUrl + 'WoodenFloor/wood-panel_';
+        this.bronzeUrl = this.baseUrl + 'bronze/';
+        this.woodUrl = this.baseUrl + 'wood/floor/';
+        this.woodPanelUrl = this.baseUrl + 'wood/panel/';
 
         this.materialUrls = {
             'bronze': this.bronzeUrl,
@@ -12,14 +12,14 @@ export default class textureLoaderHelper {
           };
     }
 
-    loadTexture(material, type='base', ext='jpg', success) {
-        const url = this.materialUrls[material] + type + '.' + ext;
+    loadTexture(material, type='base', quality='l', ext='jpg', success) {
+        const url = this.materialUrls[material] + type + '-' + quality + '.' + ext;
         // console.log(`loadTexture: ${url}`);
         return new THREE.TextureLoader().load( url, success );
     }
 
-    getOrLoadTexture(material, type='base', ext='jpg', success) {
-        const url = this.materialUrls[material] + type + '.' + ext;
+    getOrLoadTexture(material, type='base', quality='l', ext='jpg', success) {
+        const url = this.materialUrls[material] + type + '-' + quality + '.' + ext;
         
         var texture =  THREE.Cache.files[url];
         if (texture !== undefined) {

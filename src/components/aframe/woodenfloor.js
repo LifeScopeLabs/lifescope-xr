@@ -16,6 +16,7 @@ AFRAME.registerComponent('wooden-floor', {
       reflectivity: { type: 'number', default: 0.5 },
       withBump: { type: 'boolean', default: false },
       withNormal: { type: 'boolean', default: false },
+      quality: { default: 'l' },
       helper: { default: false }
     },
 
@@ -32,7 +33,7 @@ AFRAME.registerComponent('wooden-floor', {
         var tlHelper = new textureLoaderHelper();
         const baseUrl = 'https://s3.amazonaws.com/lifescope-static/static/xr/textures/WoodenFloor/wood_';
 
-        var baseTexture = tlHelper.loadTexture( 'wood', 'base', 'jpg',
+        var baseTexture = tlHelper.loadTexture( 'wood', 'base', self.data.quality, 'jpg',
             function (texture) {
                 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                 texture.offset.set( 0, 0 );
@@ -50,7 +51,7 @@ AFRAME.registerComponent('wooden-floor', {
         floorGeometry.rotateX(-Math.PI / 2);
 
         if (self.data.withBump) {
-            var bumpTexture = tlHelper.loadTexture( 'wood-panel', 'height', 'jpg',
+            var bumpTexture = tlHelper.loadTexture( 'wood-panel', 'height', self.data.quality, 'jpg',
                 function (texture) {
                     floorMaterial.bumpMap = texture;
                     floorMaterial.bumpScale = 1;
@@ -59,7 +60,7 @@ AFRAME.registerComponent('wooden-floor', {
             
         }
         if (self.data.withNormal) {
-            var normalTexture = tlHelper.loadTexture( 'wood-panel', 'normal', 'jpg',
+            var normalTexture = tlHelper.loadTexture( 'wood-panel', 'normal', self.data.quality, 'jpg',
                 function (texture) {
                     floorMaterial.normalMap = texture;
                 } );
@@ -86,6 +87,7 @@ AFRAME.registerPrimitive( 'a-wooden-floor', {
         'y': 'wooden-floor.y',
         'z': 'wooden-floor.z',
         'bump': 'wooden-floor.withBump',
-        'normal': 'wooden-floor.withNormal'
+        'normal': 'wooden-floor.withNormal',
+        'quality': 'diorama-component.quality'
     }
 });
