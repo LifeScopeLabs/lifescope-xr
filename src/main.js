@@ -22,6 +22,7 @@ import './components/aframe/avatar-rig';
 import './components/aframe/ionicon';
 import './components/aframe/mapbox-terrain.js';
 import './components/aframe/diorama.js';
+import './components/aframe/rail.js';
 import './components/aframe/woodenfloor.js';
 import './components/hubs/virtual-gamepad-controls.js';
 import './components/hubs/character-controller.js';
