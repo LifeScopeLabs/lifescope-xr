@@ -4,16 +4,19 @@
             :key="'railSegment' + n"
             :rotation="railRotation(n-1)"
             :position="railPosition(n-1)"
+            :radius="1"
+            :radialsegments="numberOfSegments"
             :bump="bump"
             :normal="normal"
             :quality="textureQuality"/>
-        <a-custom-image v-for="n in numberOfItemsToDisplay"
+        <a-diorama v-for="n in numberOfItemsToDisplay"
             :key="'carouselImage' + n"
             :src="imageSrc(items[n-1])"
             :rotation="dioramaRotation(n-1)"
             :position="dioramaPosition(n-1)"
             :bump="bump"
-            :normal="normal"/>
+            :normal="normal"
+            :quality="textureQuality"/>
     </a-entity>
 </template>
 
@@ -22,6 +25,12 @@ import { mapState } from 'vuex';
 import { GraphicsQualityEnum } from '../../store/modules/xr/modules/graphics';
 
 export default {
+    data() {
+        return {
+            railheight: 1.2,
+            floorradius: 6,
+        }
+    },
     computed: {
         sortedLSObjs() {
             var sorted = this.LSObjs;
@@ -97,8 +106,8 @@ export default {
             var sinTheta = Math.sin( theta );
             var cosTheta = Math.cos( theta );
 
-            var x = 6 * sinTheta;
-            var z = 6 * cosTheta;
+            var x = this.floorradius * sinTheta;
+            var z = this.floorradius * cosTheta;
 
             return `${x} 0 ${z}`;
         },
@@ -120,10 +129,10 @@ export default {
             var sinTheta = Math.sin( theta );
             var cosTheta = Math.cos( theta );
 
-            var x = 6.2 * sinTheta;
-            var z = 6.2 * cosTheta;
+            var x = (this.floorradius) * sinTheta;
+            var z = (this.floorradius) * cosTheta;
 
-            return `${x} 1.5 ${z}`;
+            return `${x} 0 ${z}`;
         },
     },
   }

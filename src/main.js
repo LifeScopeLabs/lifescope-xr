@@ -22,7 +22,6 @@ import './components/aframe/avatar-rig';
 import './components/aframe/ionicon';
 import './components/aframe/mapbox-terrain.js';
 import './components/aframe/diorama.js';
-import './components/aframe/rail.js';
 import './components/aframe/woodenfloor.js';
 import './components/hubs/virtual-gamepad-controls.js';
 import './components/hubs/character-controller.js';
@@ -54,7 +53,7 @@ var router = new VueRouter({
 // ignore elements for Firefox
 Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere',
  'a-animation', 'a-sky', 'a-mapbox-terrain', 'a-wooden-floor', 'a-diorama-cyl',
- 'a-sun-sky', 'a-rail', 'a-custom-image',
+ 'a-sun-sky', 'a-rail', 'a-diorama',
  'a-gui-flex-container', 'a-gui-label', 'a-gui-radio', 'a-gui-cursor', 'a-gui-toggle'];
 
 // mobile swipe controls
