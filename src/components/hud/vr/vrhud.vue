@@ -125,8 +125,15 @@ export default {
             posEntity.parentElement.removeChild(posEntity);
             hud = document.querySelector(selector);
             posEntity.removeEventListener('loaded', loadedHandler);
-            hud.object3D.position.set(position.x, position.y, position.z);
+            hud.object3D.position.set(position.x, position.y + 5, position.z);
             hud.object3D.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+
+            AFRAME.ANIME({
+                targets: hud.object3D.position,
+                easing: 'linear',
+                y: [position.y + 5, position.y],
+                duration: 0.5*1000,
+            })
         }
         posEntity.addEventListener('loaded', loadedHandler)
       }

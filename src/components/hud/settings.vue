@@ -106,6 +106,7 @@ import { mapState } from 'vuex';
 
 import { SkyboxEnum, GraphicsQualityEnum } from '../../store/modules/xr/modules/graphics';
 
+import HudUtils from './hudutils';
 
 export default {
 
@@ -115,6 +116,7 @@ export default {
             qualitySetting: 'HIGH',
             settingsStyleObject: {
                 visibility: 'hidden',
+                opacity: 0
             },
             mapFloorCheck: false,
             lat: 0,
@@ -197,6 +199,7 @@ export default {
 
     mounted() {
         var self = this;
+        self.hudUtils = new HudUtils();
         document.body.addEventListener('keypress', self.keypressListener);
         
         self.inputMapLatitude = self.mapLatitude;
@@ -220,10 +223,7 @@ export default {
             this.toggleSky();
         },
         toggleSettingsVisibility() {
-            if (CONFIG.DEBUG) {console.log("toggleSettingsVisibility");}
-            this.settingsStyleObject.visibility = 
-                this.settingsStyleObject.visibility == 'visible' ?
-                'hidden' : 'visible';
+            this.hudUtils.toggleHud(this.settingsStyleObject);
         },
         toggleSky() {
             var newVal = this.skybox == SkyboxEnum.STARS ? 'SUN' : 'STARS';
