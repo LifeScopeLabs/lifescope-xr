@@ -1,13 +1,13 @@
-const SkyboxEnum = {
+const SkyboxEnum = Object.freeze({
     STARS: 1,
     SUN: 2
-};
+});
 
-const GraphicsQualityEnum = {
+const GraphicsQualityEnum = Object.freeze({
     LOW: 1,
     MEDIUM: 2,
     HIGH: 3
-};
+});
 
 export const state = function () {
     return {

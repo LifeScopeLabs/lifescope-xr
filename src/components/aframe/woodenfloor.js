@@ -88,6 +88,7 @@ AFRAME.registerPrimitive( 'a-wooden-floor', {
         'z': 'wooden-floor.z',
         'bump': 'wooden-floor.withBump',
         'normal': 'wooden-floor.withNormal',
-        'quality': 'diorama-component.quality'
+        'quality': 'wooden.quality',
+        'radialsegments': 'wooden-floor.radialsegments',
     }
 });

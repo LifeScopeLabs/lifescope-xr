@@ -1,10 +1,11 @@
 <template>
     <a-entity class="gallery-carousel">
-        <a-rail v-for="n in numberOfSegments"
+        <a-rail v-for="n in numberOfItemsToDisplay"
             :key="'railSegment' + n"
             :rotation="railRotation(n-1)"
             :position="railPosition(n-1)"
-            :radius="1"
+            :radius="floorRadius"
+            :railheight="railHeight"
             :radialsegments="numberOfSegments"
             :bump="bump"
             :normal="normal"
@@ -14,6 +15,7 @@
             :src="imageSrc(items[n-1])"
             :rotation="dioramaRotation(n-1)"
             :position="dioramaPosition(n-1)"
+            :railheight="railHeight"
             :bump="bump"
             :normal="normal"
             :quality="textureQuality"/>
@@ -25,13 +27,10 @@ import { mapState } from 'vuex';
 import { GraphicsQualityEnum } from '../../store/modules/xr/modules/graphics';
 
 export default {
-    data() {
-        return {
-            railheight: 1.2,
-            floorradius: 6,
-        }
-    },
     computed: {
+        radialsegments() {
+            return this.numberOfSegments;
+        },
         sortedLSObjs() {
             var sorted = this.LSObjs;
             sorted.sort(function (a, b) {
@@ -70,7 +69,9 @@ export default {
         ...mapState('xr/carousel',
             [
                 'pageStart',
-                'numberOfSegments'
+                'numberOfSegments',
+                'floorRadius',
+                'railHeight'
             ]
         ),
         ...mapState('xr/graphics',
@@ -89,11 +90,10 @@ export default {
                 return this.roomConfig.bucket_route + '/' + this.roomConfig.BUCKET_NAME + '/' + image.route;
         },
         railRotation: function(segment) {
-            var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
-            // 0.5/36 to get to the post
+            var u = segment / this.numberOfSegments;
             var theta =  (-3*Math.PI/4) - (u * Math.PI * 2);
 
-            var roty = theta * (180/Math.PI) + 5;
+            var roty = theta * (180/Math.PI);
             var rotx = 0;
 
             return `${rotx} ${roty} 0`;
@@ -106,8 +106,8 @@ export default {
             var sinTheta = Math.sin( theta );
             var cosTheta = Math.cos( theta );
 
-            var x = this.floorradius * sinTheta;
-            var z = this.floorradius * cosTheta;
+            var x = this.floorRadius * sinTheta;
+            var z = this.floorRadius * cosTheta;
 
             return `${x} 0 ${z}`;
         },
@@ -129,8 +129,8 @@ export default {
             var sinTheta = Math.sin( theta );
             var cosTheta = Math.cos( theta );
 
-            var x = (this.floorradius) * sinTheta;
-            var z = (this.floorradius) * cosTheta;
+            var x = (this.floorRadius) * sinTheta;
+            var z = (this.floorRadius) * cosTheta;
 
             return `${x} 0 ${z}`;
         },

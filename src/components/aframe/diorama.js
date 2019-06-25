@@ -190,6 +190,12 @@ AFRAME.registerComponent('diorama-rail', {
         }
     },
 
+    remove: function () {
+        if (this.el.object3DMap.hasOwnProperty(this.id)) {
+            this.el.removeObject3D(this.id);
+        }
+    },
+
     _createRail() {
         var data = this.data;
         this._createDioramaComponent('bronze', 'column');
@@ -231,16 +237,17 @@ AFRAME.registerComponent('diorama-rail', {
 AFRAME.registerPrimitive( 'a-rail', {
     defaultComponents: {
         'diorama-rail__rail': { 
-            'railheight': 1.2
         },
 
     },
     mappings: {
-        'radius': 'diorama-rail.floorradius',
-        'bump': 'diorama-rail.withBump',
-        'normal': 'diorama-rail.withNormal',
-        'quality': 'diorama-rail.quality',
-        'radialsegments': 'diorama-rail.radialsegments'
+        'radius': 'diorama-rail__rail.floorradius',
+        'bump': 'diorama-rail__rail.withBump',
+        'normal': 'diorama-rail__rail.withNormal',
+        'quality': 'diorama-rail__rail.quality',
+        'radialsegments': 'diorama-rail__rail.radialsegments',
+        'railheight': 'diorama-rail__rail.railheight',
+
     }
 });
 
@@ -297,6 +304,15 @@ AFRAME.registerComponent('diorama-case', {
             self._createImage();
         }
         
+    },
+
+    remove: function () {
+        if (this.el.object3DMap.hasOwnProperty(this.id)) {
+            this.el.removeObject3D(this.id);
+        }
+        if (this.el.object3DMap.hasOwnProperty('image')) {
+            this.el.removeObject3D('image');
+        }
     },
 
     _createDiorama() {
@@ -431,15 +447,15 @@ AFRAME.registerComponent('diorama-case', {
 AFRAME.registerPrimitive( 'a-diorama', {
     defaultComponents: {
         'diorama-case__case': { 
-            'railheight': 1.2
         },
 
     },
     mappings: {
-        'bump': 'diorama-case.withBump',
-        'normal': 'diorama-case.withNormal',
-        'quality': 'diorama-case.quality',
-        'src': 'diorama-case.imageURL',
-        'srcfit': 'diorama-case.srcFit',
+        'bump': 'diorama-case__case.withBump',
+        'normal': 'diorama-case__case.withNormal',
+        'quality': 'diorama-case__case.quality',
+        'src': 'diorama-case__case.imageURL',
+        'srcfit': 'diorama-case__case.srcFit',
+        'railheight': 'diorama-case__case.railheight'
     }
 });

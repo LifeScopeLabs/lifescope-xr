@@ -22,6 +22,21 @@
                     <label for="sky-setting-sun">Sun</label>
                 </div>
             </div>
+
+            <h3> Carousel </h3>
+            <div class="input-carousel">
+                <input type="number" id="car-setting-segements" name="segments"
+                        v-model="inputSegments"
+                        min="12" max="121">
+                <label for="car-setting-segements">Segments</label>
+
+                <input type="number" id="car-setting-radius" name="floorradius"
+                        v-model="inputFloorRadius"
+                        min="1">
+                <label for="car-setting-radius">Floor Radius</label>
+            </div>
+            <input type="button" v-on:click="updateCarousel" id="car-setting-button" name="car-settings"
+                value="Update Carousel">
             
 
             <h3> Map </h3>
@@ -119,6 +134,10 @@ export default {
             mapFloorCheck: false,
             lat: 0,
             lon: 0,
+            carouselDimensions: {
+                segments: 24,
+                radius: 5
+            }
         }
     },
 
@@ -144,12 +163,21 @@ export default {
             set (val) { this.$store.commit('xr/map/SET_MAP_LONGITUDE', val); }
         },
         inputMapLatitude: {
-            get () { return this.lat},
+            get () { return this.lat },
             set (val) { this.lat = val }
         },
         inputMapLongitude: {
-            get () { return this.lon},
+            get () { return this.lon },
             set (val) { this.lon = val }
+        },
+
+        inputSegments: {
+            get () { return this.carouselDimensions.segments },
+            set (val) { this.carouselDimensions.segments = val }
+        },
+        inputFloorRadius: {
+            get () { return this.carouselDimensions.radius },
+            set (val) { this.carouselDimensions.radius = val }
         },
 
         bump: {
@@ -170,6 +198,11 @@ export default {
             'skybox',
             'quality'
         ]),
+        ...mapState('xr/carousel',
+        [
+            'numberOfSegments',
+            'floorRadius'
+        ])
     },
 
     watch: {
@@ -202,6 +235,9 @@ export default {
         self.inputMapLatitude = self.mapLatitude;
         self.inputMapLongitude = self.mapLongitude;
 
+        self.inputSegments = self.numberOfSegments;
+        self.inputFloorRadius = self.floorRadius;
+
         document.body.addEventListener('swapsky', self.swapskyListener);
     },
 
@@ -228,11 +264,14 @@ export default {
         toggleSky() {
             var newVal = this.skybox == SkyboxEnum.STARS ? 'SUN' : 'STARS';
             this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
-
         },
         setCoords() {
             this.$store.commit('xr/map/SET_MAP_LATITUDE', this.lat);
             this.$store.commit('xr/map/SET_MAP_LONGITUDE', this.lon);
+        },
+        updateCarousel() {
+            this.$store.commit('xr/carousel/SET_NUMBER_OF_SEGMENTS', this.carouselDimensions.segments);
+            this.$store.commit('xr/carousel/SET_FLOOR_RADIUS', this.carouselDimensions.radius);
         }
     },
 }
