@@ -2,12 +2,14 @@
     <a-entity class="gallery">
         <!-- lights -->
         <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
-            <a-entity id="dirLight" light="type: directional; color: #FFF; intensity: 0.8" position="1 1 1"></a-entity>
+        <a-entity id="dirLight" light="type: directional; color: #FFF; intensity: 0.8;" position="-1 -1 0"></a-entity>
+        <a-light type='point' color='#FFF' intensity='0.8' position="10 10 0" ></a-light>
+        <!-- <a-light type='hemisphere' color='#FFF' groundColor='#00F' intensity='0.8' ></a-light> -->
 
         <!-- Floor -->
         <a-wooden-floor class="boundry"
             :radius='floorRadius' :radialsegments='numberOfSegments'
-            :bump="bump" :normal="normal" :quality="quality"></a-wooden-floor>
+            :bump="bump" :normal="normal" :quality="quality" :shading="textureShading"></a-wooden-floor>
 
         <!-- Carousel -->
         <gallery-carousel />
@@ -47,6 +49,8 @@ import { mapState } from 'vuex';
 
 import galleryCarousel from "./carousel/gallery-carousel.vue";
 
+import { ShadingEnum } from "../store/modules/xr/modules/graphics";
+
 export default {
 
     components: {
@@ -54,11 +58,22 @@ export default {
     },
 
     computed: {
+        textureShading() {
+            switch (this.shading) {
+                case ShadingEnum.DEFAULT:
+                    return 'default';
+                case ShadingEnum.CEL:
+                    return 'cel';
+                default:
+                    return 'default';
+            }
+        },
         ...mapState('xr/graphics',
             [
                 'bump',
                 'normal',
-                'quality'
+                'quality',
+                'shading',
             ]
         ),
         

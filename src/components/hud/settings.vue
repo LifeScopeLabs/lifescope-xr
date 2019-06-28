@@ -90,6 +90,13 @@
                 </div>
             </div>
 
+            <h2> Shading </h2>
+
+             <select v-model="shading">
+                <option value="DEFAULT">Default</option>
+                <option value="CEL">Cel</option>
+            </select> 
+
             <h2> Quality </h2>
             <div class="input-quality">
                 <div>
@@ -119,7 +126,7 @@
 <script>
 import { mapState } from 'vuex';
 
-import { SkyboxEnum, GraphicsQualityEnum } from '../../store/modules/xr/modules/graphics';
+import { SkyboxEnum, GraphicsQualityEnum, ShadingEnum } from '../../store/modules/xr/modules/graphics';
 
 
 export default {
@@ -178,6 +185,11 @@ export default {
         inputFloorRadius: {
             get () { return this.carouselDimensions.radius },
             set (val) { this.carouselDimensions.radius = val }
+        },
+
+        shading: {
+            get () { return this.$store.state.xr.graphics.shading;},
+            set (val) { this.$store.commit('xr/graphics/SET_SHADING', val); }
         },
 
         bump: {

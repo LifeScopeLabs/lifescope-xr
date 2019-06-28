@@ -9,7 +9,8 @@
             :radialsegments="numberOfSegments"
             :bump="bump"
             :normal="normal"
-            :quality="textureQuality"/>
+            :quality="textureQuality"
+            :shading="textureShading"/>
         <a-diorama v-for="n in numberOfItemsToDisplay"
             :key="'carouselImage' + n"
             :src="imageSrc(items[n-1])"
@@ -18,13 +19,14 @@
             :railheight="railHeight"
             :bump="bump"
             :normal="normal"
-            :quality="textureQuality"/>
+            :quality="textureQuality"
+            :shading="textureShading"/>
     </a-entity>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import { GraphicsQualityEnum } from '../../store/modules/xr/modules/graphics';
+import { GraphicsQualityEnum, ShadingEnum } from '../../store/modules/xr/modules/graphics';
 
 export default {
     computed: {
@@ -59,6 +61,16 @@ export default {
                     return 'l';
             }
         },
+        textureShading() {
+            switch (this.shading) {
+                case ShadingEnum.DEFAULT:
+                    return 'default';
+                case ShadingEnum.CEL:
+                    return 'cel';
+                default:
+                    return 'default';
+            }
+        },
         // vuex store
         ...mapState('xr',
             [
@@ -78,7 +90,8 @@ export default {
             [
                 'bump',
                 'normal',
-                'quality'
+                'quality',
+                'shading'
             ]
         ),
     },
