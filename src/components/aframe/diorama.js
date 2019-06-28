@@ -1,10 +1,16 @@
 import textureLoaderHelper from '../../util/textureLoaderHelper.js';
+import GradientShader from '../../shaders/GradientShader';
+import CelShader from '../../shaders/CelShader';
 
+var materialColors =  new Map([
+    ['bronze', 0xDAA520],
+    ['wood', 0xA0522D],
+    ['wood-panel', 0xA0522D],
+    ['glass', 0xC0C0C0],
+])
 
-function _buildMaterial(type, quality='l', withBump=false, withNormal=false, repeatU=1, repeatV=1, props={}) {
+function _buildMaterial(shading, type, quality='l', withBump=false, withNormal=false, repeatU=1, repeatV=1, props={}) {
     var material, baseTexture, bumpTexture, nomralTexture;
-    var tlHelper = new textureLoaderHelper();
-
     if (type=='glass') {
         material = new THREE.MeshPhysicalMaterial( 
             {
@@ -20,6 +26,18 @@ function _buildMaterial(type, quality='l', withBump=false, withNormal=false, rep
         });
         return material
     }
+
+    if (shading=='cel') {
+        var material = new CelShader(materialColors.get(type), props);
+        return material;
+    }
+
+    if (type=='gradient') {
+        var material = new GradientShader(0xACB6E5, 0x74ebd5);
+        return material;
+    }
+    
+    var tlHelper = new textureLoaderHelper();
 
     baseTexture = tlHelper.loadTexture( type, 'base', quality, 'jpg',
         function (texture) {
@@ -176,6 +194,7 @@ AFRAME.registerComponent('diorama-rail', {
         withBump: { default: false },
         withNormal: { default: false },
         quality: { default: 'l' }, //, oneOf: ['s', 'm', 'l']
+        shading: { default: 'default' },
     },
 
     multiple: true,
@@ -187,6 +206,12 @@ AFRAME.registerComponent('diorama-rail', {
         }
         if (self.id != undefined) {
             self._createRail();
+        }
+    },
+
+    remove: function () {
+        if (this.el.object3DMap.hasOwnProperty(this.id)) {
+            this.el.removeObject3D(this.id);
         }
     },
 
@@ -216,7 +241,7 @@ AFRAME.registerComponent('diorama-rail', {
         data.pos = pos;
         data.side = side;
     
-        material = _buildMaterial(type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props);
+        material = _buildMaterial(data.shading, type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props);
         geom = _buildGeometry(shape, data);
         mesh = new THREE.Mesh(geom, material);
     
@@ -231,16 +256,17 @@ AFRAME.registerComponent('diorama-rail', {
 AFRAME.registerPrimitive( 'a-rail', {
     defaultComponents: {
         'diorama-rail__rail': { 
-            'railheight': 1.2
         },
 
     },
     mappings: {
-        'radius': 'diorama-rail.floorradius',
-        'bump': 'diorama-rail.withBump',
-        'normal': 'diorama-rail.withNormal',
-        'quality': 'diorama-rail.quality',
-        'radialsegments': 'diorama-rail.radialsegments'
+        'radius': 'diorama-rail__rail.floorradius',
+        'bump': 'diorama-rail__rail.withBump',
+        'normal': 'diorama-rail__rail.withNormal',
+        'quality': 'diorama-rail__rail.quality',
+        'radialsegments': 'diorama-rail__rail.radialsegments',
+        'railheight': 'diorama-rail__rail.railheight',
+        'shading': 'diorama-rail__rail.shading',
     }
 });
 
@@ -276,6 +302,7 @@ AFRAME.registerComponent('diorama-case', {
         withBump: { default: false },
         withNormal: { default: false },
         quality: { default: 'l' }, //, oneOf: ['s', 'm', 'l']
+        shading: { default: 'default' }
     },
 
     multiple: true,
@@ -297,6 +324,15 @@ AFRAME.registerComponent('diorama-case', {
             self._createImage();
         }
         
+    },
+
+    remove: function () {
+        if (this.el.object3DMap.hasOwnProperty(this.id)) {
+            this.el.removeObject3D(this.id);
+        }
+        if (this.el.object3DMap.hasOwnProperty('image')) {
+            this.el.removeObject3D('image');
+        }
     },
 
     _createDiorama() {
@@ -416,7 +452,7 @@ AFRAME.registerComponent('diorama-case', {
         data.depth = depth;
         data.offset = offset;
     
-        material = _buildMaterial(type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props);
+        material = _buildMaterial(data.shading, type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props);
         geom = _buildGeometry('case', data);
         mesh = new THREE.Mesh(geom, material);
     
@@ -431,15 +467,16 @@ AFRAME.registerComponent('diorama-case', {
 AFRAME.registerPrimitive( 'a-diorama', {
     defaultComponents: {
         'diorama-case__case': { 
-            'railheight': 1.2
         },
 
     },
     mappings: {
-        'bump': 'diorama-case.withBump',
-        'normal': 'diorama-case.withNormal',
-        'quality': 'diorama-case.quality',
-        'src': 'diorama-case.imageURL',
-        'srcfit': 'diorama-case.srcFit',
+        'bump': 'diorama-case__case.withBump',
+        'normal': 'diorama-case__case.withNormal',
+        'quality': 'diorama-case__case.quality',
+        'src': 'diorama-case__case.imageURL',
+        'srcfit': 'diorama-case__case.srcFit',
+        'railheight': 'diorama-case__case.railheight',
+        'shading': 'diorama-case__case.shading',
     }
 });

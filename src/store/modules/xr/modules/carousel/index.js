@@ -2,7 +2,9 @@ export const state = function () {
     return {
         pageStart: 0,
         pageStep: 5,
-        numberOfSegments: 36,
+        numberOfSegments: 24,
+        floorRadius: 5,
+        railHeight: 1.2
      };
 };
 
@@ -24,6 +26,20 @@ export const mutations = {
         else {
             state.pageStart = length - state.numberOfSegments;
         }
+    },
+    SET_NUMBER_OF_SEGMENTS: function(state, val) {
+        if (CONFIG.DEBUG) {console.log("SET_NUMBER_OF_SEGMENTS")}
+        var num = new Number(val);
+        if (num < 12) {num = 12;}
+        if (num > 121) {num = 121;}
+        state.numberOfSegments = num;
+    },
+    SET_FLOOR_RADIUS: function(state, val) {
+        if (CONFIG.DEBUG) {console.log("SET_FLOOR_RADIUS")}
+        var num = new Number(val);
+        if (num < 1) {num = 1;}
+        // if (num > 24) {num = 24;}
+        state.floorRadius = num;
     },
 };
      
