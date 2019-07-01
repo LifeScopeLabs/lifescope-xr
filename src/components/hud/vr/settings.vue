@@ -58,6 +58,7 @@
 
         </a-gui-flex-container>
 
+        <!-- second column -->
         <a-gui-flex-container flex-direction="column" :width="width/2" :height="height" :position="width/4 + ' 0 0'"
             is-top-container="true" :opacity="opacity" :panel-color="panelColor">
                 <a-gui-label value="Maps"
@@ -80,6 +81,31 @@
                     :font-size="toggleStyle.fontSize" :background-color="toggleStyle.backgroundColor" :font-color="toggleStyle.fontColor"
                     :height="lineSep" lablelzoffset="0">
                 </a-gui-toggle>
+
+                                <a-gui-label value="Shading"
+                    :opacity="opacity"
+                    :font-size="header2Style.fontSize" :background-color="header2Style.backgroundColor" :font-color="textStyle.fontColor"
+                    :font-weight="header2Style.weight"
+                    :height="lineSep">
+                </a-gui-label>
+                <a-gui-radio class="clickable"
+                    value="DEFAULT"
+                    onclickevent="updateshading"
+                    radiogroup='shading'
+                    :checked="shading==ShadingEnum.DEFAULT"
+                    :opacity="opacity" 
+                    :font-size="radioStyle.fontSize" :background-color="radioStyle.backgroundColor" :font-color="radioStyle.fontColor"
+                    :height="lineSep" radiosizecoef="2" lablelzoffset="0">
+                </a-gui-radio>
+                <a-gui-radio class="clickable"
+                    value="CEL"
+                    onclickevent="updateshading"
+                    :opacity="opacity"
+                    radiogroup='shading'
+                    :checked="shading==ShadingEnum.CEL"
+                    :font-size="radioStyle.fontSize" :background-color="radioStyle.backgroundColor" :font-color="radioStyle.fontColor"
+                    :height="lineSep" radiosizecoef="2" lablelzoffset="0">
+                </a-gui-radio>
         </a-gui-flex-container>
 
     </a-entity>
@@ -88,6 +114,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import { ShadingEnum } from '../../../store/modules/xr/modules/graphics';
 
 export default {
 
@@ -124,43 +151,47 @@ export default {
                 fontColor: '#aeaeae'
             },
             gui: {},
-            guiActive: true
+            guiActive: true,
+            shadingSetting: {
+                DEFAULT: true,
+                CEL: false
+            },
+            ShadingEnum: ShadingEnum,
         }
+    },
+
+    computed: {
+        ...mapState('xr/graphics',
+        [
+            'shading',
+        ]),
     },
 
 
     mounted() {
         var self = this;
-        self.gui = document.querySelector('#helpgui');
+        // self.gui = document.querySelector('#vrhudentity');
 
-        document.body.addEventListener('togglemenu', function(evt) {
-            self.toggleHud();
-        });
+        // document.body.addEventListener('togglemenu', self.toggleHud());
+        self.$el.addEventListener('updatesky', self.updateSkyListener);
+        self.$el.addEventListener('updatebump', self.updateBumpListener);
+        self.$el.addEventListener('updatenormal', self.updateNormalListener);
+        self.$el.addEventListener('updatefloormap', self.updateFloorMapListener);
+        self.$el.addEventListener('updateworldmap', self.updateWorldMapListener);
+        self.$el.addEventListener('updateshading', self.updateShadingListener);
 
-        self.$el.addEventListener('updatesky', function(evt) {
-            // console.log('updatesky');
-            self.updateSky(evt.detail.value);
-        });
+        sha
+    },
 
-        self.$el.addEventListener('updatebump', function(evt) {
-            // console.log('updatebump');
-            self.updateBump(evt.detail.value);
-        });
-
-        self.$el.addEventListener('updatenormal', function(evt) {
-            // console.log('updatenormal');
-            self.updateNormal(evt.detail.value);
-        });
-
-        self.$el.addEventListener('updatefloormap', function(evt) {
-            // console.log('updatefloormap');
-            self.updateFloorMap(evt.detail.value);
-        });
-
-        self.$el.addEventListener('updateworldmap', function(evt) {
-            // console.log('updateworldmap');
-            self.updateWorldMap(evt.detail.value);
-        });
+    beforeDestroy() {
+        var self = this;
+        // document.body.removeEventListener('togglemenu', self.toggleHud());
+        self.$el.removeEventListener('updatesky', self.updateSkyListener);
+        self.$el.removeEventListener('updatebump', self.updateBumpListener);
+        self.$el.removeEventListener('updatenormal', self.updateNormalListener);
+        self.$el.removeEventListener('updatefloormap', self.updateFloorMapListener);
+        self.$el.removeEventListener('updateworldmap', self.updateWorldMapListener);
+        self.$el.removeEventListener('updateshading', self.updateShadingListener);
     },
 
     methods: {
@@ -183,27 +214,38 @@ export default {
                 self.guiActive = true;
             }
         },
-        updateSky(val) {
+        updateSkyListener(evt) {
             // console.log('updateSky');
+            var val = evt.detail.value;
             var newVal = val.toUpperCase();// == SkyboxEnum.STARS ? 'SUN' : 'STARS';
             this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
         },
-        updateBump(val) {
+        updateBumpListener(evt) {
+            var val = evt.detail.value;
             console.log(`updateBump(${val})`)
             this.$store.commit('xr/graphics/SET_BUMP', val);
         },
-        updateNormal(val) {
+        updateNormalListener(evt) {
+            var val = evt.detail.value;
             console.log(`updateNormal(${val})`)
             this.$store.commit('xr/graphics/SET_NORMAL', val);
         },
-        updateFloorMap(val) {
+        updateFloorMapListener(evt) {
+            var val = evt.detail.value;
             console.log(`updateFloorMap(${val})`)
             this.$store.commit('xr/map/SET_FLOOR_MAP_ACTIVE', val);
         },
-        updateWorldMap(val) {
+        updateWorldMapListener(evt) {
+            var val = evt.detail.value;
             console.log(`updateWorldMap(${val})`)
             this.$store.commit('xr/map/SET_WORLD_MAP_ACTIVE', val);
-        }
+        },
+        updateShadingListener(evt) {
+            var val = evt.detail.value;
+            // console.log('updateSky');
+            var newVal = val.toUpperCase();
+            this.$store.commit('xr/graphics/SET_SHADING', newVal);
+        },
     },
 }
 </script>

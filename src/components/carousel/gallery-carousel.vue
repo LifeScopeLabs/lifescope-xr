@@ -1,6 +1,6 @@
 <template>
     <a-entity class="gallery-carousel">
-        <a-rail v-for="n in numberOfItemsToDisplay"
+        <a-rail v-for="n in radialsegments"
             :key="'railSegment' + n"
             :rotation="railRotation(n-1)"
             :position="railPosition(n-1)"
@@ -31,7 +31,7 @@ import { GraphicsQualityEnum, ShadingEnum } from '../../store/modules/xr/modules
 export default {
     computed: {
         radialsegments() {
-            return this.numberOfSegments;
+            return Math.max(this.numberOfSegments, 12);
         },
         sortedLSObjs() {
             var sorted = this.LSObjs;
