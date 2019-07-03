@@ -46,9 +46,8 @@
         "webrtc-adapter": "^6.2.1"
     },
     "dependencies": {
-        "aframe": "^0.9.1",
+        "aframe": "^0.9.2",
         "aframe-extras": "^4.1.2",
-        "aframe-forcegraph-component": "^2.15.1",
         "aframe-geojson-component": "^1.2.4",
         "aframe-gui": "git+https://github.com/mohrtw/aframe-gui#lifescope",
         "aframe-input-mapping-component": "^0.1.3",

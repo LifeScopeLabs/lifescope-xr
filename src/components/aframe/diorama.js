@@ -42,7 +42,6 @@ function _buildMaterial(shading, type, quality='l', withBump=false, withNormal=f
     baseTexture = tlHelper.loadTexture( type, 'base', quality, 'jpg',
         function (texture) {
             texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-            texture.offset.set( 0, 0 );
             texture.repeat.set( repeatU, repeatV );
     });
     
@@ -69,6 +68,7 @@ function _buildMaterial(shading, type, quality='l', withBump=false, withNormal=f
             }
         );
     }
+    material.needsUpdate = true;
     return material;
 }
 
@@ -243,6 +243,13 @@ AFRAME.registerComponent('diorama-rail', {
     
         material = _buildMaterial(data.shading, type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props);
         geom = _buildGeometry(shape, data);
+        if (shape == 'base') {
+            var texture = material.map;
+            var offsetx = (data.floorradius) * Math.sin(2 * Math.PI / data.radialsegments);
+            var offsety = data.baseheight / 2
+            texture.rotation = Math.PI / 2;
+            texture.offset.set( offsetx, offsety );
+        }
         mesh = new THREE.Mesh(geom, material);
     
         var group = self.el.getObject3D(self.id) || new THREE.Group();
@@ -256,6 +263,7 @@ AFRAME.registerComponent('diorama-rail', {
 AFRAME.registerPrimitive( 'a-rail', {
     defaultComponents: {
         'diorama-rail__rail': { 
+            repeatV: 1,
         },
 
     },
@@ -369,7 +377,7 @@ AFRAME.registerComponent('diorama-case', {
             }
         );
         self._createCase(
-            'wood',
+            'wood-panel',
             data.imagewidth + 0.06,
             data.imageheight + 0.07,
             data.bronzedepth*2,
