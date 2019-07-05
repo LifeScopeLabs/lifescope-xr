@@ -42,7 +42,8 @@ export default {
     computed: {
         ...mapState('xr',
             [
-                'inVR'
+                'inVR',
+                'sceneLoaded'
             ]
         ),
         ...mapState('xr/avatar',
@@ -51,6 +52,14 @@ export default {
                 'rightHandControllerActive'
             ]
         )
+    },
+
+    watch: {
+        sceneLoaded: function (newVal, oldVal) {
+            if (newVal) {
+                this.onSceneLoaded();
+            }
+        },
     },
 
     methods: {
@@ -104,6 +113,99 @@ export default {
         tearDownVR() {
             this.$store.commit('xr/avatar/SET_RIGHT_HAND_CONTROLLER_ACTIVE', false);
             this.$refs.righthand.tearDownControls();
+        },
+
+        onSceneLoaded() {
+            this.createAvatarRigTemplate();
+            this.addAvatarRigTemplate();
+            this.networkAvatarRig();
+        },
+
+        createAvatarRigTemplate() {
+            var frag = this.fragmentFromString(`
+            <template id="avatar-rig-template" v-pre>
+            <a-entity class="player">
+
+                <a-entity class="avatar" networked-audio-source >
+                <a-sphere class="head"
+                    color="#5985ff"
+                    scale="0.45 0.5 0.4"
+                ></a-sphere>
+                <a-entity class="face"
+                    position="0 0.05 0"
+                >
+                    <a-sphere class="eye"
+                    color="#efefef"
+                    position="0.16 0.1 -0.35"
+                    scale="0.12 0.12 0.12"
+                    >
+                    <a-sphere class="pupil"
+                        color="#000"
+                        position="0 0 -1"
+                        scale="0.2 0.2 0.2"
+                    ></a-sphere>
+                    </a-sphere>
+                    <a-sphere class="eye"
+                    color="#efefef"
+                    position="-0.16 0.1 -0.35"
+                    scale="0.12 0.12 0.12"
+                    >
+                    <a-sphere class="pupil"
+                        color="#000"
+                        position="0 0 -1"
+                        scale="0.2 0.2 0.2"
+                    ></a-sphere>
+                    </a-sphere>
+                </a-entity>
+                </a-entity>
+
+            </a-entity>
+            </template> 
+            `);
+
+            document.querySelector('a-assets').appendChild(frag);
+
+        },
+
+        addAvatarRigTemplate() {
+        if (CONFIG.DEBUG) {console.log("addAvatarRigTemplate");};
+            NAF.schemas.add({
+                template: '#avatar-rig-template',
+                components: [
+                {
+                    component: 'position'
+                },
+                {
+                    component: 'rotation'
+                },
+                {
+                    selector: '.avatar',
+                    component: 'rotation'
+                }
+                ]
+            });
+        },
+
+        networkAvatarRig() {
+            var playerRig = document.getElementById('playerRig');
+            try {
+                if (playerRig) {
+                    playerRig.setAttribute("networked",
+                        { 'template': '#avatar-rig-template',
+                        'attachTemplateToLocal': true });
+                }
+                else {
+                    console.log("failed to set up NAF on playerRig");
+                }
+            }
+            catch (e) {
+                console.log("failed to set up NAF on playerRig");
+                console.log(e);
+            }
+        },
+
+        fragmentFromString(strHTML) {
+            return document.createRange().createContextualFragment(strHTML);
         },
 
     }

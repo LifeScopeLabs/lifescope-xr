@@ -105,11 +105,16 @@ export default {
 
       });
 
+      document.body.addEventListener('clientConnected', function (evt) {
+        console.log('clientConnected event. clientId =', evt.detail.clientId);
+        console.log('roomName: ' + self.roomName);
+      });
+
       // make eyes invisible to user when the avatar is created
       document.body.addEventListener('entityCreated', function (evt) {
+        console.log('entityCreated');
         if (evt.detail.el.id === 'playerRig') {
-          document.getElementsByClassName('player')[0].getElementsByClassName('face')[0].setAttribute('visible', 'false');
-          document.getElementsByClassName('player')[0].getElementsByClassName('head')[0].setAttribute('visible', 'false');
+          document.querySelector('#playerRig .face').setAttribute('visible', 'false');
         }
       });
 

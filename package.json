@@ -63,7 +63,7 @@
         "easyrtc": "^1.1.0",
         "express": "^4.16.3",
         "fs": "0.0.1-security",
-        "networked-aframe": "git+https://github.com/lifescopelabs/networked-aframe",
+        "networked-aframe": "git+https://github.com/MozillaReality/networked-aframe",
         "nipplejs": "^0.7.1",
         "npm": "^6.1.0",
         "socket.io": "^2.1.0",
