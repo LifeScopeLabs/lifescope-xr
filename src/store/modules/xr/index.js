@@ -80,6 +80,10 @@ export const actions = {
             .then((res) => {
                 commit('SET_ROOMCONFIG', res.data);
             })
+            .catch(function (error) {
+                console.log('getRoomConfig error');
+                console.log(error);
+            })
         },
 
         getObjs (context) {
@@ -103,6 +107,7 @@ export const actions = {
             })
             .catch(function (error) {
                 // handle error
+                console.log('getObs error');
                 console.log(error);
             })
         }

@@ -116,12 +116,34 @@ export default {
         },
 
         onSceneLoaded() {
-            this.createAvatarRigTemplate();
+            // this.createAvatarRigTemplate();
+            this.createAvatarGLTFTemplate();
             this.addAvatarRigTemplate();
             this.networkAvatarRig();
         },
 
+        createAvatarGLTFTemplate() {
+            if (CONFIG.DEBUG) {console.log('createAvatarGLTFTemplate()');}
+            var frag = this.fragmentFromString(`
+            <template id="avatar-rig-template" v-pre>
+                    <a-gltf-model class="gltfmodel" src="#avatar-0"
+                        scale="0.02 0.02 0.02">
+                    </a-gltf-model>
+            </template> 
+            `);
+            var assets = document.querySelector('a-assets');
+            try {
+                assets.appendChild(frag);
+            }
+            catch (err) {
+                console.log('createAvatarGLTFTemplate error');
+                console.log(err);
+            }
+            
+        },
+
         createAvatarRigTemplate() {
+            if (CONFIG.DEBUG) {console.log('createAvatarRigTemplate()');}
             var frag = this.fragmentFromString(`
             <template id="avatar-rig-template" v-pre>
             <a-entity class="player">
@@ -160,7 +182,7 @@ export default {
                 </a-entity>
 
             </a-entity>
-            </template> 
+            </template>
             `);
 
             document.querySelector('a-assets').appendChild(frag);
@@ -168,31 +190,39 @@ export default {
         },
 
         addAvatarRigTemplate() {
-        if (CONFIG.DEBUG) {console.log("addAvatarRigTemplate");};
-            NAF.schemas.add({
-                template: '#avatar-rig-template',
-                components: [
-                {
-                    component: 'position'
-                },
-                {
-                    component: 'rotation'
-                },
-                {
-                    selector: '.avatar',
-                    component: 'rotation'
-                }
-                ]
-            });
+            if (CONFIG.DEBUG) {console.log("addAvatarRigTemplate");};
+
+            try {
+                NAF.schemas.add({
+                    template: '#avatar-rig-template',
+                    components: [
+                    {
+                        component: 'position'
+                    },
+                    {
+                        component: 'rotation'
+                    },
+                    {
+                        selector: '.gltfmodel',
+                        component: 'rotation'
+                    }
+                    ]
+                });
+            }
+            catch (err) {
+                console.log('addAvatarRigTemplate error');
+                console.log(err);
+            }
         },
 
         networkAvatarRig() {
+            if (CONFIG.DEBUG) {console.log('networkAvatarRig');}
             var playerRig = document.getElementById('playerRig');
             try {
                 if (playerRig) {
                     playerRig.setAttribute("networked",
                         { 'template': '#avatar-rig-template',
-                        'attachTemplateToLocal': true });
+                        'attachTemplateToLocal': false });
                 }
                 else {
                     console.log("failed to set up NAF on playerRig");
@@ -201,6 +231,9 @@ export default {
             catch (e) {
                 console.log("failed to set up NAF on playerRig");
                 console.log(e);
+            }
+            finally {
+                // console.log('networkAvatarRig finally');
             }
         },
 

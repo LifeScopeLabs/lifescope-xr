@@ -52,7 +52,7 @@ var router = new VueRouter({
 
 // ignore elements for Firefox
 Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere',
- 'a-animation', 'a-sky', 'a-light',
+ 'a-animation', 'a-sky', 'a-light', 'a-asset-item',
  'a-mapbox-terrain',
  'a-sun-sky',
  'a-rail', 'a-diorama', 'a-wooden-floor',

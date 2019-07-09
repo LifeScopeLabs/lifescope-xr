@@ -11,6 +11,8 @@ const LISTEN_PORT = config.listenPort;
 const NAF_LISTEN_PORT = config.NAFListenPort;
 const BUCKET_NAME = config.ROOM_CONFIG.BUCKET_NAME;
 const BUCKET_PATH = config.ROOM_CONFIG.BUCKET_PATH;
+const BUCKET_PATH_AVATAR = config.ROOM_CONFIG.BUCKET_PATH_AVATAR;
+const bucket_route = config.ROOM_CONFIG.bucket_route;
 const ROOM_CONFIG = config.ROOM_CONFIG;
 
 
@@ -26,6 +28,7 @@ const AWSConfig = {
 
 
 var gallery_content = {};
+var avatars = [];
 const server = express();
  
 // Set aws config
@@ -74,6 +77,18 @@ s3.listObjects(bucketParams, function(err, data) {
                 };
                 gallery_content[room_name].push(result);
             }
+            // avatars
+            else if (content.Key.startsWith(BUCKET_PATH_AVATAR) && content.Key.endsWith('.gltf')) {
+                // console.log(content.Key);
+                var avatar_name = content.Key.slice(BUCKET_PATH_AVATAR.length).split('/')[0];
+                // console.log(avatar_name);
+
+                var result = {
+                    src: bucket_route + '/' + BUCKET_NAME  + '/' + content.Key,
+                    name: avatar_name
+                }
+                avatars.push(result);
+            }
         }
     }
 });
@@ -107,6 +122,12 @@ Promise.resolve()
     // room configuration
     server.get('/roomconfig', function (req, res) {
         res.json(ROOM_CONFIG);
+    });
+
+    // avatars
+    server.get('/avatars', function (req, res) {
+        // console.log(avatars);
+        res.json(avatars);
     });
 
     // start websockets for NAF

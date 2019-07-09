@@ -17,6 +17,13 @@
       <a-gltf-model id="logo" src="https://s3.amazonaws.com/lifescope-static/static/xr/logo/logo.gltf"
                     crossorigin="anonymous">
       </a-gltf-model>
+
+      <!-- Avatar -->
+      <a-asset-item v-for="(av, index) of avatars" :key="av.name"
+        :src="av.src"
+        :id="'avatar-' + index"
+        crossorigin="anonymous">
+      </a-asset-item>
     </a-assets>
 
     <!-- gallery -->
@@ -76,7 +83,13 @@ export default {
           'skybox',
           'skytime'
         ]
-      )
+      ),
+
+      ...mapState('xr/avatar',
+        [
+          'avatars'
+        ]
+      ),
     },
 
     mounted () {
@@ -113,8 +126,22 @@ export default {
       // make eyes invisible to user when the avatar is created
       document.body.addEventListener('entityCreated', function (evt) {
         console.log('entityCreated');
+        // console.log(`evt.detail.el.id: ${evt.detail.el.id}`);
         if (evt.detail.el.id === 'playerRig') {
-          document.querySelector('#playerRig .face').setAttribute('visible', 'false');
+          // document.querySelector('#playerRig .face').setAttribute('visible', 'false');
+        }
+        else if (evt.detail.el.id.startsWith('naf')) {
+          var rig = document.querySelector(`#${evt.detail.el.id}`);
+          rig.addEventListener('model-loaded', function () {
+            // console.log('model-loaded');
+            try {
+              rig.getObject3D('mesh').rotateY(Math.PI);
+            }
+            catch (err) {
+              console.log('Error updating connected player\'s rig');
+              console.log(err);
+            }
+          });
         }
       });
 
@@ -124,19 +151,26 @@ export default {
           
       var queryRoom = this.$route.query.room || 'ls-room';
 
-      this.$store.dispatch('xr/setRoomName', queryRoom).then(() => {
-        this.$store.dispatch('xr/getRoomConfig').then(() => {
-          this.$store.dispatch('xr/getObjs').then(() => {
-
+      this.$store.dispatch('xr/setRoomName', queryRoom)
+      .then(() => {
+        return this.$store.dispatch('xr/getRoomConfig');
+      })
+      .then(() => {
+          return this.$store.dispatch('xr/getObjs');
+      })
+      .then(() => {
+          return this.$store.dispatch('xr/avatar/getAvatars');
+      })
+      .then(() => {
             if (AFRAME.utils.device.isMobile()) {
               self.setupMobile();
             } else {
               self.setupDesktop();
             }
-          })
-        });
+      })
+      .catch( ( error ) => {
+        console.log(error);
       });
-      
     },
 
 
