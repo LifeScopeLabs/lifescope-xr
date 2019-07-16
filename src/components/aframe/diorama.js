@@ -3,6 +3,7 @@ import GradientShader from '../../shaders/GradientShader';
 import CelShader from '../../shaders/CelShader';
 
 var materialColors =  new Map([
+    ['brass', 0xDAA520],
     ['bronze', 0xDAA520],
     ['wood', 0xA0522D],
     ['wood-panel', 0xA0522D],
@@ -217,14 +218,14 @@ AFRAME.registerComponent('diorama-rail', {
 
     _createRail() {
         var data = this.data;
-        this._createDioramaComponent('bronze', 'column');
-        this._createDioramaComponent('bronze', 'sphere');
+        this._createDioramaComponent('brass', 'column');
+        this._createDioramaComponent('brass', 'sphere');
         this._createDioramaComponent('wood-panel', 'base');
         this._createDioramaComponent('wood-panel', 'base', 'top');
-        this._createDioramaComponent('bronze', 'trim', '', 'front');
-        this._createDioramaComponent('bronze', 'trim', '', 'back');
-        this._createDioramaComponent('bronze', 'trim', 'top', 'front');
-        this._createDioramaComponent('bronze', 'trim', 'top', 'back');
+        this._createDioramaComponent('brass', 'trim', '', 'front');
+        this._createDioramaComponent('brass', 'trim', '', 'back');
+        this._createDioramaComponent('brass', 'trim', 'top', 'front');
+        this._createDioramaComponent('brass', 'trim', 'top', 'back');
         this._createDioramaComponent('glass', 'glass', '', '', {
             color: data.color,
             metalness: data.metalness,
@@ -366,7 +367,7 @@ AFRAME.registerComponent('diorama-case', {
             }
         );
         self._createCase(
-            'bronze',
+            'brass',
             data.imagewidth,
             data.imageheight,
             data.bronzedepth,
@@ -388,7 +389,7 @@ AFRAME.registerComponent('diorama-case', {
             }
         );
         self._createCase(
-            'bronze',
+            'brass',
             0.03,
             0.03,
             0.2,
