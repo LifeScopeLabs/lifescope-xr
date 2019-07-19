@@ -3,11 +3,11 @@
             teleport-controls="cameraRig: #playerRig; startEvents: teleportstart; endEvents: teleportend; collisionEntities: .boundry;"
             windows-motion-controls="hand: right;"
             oculus-go-controls="hand: right;"
+            oculus-touch-controls="hand: right;"
+            daydream-controls="hand: right;"
+            vive-controls="hand: right;"
+            gearvr-controls="hand: right;"
             >
-            <!-- daydream-controls="hand: right;"
-                 oculus-touch-controls="hand: right;"
-                 vive-controls="hand: right;"
-                 gearvr-controls="hand: right;" -->
             <a-entity id="rightHandCursor" raycaster="objects: .clickable; showLine: true; "></a-entity>
         </a-entity>
 </template>
