@@ -123,27 +123,6 @@ export default {
         console.log('roomName: ' + self.roomName);
       });
 
-      // make eyes invisible to user when the avatar is created
-      document.body.addEventListener('entityCreated', function (evt) {
-        console.log('entityCreated');
-        // console.log(`evt.detail.el.id: ${evt.detail.el.id}`);
-        if (evt.detail.el.id === 'playerRig') {
-          // document.querySelector('#playerRig .face').setAttribute('visible', 'false');
-        }
-        else if (evt.detail.el.id.startsWith('naf')) {
-          var rig = document.querySelector(`#${evt.detail.el.id}`);
-          rig.addEventListener('model-loaded', function () {
-            // console.log('model-loaded');
-            try {
-              rig.getObject3D('mesh').rotateY(Math.PI);
-            }
-            catch (err) {
-              console.log('Error updating connected player\'s rig');
-              console.log(err);
-            }
-          });
-        }
-      });
 
       if (!self.$route.query.room){
           self.$route.query.room = 'ls-room';
