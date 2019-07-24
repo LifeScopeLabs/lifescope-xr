@@ -10,6 +10,7 @@
                 class="camera"
                 camera>
             </a-entity>
+            <rightHandController ref="righthand" />
         </a-entity>
 
         <a-gui-cursor id="cursor" v-if="cursorActive"
@@ -17,8 +18,6 @@
             fuse="true" fuse-timeout="2000"
             design="dot">
         </a-gui-cursor>
-
-        <rightHandController ref="righthand" />
 
     </a-entity>
 </template>
@@ -167,6 +166,9 @@ export default {
             this.fixVRCameraPosition();
             this.$store.commit('xr/avatar/SET_RIGHT_HAND_CONTROLLER_ACTIVE', true);
             this.$refs.righthand.setupControls();
+
+            var playerRig = document.getElementById('playerRig');
+            playerRig.object3D.matrixAutoUpdate = true;
         },
 
         tearDownVR() {

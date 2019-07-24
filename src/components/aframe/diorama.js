@@ -244,7 +244,7 @@ AFRAME.registerComponent('diorama-rail', {
     
         material = _buildMaterial(data.shading, type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props);
         geom = _buildGeometry(shape, data);
-        if (shape == 'base') {
+        if (shape == 'base' && material.map != undefined) {
             var texture = material.map;
             var offsetx = (data.floorradius) * Math.sin(2 * Math.PI / data.radialsegments);
             var offsety = data.baseheight / 2

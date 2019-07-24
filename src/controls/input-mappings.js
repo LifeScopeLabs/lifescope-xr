@@ -17,7 +17,9 @@ var mappings = {
             },
             'oculus-touch-controls': {
                 triggerdown: 'teleportstart',
-                triggerup: 'teleportend'
+                triggerup: 'teleportend',
+                'bbuttonup': 'cyclehud',
+                'abuttonup': 'cyclehud',
             },
             'windows-motion-controls': {
                 'grip.down': 'teleportstart',
