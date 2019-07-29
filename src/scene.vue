@@ -19,17 +19,20 @@
       </a-gltf-model>
 
       <!-- Avatar -->
-      <a-asset-item v-for="(av, index) of avatars" :key="av.name"
+      <!-- <a-asset-item v-for="(av, index) of avatars" :key="av.name"
         :src="av.src"
         :id="'avatar-' + index"
         crossorigin="anonymous">
-      </a-asset-item>
+      </a-asset-item> -->
+      <a-gltf-model id="avatar-0" src="../static/avatars/modified/head_female_-_low_poly/scene.gltf">
+      </a-gltf-model>
     </a-assets>
 
     <!-- gallery -->
     <gallery/>
 
-    <avatar ref="avatar"/>
+    <avatar ref="avatar"
+      position="0 1.6 -2"/>
 
     <!-- Sky id="Sky" -->
     <a-sky v-if="skybox==SkyboxEnum.STARS"

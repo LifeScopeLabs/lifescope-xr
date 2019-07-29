@@ -1,13 +1,13 @@
 <template>
   <a-entity id="playerRig"
-        position="0 1.6 -2"
+        position="0 1.6 0"
         >
         <vrhud id="vrhud" v-if="inVR"/>
         
-        <a-entity id="camera-rig"
+        <a-entity id="camera-rig" class="camera-rig"
             position="0 0 0">
             <a-entity id="player-camera"
-                class="camera"
+                class="player-camera camera"
                 camera>
             </a-entity>
             <rightHandController ref="righthand" />
@@ -185,9 +185,40 @@ export default {
 
         onSceneLoaded() {
             // this.createAvatarRigTemplate();
-            this.createAvatarGLTFTemplate();
-            this.addAvatarRigTemplate();
+            // this.createAvatarGLTFTemplate();
+            this.createAvatarTemplate();
+            // this.addAvatarRigTemplate();
+            this.addAvatarTemplate();
             this.networkAvatarRig();
+        },
+
+        createAvatarTemplate() {
+            if (CONFIG.DEBUG) {console.log('createAvatarGLTFTemplate()');}
+            //                         <rightHandController ref="righthand" />
+            var frag = this.fragmentFromString(`
+            <template id="avatar-rig-template" v-pre>
+                <a-entity>
+                    <a-entity class="camera-rig"
+                        position="0 0 0">
+                        <a-entity
+                            class="player-camera camera">
+                            <a-gltf-model class="gltfmodel" src="#avatar-0"
+                                scale="0.02 0.02 0.02">
+                            </a-gltf-model>
+                        </a-entity>
+                    </a-entity>
+                </a-entity>
+            </template> 
+            `);
+            var assets = document.querySelector('a-assets');
+            try {
+                assets.appendChild(frag);
+            }
+            catch (err) {
+                console.log('createAvatarGLTFTemplate error');
+                console.log(err);
+            }
+            
         },
 
         createAvatarGLTFTemplate() {
@@ -255,6 +286,36 @@ export default {
 
             document.querySelector('a-assets').appendChild(frag);
 
+        },
+
+        addAvatarTemplate() {
+            if (CONFIG.DEBUG) {console.log("addAvatarTemplate");};
+
+            try {
+                NAF.schemas.add({
+                    template: '#avatar-rig-template',
+                    components: [
+                    {
+                        component: 'position'
+                    },
+                    {
+                        component: 'rotation'
+                    },
+                    {
+                        selector: '.player-camera',
+                        component: 'rotation'
+                    },
+                    {
+                        selector: '.player-camera',
+                        component: 'position'
+                    },
+                    ]
+                });
+            }
+            catch (err) {
+                console.log('addAvatarRigTemplate error');
+                console.log(err);
+            }
         },
 
         addAvatarRigTemplate() {
