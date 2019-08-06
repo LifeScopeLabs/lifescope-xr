@@ -302,6 +302,14 @@ export default {
                         component: 'rotation'
                     },
                     {
+                        selector: '.camera-rig',
+                        component: 'rotation'
+                    },
+                    {
+                        selector: '.camera-rig',
+                        component: 'position'
+                    },
+                    {
                         selector: '.player-camera',
                         component: 'rotation'
                     },

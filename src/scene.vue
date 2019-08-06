@@ -106,11 +106,14 @@ export default {
         scene.addEventListener('loaded', self.onSceneLoaded);
       }
 
+      if (scene.is('vr-mode')) {
+        self.onEnterVR();
+      }
       document.body.addEventListener('enter-vr', function (evt) {
         self.onEnterVR();
-        document.body.addEventListener('exit-vr', function (event) {
-          self.onExitVR();
-        })
+      });
+      document.body.addEventListener('exit-vr', function (event) {
+        self.onExitVR();
       });
 
 
