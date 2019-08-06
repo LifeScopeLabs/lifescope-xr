@@ -111,6 +111,10 @@ export default {
                     cursor.object3D.rotation.set(THREE.Math.degToRad(-45), THREE.Math.degToRad(2.5), 0);
                     cursor.object3D.position.set(0, -0.01, 0);
                     break;
+            case 'windows-motion-controls':
+                    cursor.object3D.rotation.set(THREE.Math.degToRad(-45), THREE.Math.degToRad(2.5), 0);
+                    cursor.object3D.position.set(0, 0, -0.03);
+                    break;
                 default:
                     break;
             }
