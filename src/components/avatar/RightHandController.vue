@@ -8,7 +8,8 @@
             vive-controls="hand: right;"
             gearvr-controls="hand: right;"
             >
-            <a-entity id="rightHandCursor" raycaster="objects: .clickable; showLine: true; "></a-entity>
+            <a-entity id="rightHandCursor"
+                raycaster="objects: .clickable; showLine: true; "></a-entity>
         </a-entity>
 </template>
 
@@ -31,6 +32,14 @@ export default {
                 'rightHandControllerActive'
             ]
         )
+    },
+
+    mounted () {
+        document.addEventListener('controllerconnected', this.controllerConnectedListener) 
+    },
+
+    beforeDestroy() {
+        document.body.removeEventListener('controllerconnected', this.controllerConnectedListener)
     },
 
     methods: {
@@ -87,6 +96,23 @@ export default {
                 eventDetail.intersectedEl = intersectedEl;
                 eventDetail.intersection = intersection;
                 self.intersected.emit('click', eventDetail);
+            }
+        },
+
+        controllerConnectedListener(evt) {
+            console.log(`controller connected: ${evt.detail.name}`);
+            this.fixCursorPosition(evt.detail.name);
+        },
+
+        fixCursorPosition(controllerName) {
+            var cursor = document.querySelector('#rightHandCursor');
+            switch (controllerName) {
+                case 'oculus-touch-controls':
+                    cursor.object3D.rotation.set(THREE.Math.degToRad(-45), THREE.Math.degToRad(2.5), 0);
+                    cursor.object3D.position.set(0, -0.01, 0);
+                    break;
+                default:
+                    break;
             }
         }
     }
