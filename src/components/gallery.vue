@@ -35,12 +35,14 @@
     <!-- Demo Map -->
     <!-- Floor -->
     <a-mapbox-terrain v-if="floorMapActive == true"
-        :latitude="mapLatitude" :longitude="mapLongitude" position="0 0.1 0" zoom-level="11"
-        rows="5"></a-mapbox-terrain>
+        :latitude="mapLatitude" :longitude="mapLongitude" position="0 0.1 0"
+        :zoom-level="floorZoom" :rows="floorRows"
+        :highdpi="floorHighdpi"
+        :type="mapboxType"></a-mapbox-terrain>
     <!-- World -->
     <a-mapbox-terrain v-if="worldMapActive == true"
-        :latitude="mapLatitude" :longitude="mapLongitude" position="0 -4 0" zoom-level="8" scale="8 1 8"
-        rows="10"></a-mapbox-terrain>
+        :latitude="mapLatitude" :longitude="mapLongitude" position="0 -4 0" :zoom-level="worldZoom" scale="8 1 8"
+        :rows="worldRows"></a-mapbox-terrain>
 
   </a-entity>
 </template>
@@ -84,6 +86,12 @@ export default {
                 'worldMapActive',
                 'mapLatitude',
                 'mapLongitude',
+                'floorRows',
+                'floorZoom',
+                'floorHighdpi',
+                'worldRows',
+                'worldZoom',
+                'mapboxType'
             ]
         ),
 

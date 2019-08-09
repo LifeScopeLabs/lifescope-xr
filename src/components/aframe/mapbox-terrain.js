@@ -250,6 +250,7 @@ AFRAME.registerPrimitive('a-mapbox-terrain', AFRAME.utils.extendDeep({}, AFRAME.
 		'highdpi': 'mapbox-terrain.highdpi',
 		'heightmap': 'mapbox-terrain.heightmap',
 		'offsetx': 'mapbox-terrain.offsetx',
-		'offsety': 'mapbox-terrain.offsety'
+		'offsety': 'mapbox-terrain.offsety',
+		'type': 'mapbox-terrain.type'
 	}
 }))
