@@ -52,13 +52,35 @@
                 <label for="map-setting-long">Longitude</label>
             </div>
 
+            <div class="floormapsettings">
+                <input type="number" id="map-floor-setting-rows" name="floor-rows"
+                        v-model="inputMapFloorRows"
+                        min="1" max="10">
+                <label for="map-floor-setting-rows">Tile Rows</label>
 
+                <input type="number" id="map-floor-setting-zoom" name="floor-zoom"
+                        v-model="inputMapFloorZoom"
+                        min="0" max="19">
+                <label for="map-floor-setting-zoom">Map Zoom</label>
+            </div>
 
-
+            <h3> Map Type </h3>
+            <select v-model="maptype">
+                <option value="SATELLITE">Satellite</option>
+                <option value="STREETS">Streets</option>
+                <option value="SATELLITESTREETS">Satellite-streets</option>
+                <option value="OUTDOORS">Outdoors</option>
+                <option value="LIGHT">Light</option>
+                <option value="DARK">Dark</option>
+                <!-- <option value="NAVIGATIONPREVIEWDAY">navigation-preview-day</option>
+                <option value="NAVIGATIONPREVIEWNIGHT">Cel</option>
+                <option value="NAVIGATIONGUIDANCEDAY">Cel</option>
+                <option value="NAVIGATIONGUIDANCENIGHT">Cel</option> -->
+            </select>
 
             <!-- <h3> Set coordinates </h3> -->
-            <input type="button" v-on:click="setCoords" id="map-setting-latlon" name="coords"
-                value="Update Coordinates">
+            <input type="button" v-on:click="setMap" id="map-setting-latlon" name="coords"
+                value="Update Map">
             
 
             <div class="input-map">
@@ -143,6 +165,9 @@ export default {
             mapFloorCheck: false,
             lat: 0,
             lon: 0,
+            tilerows: 1,
+            mapzoom: 11,
+            maptype: 'SATELLITE',
             carouselDimensions: {
                 segments: 24,
                 radius: 5
@@ -178,6 +203,14 @@ export default {
         inputMapLongitude: {
             get () { return this.lon },
             set (val) { this.lon = val }
+        },
+        inputMapFloorRows: {
+            get () { return this.tilerows },
+            set (val) { this.tilerows = val }
+        },
+        inputMapFloorZoom: {
+            get () { return this.mapzoom },
+            set (val) { this.mapzoom = val }
         },
 
         inputSegments: {
@@ -216,6 +249,11 @@ export default {
         [
             'numberOfSegments',
             'floorRadius'
+        ]),
+        ...mapState('xr/map',
+        [
+            'floorRows',
+            'floorZoom'
         ])
     },
 
@@ -250,6 +288,9 @@ export default {
         self.inputMapLatitude = self.mapLatitude;
         self.inputMapLongitude = self.mapLongitude;
 
+        self.inputMapFloorRows = self.floorRows;
+        self.inputMapFloorZoom = self.floorZoom;
+
         self.inputSegments = self.numberOfSegments;
         self.inputFloorRadius = self.floorRadius;
 
@@ -277,9 +318,12 @@ export default {
             var newVal = this.skybox == SkyboxEnum.STARS ? 'SUN' : 'STARS';
             this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
         },
-        setCoords() {
+        setMap() {
             this.$store.commit('xr/map/SET_MAP_LATITUDE', this.lat);
             this.$store.commit('xr/map/SET_MAP_LONGITUDE', this.lon);
+            this.$store.commit('xr/map/SET_FLOOR_MAP_ROWS', this.tilerows);
+            this.$store.commit('xr/map/SET_FLOOR_MAP_ZOOM', this.mapzoom);
+            this.$store.commit('xr/map/SET_MAPTYPE', this.maptype);
         },
         updateCarousel() {
             this.$store.commit('xr/carousel/SET_NUMBER_OF_SEGMENTS', this.carouselDimensions.segments);
