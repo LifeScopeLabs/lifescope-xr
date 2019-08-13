@@ -7,140 +7,157 @@
 
         <div class="help-settings" :style="settingsStyleObject">
 
-            <h2> Settings </h2>
-            <h3> Sky </h3>
-            <div class="input-sky">
-                <div>
-                    <input type="radio" id="sky-setting-stars" name="sky" value="STARS"
-                            checked v-model="skySetting">
-                    <label for="sky-setting-stars">Stars</label>
-                </div>
+            <div class="help-header"> Settings </div>
 
-                <div>
-                    <input type="radio" id="sky-setting-sun" name="sky" value="SUN"
-                        v-model="skySetting">
-                    <label for="sky-setting-sun">Sun</label>
-                </div>
-            </div>
+            <div class="settings-grid">
+                <div class="settings-left">
+                    <div class="setting-title"> Sky </div>
+                    <div class="input-sky">
+                        <div>
+                            <input type="radio" id="sky-setting-stars" name="sky" value="STARS"
+                                    checked v-model="skySetting">
+                            <label for="sky-setting-stars">Stars</label>
+                        </div>
 
-            <h3> Carousel </h3>
-            <div class="input-carousel">
-                <input type="number" id="car-setting-segements" name="segments"
-                        v-model="inputSegments"
-                        min="12" max="121">
-                <label for="car-setting-segements">Segments</label>
+                        <div>
+                            <input type="radio" id="sky-setting-sun" name="sky" value="SUN"
+                                v-model="skySetting">
+                            <label for="sky-setting-sun">Sun</label>
+                        </div>
+                    </div>
 
-                <input type="number" id="car-setting-radius" name="floorradius"
-                        v-model="inputFloorRadius"
-                        min="1">
-                <label for="car-setting-radius">Floor Radius</label>
-            </div>
-            <input type="button" v-on:click="updateCarousel" id="car-setting-button" name="car-settings"
-                value="Update Carousel">
-            
+                    <div class="setting-title"> Carousel </div>
+                    <div class="input-carousel">
+                        <input type="number" id="car-setting-segements" name="segments"
+                                v-model="inputSegments"
+                                min="12" max="121">
+                        <label for="car-setting-segements">Segments</label>
 
-            <h3> Map </h3>
-            <div class="latlong">
-                <input type="number" id="map-setting-lat" name="lat"
-                        v-model="inputMapLatitude"
-                        min="-90" max="90">
-                <label for="map-setting-lat">Latitude</label>
+                        <input type="number" id="car-setting-radius" name="floorradius"
+                                v-model="inputFloorRadius"
+                                min="1">
+                        <label for="car-setting-radius">Floor Radius</label>
+                    </div>
+                    <input type="button" v-on:click="updateCarousel" id="car-setting-button" name="car-settings"
+                        value="Update Carousel">
+                    
 
-                <input type="number" id="map-setting-long" name="long"
-                        v-model="inputMapLongitude"
-                        min="-180" max="180">
-                <label for="map-setting-long">Longitude</label>
-            </div>
+                    <div class="setting-title"> Textures </div>
+                    <div class="input-textures">
+                        <div>
+                            <input type="checkbox" id="textures-setting-bump" name="bump"
+                                    v-model="bump">
+                            <label for="textures-setting-bump">Bumpmap</label>
+                        </div>
 
-            <div class="floormapsettings">
-                <input type="number" id="map-floor-setting-rows" name="floor-rows"
-                        v-model="inputMapFloorRows"
-                        min="1" max="10">
-                <label for="map-floor-setting-rows">Tile Rows</label>
+                        <div>
+                            <input type="checkbox" id="textures-setting-normal" name="normal"
+                                v-model="normal">
+                            <label for="textures-setting-normal">Normals</label>
+                        </div>
+                    </div>
+<!-- 
+                    <div class="setting-title"> Shading </div>
 
-                <input type="number" id="map-floor-setting-zoom" name="floor-zoom"
-                        v-model="inputMapFloorZoom"
-                        min="0" max="19">
-                <label for="map-floor-setting-zoom">Map Zoom</label>
-            </div>
+                    <select v-model="shading">
+                        <option value="DEFAULT">Default</option>
+                        <option value="CEL">Cel</option>
+                    </select>  -->
 
-            <h3> Map Type </h3>
-            <select v-model="maptype">
-                <option value="SATELLITE">Satellite</option>
-                <option value="STREETS">Streets</option>
-                <option value="SATELLITESTREETS">Satellite-streets</option>
-                <option value="OUTDOORS">Outdoors</option>
-                <option value="LIGHT">Light</option>
-                <option value="DARK">Dark</option>
-                <!-- <option value="NAVIGATIONPREVIEWDAY">navigation-preview-day</option>
-                <option value="NAVIGATIONPREVIEWNIGHT">Cel</option>
-                <option value="NAVIGATIONGUIDANCEDAY">Cel</option>
-                <option value="NAVIGATIONGUIDANCENIGHT">Cel</option> -->
-            </select>
+                    <div class="setting-title"> Quality </div>
+                    <div class="input-quality">
+                        <div>
+                            <input type="radio" id="quality-setting-low" name="low" value="LOW"
+                                    v-model="qualitySetting">
+                            <label for="quality-setting-low">Low</label>
+                        </div>
 
-            <!-- <h3> Set coordinates </h3> -->
-            <input type="button" v-on:click="setMap" id="map-setting-latlon" name="coords"
-                value="Update Map">
-            
+                        <div>
+                            <input type="radio" id="quality-setting-med" name="med" value="MEDIUM"
+                                    v-model="qualitySetting">
+                            <label for="quality-setting-med">Medium</label>
+                        </div>
 
-            <div class="input-map">
-                <div>
-                    <input type="checkbox" id="map-setting-floor" name="floor"
-                            v-model="mapFloorCheck">
-                    <label for="map-setting-floor">Floor Map</label>
-                </div>
+                        <div>
+                            <input type="radio" id="quality-setting-high" name="hiegh" value="HIGH"
+                                    checked v-model="qualitySetting">
+                            <label for="quality-setting-high">High</label>
+                        </div>
 
-                <div>
-                    <input type="checkbox" id="map-setting-world" name="world"
-                        v-model="mapWorldSetting">
-                    <label for="map-setting-world">World Map</label>
-                </div>
-            </div>
+                    </div>
 
-            <h3> Textures </h3>
-            <div class="input-textures">
-                <div>
-                    <input type="checkbox" id="textures-setting-bump" name="bump"
-                            v-model="bump">
-                    <label for="textures-setting-bump">Bumpmap</label>
-                </div>
 
-                <div>
-                    <input type="checkbox" id="textures-setting-normal" name="normal"
-                        v-model="normal">
-                    <label for="textures-setting-normal">Normals</label>
-                </div>
-            </div>
+                </div>   <!-- settings right -->
 
-            <h2> Shading </h2>
+                <div class="settings-right">
 
-             <select v-model="shading">
-                <option value="DEFAULT">Default</option>
-                <option value="CEL">Cel</option>
-            </select> 
+                    <div class="setting-title"> Map </div>
+                    <div class="input-map">
+                        <div>
+                            <input type="checkbox" id="map-setting-floor" name="floor"
+                                    v-model="mapFloorCheck">
+                            <label for="map-setting-floor">Floor Map</label>
+                        </div>
 
-            <h2> Quality </h2>
-            <div class="input-quality">
-                <div>
-                    <input type="radio" id="quality-setting-low" name="low" value="LOW"
-                            v-model="qualitySetting">
-                    <label for="quality-setting-low">Low</label>
-                </div>
+                        <div>
+                            <input type="checkbox" id="map-setting-world" name="world"
+                                v-model="mapWorldSetting">
+                            <label for="map-setting-world">World Map</label>
+                        </div>
+                    </div>
 
-                <div>
-                    <input type="radio" id="quality-setting-med" name="med" value="MEDIUM"
-                            v-model="qualitySetting">
-                    <label for="quality-setting-med">Medium</label>
-                </div>
+                    <div class="latlong">
+                        <input type="number" id="map-setting-lat" name="lat"
+                                v-model="inputMapLatitude"
+                                min="-90" max="90">
+                        <label for="map-setting-lat">Latitude</label>
 
-                <div>
-                    <input type="radio" id="quality-setting-high" name="hiegh" value="HIGH"
-                            checked v-model="qualitySetting">
-                    <label for="quality-setting-high">HIGH</label>
-                </div>
+                        <input type="number" id="map-setting-long" name="long"
+                                v-model="inputMapLongitude"
+                                min="-180" max="180">
+                        <label for="map-setting-long">Longitude</label>
+                    </div>
 
-            </div>
-        </div>
+                    <div class="floormapsettings">
+                        <input type="number" id="map-floor-setting-rows" name="floor-rows"
+                                v-model="inputMapFloorRows"
+                                min="1" max="10">
+                        <label for="map-floor-setting-rows">Tile Rows</label>
+
+                        <input type="number" id="map-floor-setting-zoom" name="floor-zoom"
+                                v-model="inputMapFloorZoom"
+                                min="0" max="19">
+                        <label for="map-floor-setting-zoom">Map Zoom</label>
+
+                        <input type="number" id="map-floor-scale" name="floor-scale"
+                                v-model="inputFloorScale"
+                                min="1">
+                        <label for="map-floor-scale">Map Scale</label>
+
+                        <div>
+                        <select v-model="maptype" id="map-setting-type">
+                            <option value="SATELLITE">Satellite</option>
+                            <option value="STREETS">Streets</option>
+                            <option value="SATELLITESTREETS">Satellite-streets</option>
+                            <option value="OUTDOORS">Outdoors</option>
+                            <option value="LIGHT">Light</option>
+                            <option value="DARK">Dark</option>
+                        <!-- <option value="NAVIGATIONPREVIEWDAY">navigation-preview-day</option>
+                        <option value="NAVIGATIONPREVIEWNIGHT">Cel</option>
+                        <option value="NAVIGATIONGUIDANCEDAY">Cel</option>
+                        <option value="NAVIGATIONGUIDANCENIGHT">Cel</option> -->
+                        </select>
+                         <label for="map-setting-type">Map Type</label>
+                        </div>
+                    </div>
+
+                    <!-- <h3> Set coordinates </h3> -->
+                    <input type="button" v-on:click="setMap" id="map-setting-latlon" name="coords"
+                        value="Update Map">
+                    
+                </div>  <!-- settings right -->
+            </div>  <!-- settings grid -->
+        </div> <!-- help settings -->
     </div>
 
 </template>
@@ -167,6 +184,7 @@ export default {
             lon: 0,
             tilerows: 1,
             mapzoom: 11,
+            floorscale: 1,
             maptype: 'SATELLITE',
             carouselDimensions: {
                 segments: 24,
@@ -221,6 +239,10 @@ export default {
             get () { return this.carouselDimensions.radius },
             set (val) { this.carouselDimensions.radius = val }
         },
+        inputFloorScale: {
+            get() { return this.floorscale },
+            set (val) { this.floorscale = val }
+        },
 
         shading: {
             get () { return this.$store.state.xr.graphics.shading;},
@@ -253,7 +275,8 @@ export default {
         ...mapState('xr/map',
         [
             'floorRows',
-            'floorZoom'
+            'floorZoom',
+            'floorScale'
         ])
     },
 
@@ -324,6 +347,7 @@ export default {
             this.$store.commit('xr/map/SET_FLOOR_MAP_ROWS', this.tilerows);
             this.$store.commit('xr/map/SET_FLOOR_MAP_ZOOM', this.mapzoom);
             this.$store.commit('xr/map/SET_MAPTYPE', this.maptype);
+            this.$store.commit('xr/map/SET_FLOOR_SCALE', this.floorscale);
         },
         updateCarousel() {
             this.$store.commit('xr/carousel/SET_NUMBER_OF_SEGMENTS', this.carouselDimensions.segments);

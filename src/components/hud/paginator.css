@@ -3,6 +3,7 @@
     top: 88%;
     left: 46%;
     width: 8%;
+    min-width: 75px;
     height: 10%;
     box-sizing: border-box;
 

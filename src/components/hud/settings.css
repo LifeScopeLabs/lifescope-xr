@@ -29,6 +29,8 @@
     z-index:10005;
     pointer-events: visible;
 
+    display: block;
+
     border: 1px solid #7b7b7b;
     border-radius: 12px;
     background-color: #2A2A2A;
@@ -42,8 +44,6 @@
     height: 75%;
     box-sizing: border-box;
 
-    column-count: 2;
-
     align-self: center;
     margin-left: auto;
     margin-right: auto;
@@ -53,6 +53,70 @@
     overflow: scroll;
 }
 
-.help-settings h2 {
+.help-settings .help-header {
     line-height: 1em;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+
+    border-bottom: solid;
+    margin: -15px;
+}
+
+.help-settings input {
+    padding: 5px;
+    border: 2px solid #ccc;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.settings-left {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+.settings-right {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+.input-sky {
+    display: flex;
+    /* grid-template-columns: 1fr 1fr; */
+    flex-direction: row;
+}
+
+.input-sky div {
+    margin-inline-end: 10px;
+}
+
+.input-map {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.input-quality {
+    display: flex;
+    flex-direction: row;
+}
+
+.input-quality div {
+    margin-inline-end: 10px;
+}
+
+.floormapsettings select {
+    font-size: 1em;
+}
+
+.setting-title {
+    font-size: 1.5em;
+    font-weight: bold;
 }

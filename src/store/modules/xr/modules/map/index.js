@@ -22,6 +22,7 @@ export const state = function () {
         floorHighdpi: false,
         floorMapType: 'satellite',
         floorMapHeightMap: false,
+        floorScale: 1,
         mapboxType: MapboxTypeEnum.SATELLITE,
         worldRows: 10,
         worldZoom: 8,
@@ -62,6 +63,10 @@ export const mutations = {
     SET_FLOOR_DPI: function(state, val) {
         if (CONFIG.DEBUG) {console.log("SET_FLOOR_DPI");}
         state.floorHighdpi = val;
+    },
+    SET_FLOOR_SCALE: function(state, val) {
+        if (CONFIG.DEBUG) {console.log("SET_FLOOR_SCALE");}
+        state.floorScale = val;
     },
     SET_MAPTYPE: function(state, val) {
         if (CONFIG.DEBUG) {console.log("SET_MAPTYPE");}

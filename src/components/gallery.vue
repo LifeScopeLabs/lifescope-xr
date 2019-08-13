@@ -35,7 +35,8 @@
     <!-- Demo Map -->
     <!-- Floor -->
     <a-mapbox-terrain v-if="floorMapActive == true"
-        :latitude="mapLatitude" :longitude="mapLongitude" position="0 0.1 0"
+        position="0 0.1 0" :scale="floorScale + ' 1 ' + floorScale"
+        :latitude="mapLatitude" :longitude="mapLongitude"
         :zoom-level="floorZoom" :rows="floorRows"
         :highdpi="floorHighdpi"
         :type="mapboxType"></a-mapbox-terrain>
@@ -89,6 +90,7 @@ export default {
                 'floorRows',
                 'floorZoom',
                 'floorHighdpi',
+                'floorScale',
                 'worldRows',
                 'worldZoom',
                 'mapboxType'

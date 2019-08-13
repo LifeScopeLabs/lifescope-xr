@@ -16,8 +16,8 @@ var mappings = {
                 'trackpad.up': 'teleportend'
             },
             'oculus-touch-controls': {
-                triggerdown: 'teleportstart',
-                triggerup: 'teleportend',
+                // triggerdown: 'teleportstart',
+                // triggerup: 'teleportend',
                 'bbuttonup': 'cyclehud',
                 'abuttonup': 'cyclehud',
             },
