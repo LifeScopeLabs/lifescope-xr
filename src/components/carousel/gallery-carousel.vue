@@ -103,6 +103,27 @@ export default {
                 return this.roomConfig.bucket_route + '/' + this.roomConfig.BUCKET_NAME + '/' + image.route;
         },
         railRotation: function(segment) {
+            var u = (segment + 0.5) / this.numberOfSegments;
+            var theta = (135 - u * 360);
+
+            var roty = theta - 90;
+            var rotx = 0;
+
+            return `${rotx} ${roty} 0`;
+        },
+        railPosition: function(segment) {
+            var u = segment / this.numberOfSegments;
+            var theta = (3*Math.PI/4 -u * 2 * Math.PI);
+
+            var sinTheta = Math.sin( theta );
+            var cosTheta = Math.cos( theta );
+
+            var x = + this.floorRadius * cosTheta;
+            var z = - this.floorRadius * sinTheta;
+
+            return `${x} 0 ${z}`;
+        },
+        dioramaRotation: function(segment) {
             var u = segment / this.numberOfSegments;
             var theta =  (-3*Math.PI/4) - (u * Math.PI * 2);
 
@@ -111,32 +132,8 @@ export default {
 
             return `${rotx} ${roty} 0`;
         },
-        railPosition: function(segment) {
-            var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
-            // 0.5/36 to get to the post
-            var theta = (-3*Math.PI/4) - (u * Math.PI * 2);
-
-            var sinTheta = Math.sin( theta );
-            var cosTheta = Math.cos( theta );
-
-            var x = this.floorRadius * sinTheta;
-            var z = this.floorRadius * cosTheta;
-
-            return `${x} 0 ${z}`;
-        },
-        dioramaRotation: function(segment) {
-            var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
-            // 0.5/36 to get to the post
-            var theta =  (-3*Math.PI/4) - (u * Math.PI * 2);
-
-            var roty = theta * (180/Math.PI);
-            var rotx = 0;
-
-            return `${rotx} ${roty} 0`;
-        },
         dioramaPosition: function(segment) {
-            var u = segment / this.numberOfSegments + 0.5 / this.numberOfSegments;
-            // 0.5/36 to get to the post
+            var u = segment / this.numberOfSegments;
             var theta = (-3*Math.PI/4) - (u * Math.PI * 2);
 
             var sinTheta = Math.sin( theta );

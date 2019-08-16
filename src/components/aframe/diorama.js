@@ -114,14 +114,15 @@ function _buildGeometry(type, data) {
             if (type == 'glass') { height = data.railheight - (2*data.baseheight); depth = data.basedepth - 0.01; }
             else if (type == 'base') { height = data.baseheight; depth = data.basedepth; }
             else if (type == 'trim') { height = data.trimheight; depth = 0.01;}
-        
+
             var shape = new THREE.Shape();
-        
-            shape.moveTo( -width/2, -height/2 );
-            shape.lineTo( -width/2, height/2 );
-            shape.lineTo( width/2, height/2 );
-            shape.lineTo( width/2, -height/2 );
-            shape.lineTo( -width/2, -height/2 );
+            var cr = data.columnradius;
+
+            shape.moveTo( -(width - cr)/2, -height/2 );
+            shape.lineTo( -(width - cr)/2, height/2 );
+            shape.lineTo( (width + cr)/2, height/2 );
+            shape.lineTo( (width + cr)/2, -height/2 );
+            shape.lineTo( -(width - cr)/2, -height/2 );
         
             var extrudeSettings = {
                 steps: 2,
@@ -157,7 +158,7 @@ function _buildGeometry(type, data) {
                 y += data.baseheight;
             }
  
-            geom.translate(x + (width/2),
+            geom.translate(x + ((width + cr/2 + 0.01)/2),
                         y + height/2,
                         z - depth/2);
             break;

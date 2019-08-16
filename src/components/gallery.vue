@@ -10,7 +10,7 @@
         <a-wooden-floor class="boundry"
             :radius='floorRadius' :radialsegments='numberOfSegments'
             :bump="bump" :normal="normal" :quality="quality" :shading="textureShading"
-            :rotation="'0 ' +  (180/numberOfSegments) + ' 0'"></a-wooden-floor>
+            rotation="0 135 0"></a-wooden-floor>
 
         <!-- Carousel -->
         <gallery-carousel />

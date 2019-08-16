@@ -50,7 +50,6 @@ AFRAME.registerComponent('wooden-floor', {
 
     _buildMaterial: function() {
         var self = this;
-        console.log(self.data.shading);
         if (self.data.shading == 'cel') {
             var material = new CelShader(0xA0522D);
             return material;
