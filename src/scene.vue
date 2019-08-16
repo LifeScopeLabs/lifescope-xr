@@ -39,7 +39,7 @@
       id="starsky" src="#sky" rotation="90 0 90">
     </a-sky>
     <a-sun-sky v-else-if="skybox==SkyboxEnum.SUN"
-      id="sunsky" material="side: back" :sun-sky-position="'time: ' + skytime">
+      id="sunsky" material="side: back" :sun-sky-position="'starttime: ' + skytime">
     </a-sun-sky>
 
   </a-scene>

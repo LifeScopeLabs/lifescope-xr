@@ -26,6 +26,16 @@
                         </div>
                     </div>
 
+                    <div class="setting-title"> Time </div>
+
+                    <div class="input-time">
+                        <input type="time" id="sky-setting-time" name="time"
+                                v-model="inputTime">
+                        <label for="sky-setting-time">Time</label>
+                        <input type="button" v-on:click="updateTime" id="time-setting-button" name="time-settings"
+                            value="Update Time">
+                    </div>
+
                     <div class="setting-title"> Carousel </div>
                     <div class="input-carousel">
                         <input type="number" id="car-setting-segements" name="segments"
@@ -189,7 +199,8 @@ export default {
             carouselDimensions: {
                 segments: 24,
                 radius: 5
-            }
+            },
+            time: 0
         }
     },
 
@@ -242,6 +253,13 @@ export default {
         inputFloorScale: {
             get() { return this.floorscale },
             set (val) { this.floorscale = val }
+        },
+
+        inputTime: {
+            get () { return this.time },
+            set (val) { 
+                console.log(`inputTime: ${val}`);
+                this.time = val }
         },
 
         shading: {
@@ -352,6 +370,9 @@ export default {
         updateCarousel() {
             this.$store.commit('xr/carousel/SET_NUMBER_OF_SEGMENTS', this.carouselDimensions.segments);
             this.$store.commit('xr/carousel/SET_FLOOR_RADIUS', this.carouselDimensions.radius);
+        },
+        updateTime() {
+            this.$store.dispatch('xr/graphics/setTimeFromString', this.time);
         }
     },
 }

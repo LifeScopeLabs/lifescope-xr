@@ -62,12 +62,30 @@ export const mutations = {
         if (CONFIG.DEBUG) {console.log(`SET_NORMAL: ${active}`)}
         state.normal = active ? true : false;
     },
+    SET_SKYTIME: function(state, value) {
+        if (CONFIG.DEBUG) {console.log(`SET_SKYTIME: ${value}`)}
+        state.skytime = value;
+    },
+};
+
+export const actions = {
+    setTimeFromString: function(context, timeStr) {
+        if (CONFIG.DEBUG) {console.log("setTimeFromString");}
+        var timeNum = 0;
+        var timeArray = timeStr.split(':');
+        var hours = Number.parseInt(timeArray[0]);
+        var minutes = Number.parseInt(timeArray[1]);
+        var hourDecimal = minutes / 60;
+        timeNum = hours + hourDecimal;
+        context.commit('SET_SKYTIME', timeNum);
+    }
 };
 
 const graphicsModule = {
     namespaced: true,
     state,
-    mutations
+    mutations,
+    actions
 }
 
 export { SkyboxEnum, GraphicsQualityEnum, ShadingEnum };
