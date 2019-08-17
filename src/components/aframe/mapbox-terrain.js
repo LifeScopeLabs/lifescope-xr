@@ -54,8 +54,8 @@ AFRAME.registerComponent('mapbox-terrain', {
 	},
 
 	update: function() {
-		if(this.el.object3DMap['meshMain'] !== undefined) {
-			this.el.removeObject3D('meshMain');
+		if(this.el.object3DMap['mapmesh'] !== undefined) {
+			this.el.removeObject3D('mapmesh');
 		}
 		this._createMapBox();
 	},
