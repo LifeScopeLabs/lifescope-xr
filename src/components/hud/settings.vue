@@ -102,19 +102,6 @@
                 <div class="settings-right">
 
                     <div class="setting-title"> Map </div>
-                    <div class="input-map">
-                        <div>
-                            <input type="checkbox" id="map-setting-floor" name="floor"
-                                    v-model="mapFloorCheck">
-                            <label for="map-setting-floor">Floor Map</label>
-                        </div>
-
-                        <div>
-                            <input type="checkbox" id="map-setting-world" name="world"
-                                v-model="mapWorldSetting">
-                            <label for="map-setting-world">World Map</label>
-                        </div>
-                    </div>
 
                     <div class="latlong">
                         <input type="number" id="map-setting-lat" name="lat"
@@ -128,23 +115,51 @@
                         <label for="map-setting-long">Longitude</label>
                     </div>
 
+                    <input type="button" v-on:click="setMap" id="map-setting-latlon" name="coords"
+                        value="Update Map">
+
+                    <div class="setting-title"> Floor </div>
                     <div class="floormapsettings">
+                        <div>
+                            <input type="checkbox" id="map-setting-floor" name="floor"
+                                    v-model="mapFloorCheck">
+                            <label for="map-setting-floor">Active</label>
+                            <!-- DPI -->
+                            <input type="checkbox" id="map-floor-setting-dpi" name="floor-dpi"
+                                    v-model="inputMapFloorHighDPI">
+                            <label for="map-floor-setting-dpi">High DPI</label>
+                            
+                            <!-- height map -->
+                            <input type="checkbox" id="map-floor-setting-heightmap" name="floor-heightmap"
+                                    v-model="inputMapFloorHeightmap">
+                            <label for="map-floor-setting-heightmap">Height Map</label>
+                        </div>
+
+                        <!-- scale -->
+                        <input type="number" id="map-floor-scale" name="floor-scale"
+                                v-model="inputFloorScale"
+                                min="1">
+                        <label for="map-floor-scale">Scale</label>
+
+                        <!-- rows -->
                         <input type="number" id="map-floor-setting-rows" name="floor-rows"
                                 v-model="inputMapFloorRows"
                                 min="1" max="10">
                         <label for="map-floor-setting-rows">Tile Rows</label>
 
+                        <!-- zoom -->
                         <input type="number" id="map-floor-setting-zoom" name="floor-zoom"
                                 v-model="inputMapFloorZoom"
                                 min="0" max="19">
-                        <label for="map-floor-setting-zoom">Map Zoom</label>
+                        <label for="map-floor-setting-zoom">Zoom</label>
 
-                        <input type="number" id="map-floor-scale" name="floor-scale"
-                                v-model="inputFloorScale"
+                        <!-- height scale -->
+                        <input type="number" id="map-floor-setting-height" name="floor-height"
+                                v-model="inputMapFloorHeight"
                                 min="1">
-                        <label for="map-floor-scale">Map Scale</label>
+                        <label for="map-floor-setting-zoom">Height Scale</label>
 
-                        <div>
+                        <!-- <div>
                         <select v-model="maptype" id="map-setting-type">
                             <option value="SATELLITE">Satellite</option>
                             <option value="STREETS">Streets</option>
@@ -152,18 +167,56 @@
                             <option value="OUTDOORS">Outdoors</option>
                             <option value="LIGHT">Light</option>
                             <option value="DARK">Dark</option>
-                        <!-- <option value="NAVIGATIONPREVIEWDAY">navigation-preview-day</option>
+                        <option value="NAVIGATIONPREVIEWDAY">navigation-preview-day</option>
                         <option value="NAVIGATIONPREVIEWNIGHT">Cel</option>
                         <option value="NAVIGATIONGUIDANCEDAY">Cel</option>
-                        <option value="NAVIGATIONGUIDANCENIGHT">Cel</option> -->
+                        <option value="NAVIGATIONGUIDANCENIGHT">Cel</option>
                         </select>
                          <label for="map-setting-type">Map Type</label>
-                        </div>
-                    </div>
+                        </div> -->
+                    </div>         
 
-                    <!-- <h3> Set coordinates </h3> -->
-                    <input type="button" v-on:click="setMap" id="map-setting-latlon" name="coords"
-                        value="Update Map">
+                    <div class="setting-title"> World </div>
+                    <div class="worldmapsettings">
+                        <div>
+                            <input type="checkbox" id="map-setting-world" name="world"
+                                v-model="mapWorldCheck">
+                            <label for="map-setting-world">Active</label>
+                            <!-- DPI -->
+                            <input type="checkbox" id="map-world-setting-dpi" name="world-dpi"
+                                    v-model="inputMapWorldHighDPI">
+                            <label for="map-world-setting-dpi">High DPI</label>
+                            
+                            <!-- height map -->
+                            <input type="checkbox" id="map-world-setting-heightmap" name="world-heightmap"
+                                    v-model="inputMapWorldHeightmap">
+                            <label for="map-world-setting-heightmap">Height Map</label>
+                        </div>
+
+                        <!-- scale -->
+                        <input type="number" id="map-world-scale" name="world-scale"
+                                v-model="inputWorldScale"
+                                min="1">
+                        <label for="map-world-scale">Scale</label>
+
+                        <!-- rows -->
+                        <input type="number" id="map-world-setting-rows" name="world-rows"
+                                v-model="inputMapWorldRows"
+                                min="1" max="10">
+                        <label for="map-world-setting-rows">Tile Rows</label>
+
+                        <!-- zoom -->
+                        <input type="number" id="map-world-setting-zoom" name="world-zoom"
+                                v-model="inputMapWorldZoom"
+                                min="0" max="19">
+                        <label for="map-world-setting-zoom">Zoom</label>
+
+                        <!-- height scale -->
+                        <input type="number" id="map-world-setting-height" name="world-height"
+                                v-model="inputMapWorldHeight"
+                                min="1">
+                        <label for="map-world-setting-zoom">Height Scale</label>
+                    </div>           
                     
                 </div>  <!-- settings right -->
             </div>  <!-- settings grid -->
@@ -189,12 +242,25 @@ export default {
                 visibility: 'hidden',
                 opacity: 0
             },
-            mapFloorCheck: false,
             lat: 0,
             lon: 0,
-            tilerows: 1,
-            mapzoom: 11,
+
+            mapFloorCheck: false,
+            floorMapTileRows: 1,
+            floorMapZoom: 11,
             floorscale: 1,
+            floorHighDPI: false,
+            floorMapHeightmap: false,
+            floorMapHeight: 1,
+
+            mapWorldCheck: false,
+            worldMapTileRows: 1,
+            worldMapZoom: 11,
+            worldscale: 1,
+            worldHighDPI: false,
+            worldMapHeightmap: false,
+            worldMapHeight: 1,
+
             maptype: 'SATELLITE',
             carouselDimensions: {
                 segments: 24,
@@ -205,17 +271,9 @@ export default {
     },
 
     computed: {
-        mapFloorSetting: {
-            get () { return this.$store.state.xr.map.mapFloorSetting;},
-            set (val) { 
-                this.$store.commit('xr/map/SET_FLOOR_MAP_ACTIVE', val);
-            }
-        },
-        mapWorldSetting: {
-            get () { return this.$store.state.xr.map.worldMapActive;},
-            set (val) { 
-                this.$store.commit('xr/map/SET_WORLD_MAP_ACTIVE', val);
-            }
+        inputFloorRadius: {
+            get () { return this.carouselDimensions.radius },
+            set (val) { this.carouselDimensions.radius = val }
         },
         mapLatitude: {
             get () { return this.$store.state.xr.map.mapLatitude;},
@@ -233,27 +291,65 @@ export default {
             get () { return this.lon },
             set (val) { this.lon = val }
         },
+
+
+
         inputMapFloorRows: {
-            get () { return this.tilerows },
-            set (val) { this.tilerows = val }
+            get () { return this.floorMapTileRows },
+            set (val) { this.floorMapTileRows = val }
+        },
+        inputFloorScale: {
+            get() { return this.floorscale },
+            set (val) { this.floorscale = val }
         },
         inputMapFloorZoom: {
-            get () { return this.mapzoom },
-            set (val) { this.mapzoom = val }
+            get () { return this.floorMapZoom },
+            set (val) { this.floorMapZoom = val }
+        },
+        inputMapFloorHighDPI: {
+            get () { return this.floorHighDPI },
+            set (val) { this.floorHighDPI = val }
+        },
+        inputMapFloorHeightmap: {
+            get () { return this.floorMapHeightmap },
+            set (val) { this.floorMapHeightmap = val }
+        },
+        inputMapFloorHeight: {
+            get () { return this.floorMapHeight },
+            set (val) { this.floorMapHeight= val }
+        },
+
+
+        inputMapWorldRows: {
+            get () { return this.worldMapTileRows },
+            set (val) { this.worldMapTileRows = val }
+        },
+        inputWorldScale: {
+            get() { return this.worldscale },
+            set (val) { this.worldscale = val }
+        },
+        inputMapWorldZoom: {
+            get () { return this.worldMapZoom },
+            set (val) { this.worldMapZoom = val }
+        },
+        inputMapWorldHighDPI: {
+            get () { return this.worldHighDPI },
+            set (val) { this.worldHighDPI = val }
+        },
+        inputMapWorldHeightmap: {
+            get () { return this.worldMapHeightmap },
+            set (val) { this.worldMapHeightmap = val }
+        },
+        inputMapWorldHeight: {
+            get () { return this.worldMapHeight },
+            set (val) { this.worldMapHeight= val }
         },
 
         inputSegments: {
             get () { return this.carouselDimensions.segments },
             set (val) { this.carouselDimensions.segments = val }
         },
-        inputFloorRadius: {
-            get () { return this.carouselDimensions.radius },
-            set (val) { this.carouselDimensions.radius = val }
-        },
-        inputFloorScale: {
-            get() { return this.floorscale },
-            set (val) { this.floorscale = val }
-        },
+
 
         inputTime: {
             get () { return this.time },
@@ -294,7 +390,10 @@ export default {
         [
             'floorRows',
             'floorZoom',
-            'floorScale'
+            'floorScale',
+            'worldRows',
+            'worldZoom',
+            'worldScale',
         ])
     },
 
@@ -316,8 +415,10 @@ export default {
             }
         },
         mapFloorCheck: function (newVal, oldVal) {
-            // this.mapFloorSetting.set(newVal);
             this.$store.commit('xr/map/SET_FLOOR_MAP_ACTIVE', newVal);
+        },
+        mapWorldCheck: function (newVal, oldVal) {
+            this.$store.commit('xr/map/SET_WORLD_MAP_ACTIVE', newVal);
         }
     },
 
@@ -331,6 +432,9 @@ export default {
 
         self.inputMapFloorRows = self.floorRows;
         self.inputMapFloorZoom = self.floorZoom;
+
+        self.inputMapWorldRows = self.worldRows;
+        self.inputMapWorldZoom = self.worldZoom;
 
         self.inputSegments = self.numberOfSegments;
         self.inputFloorRadius = self.floorRadius;
@@ -362,10 +466,21 @@ export default {
         setMap() {
             this.$store.commit('xr/map/SET_MAP_LATITUDE', this.lat);
             this.$store.commit('xr/map/SET_MAP_LONGITUDE', this.lon);
-            this.$store.commit('xr/map/SET_FLOOR_MAP_ROWS', this.tilerows);
-            this.$store.commit('xr/map/SET_FLOOR_MAP_ZOOM', this.mapzoom);
             this.$store.commit('xr/map/SET_MAPTYPE', this.maptype);
+
+            this.$store.commit('xr/map/SET_FLOOR_MAP_ROWS', this.floorMapTileRows);
+            this.$store.commit('xr/map/SET_FLOOR_MAP_ZOOM', this.floorMapZoom);
             this.$store.commit('xr/map/SET_FLOOR_SCALE', this.floorscale);
+            this.$store.commit('xr/map/SET_FLOOR_DPI', this.floorHighDPI);
+            this.$store.commit('xr/map/SET_FLOOR_HEIGHTMAP', this.floorMapHeightmap);
+            this.$store.commit('xr/map/SET_FLOOR_HEIGHT', this.floorMapHeight);
+
+            this.$store.commit('xr/map/SET_WORLD_MAP_ROWS', this.worldMapTileRows);
+            this.$store.commit('xr/map/SET_WORLD_MAP_ZOOM', this.worldMapZoom);
+            this.$store.commit('xr/map/SET_WORLD_SCALE', this.worldscale);
+            this.$store.commit('xr/map/SET_WORLD_DPI', this.worldHighDPI);
+            this.$store.commit('xr/map/SET_WORLD_HEIGHTMAP', this.worldMapHeightmap);
+            this.$store.commit('xr/map/SET_WORLD_HEIGHT', this.worldMapHeight);
         },
         updateCarousel() {
             this.$store.commit('xr/carousel/SET_NUMBER_OF_SEGMENTS', this.carouselDimensions.segments);

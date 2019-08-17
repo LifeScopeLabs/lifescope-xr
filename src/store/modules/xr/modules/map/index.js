@@ -17,12 +17,22 @@ export const state = function () {
         worldMapActive: false,
         mapLatitude: 34.023552,
         mapLongitude: -118.286189,
+
+        floorMapType: 'satellite',
         floorRows: 1,
         floorZoom: 11,
-        floorHighdpi: false,
-        floorMapType: 'satellite',
-        floorMapHeightMap: false,
+        floorHighDPI: false,
         floorScale: 1,
+        floorMapHeightmap: false,
+        floorMapHeight: 1,
+
+        worldRows: 1,
+        worldZoom: 11,
+        worldHighDPI: false,
+        worldScale: 8,
+        worldMapHeightmap: false,
+        worldMapFloorHeight: 1,
+
         mapboxType: MapboxTypeEnum.SATELLITE,
         worldRows: 10,
         worldZoom: 8,
@@ -52,6 +62,7 @@ export const mutations = {
         if (num > 180) {num = 180;}
         state.mapLongitude = num;
     },
+
     SET_FLOOR_MAP_ROWS: function(state, val) {
         if (CONFIG.DEBUG) {console.log("SET_FLOOR_MAP_ROWS");}
         state.floorRows = val;
@@ -62,12 +73,47 @@ export const mutations = {
     },
     SET_FLOOR_DPI: function(state, val) {
         if (CONFIG.DEBUG) {console.log("SET_FLOOR_DPI");}
-        state.floorHighdpi = val;
+        state.floorHighDPI = val;
     },
     SET_FLOOR_SCALE: function(state, val) {
         if (CONFIG.DEBUG) {console.log("SET_FLOOR_SCALE");}
         state.floorScale = val;
     },
+    SET_FLOOR_HEIGHTMAP: function(state, val) {
+        if (CONFIG.DEBUG) {console.log("SET_FLOOR_HEIGHTMAP");}
+        state.floorMapHeightmap = val;
+    },
+    SET_FLOOR_HEIGHT: function(state, val) {
+        if (CONFIG.DEBUG) {console.log("SET_FLOOR_HEIGHT");}
+        state.floorMapHeight = val;
+    },
+
+
+    SET_WORLD_MAP_ROWS: function(state, val) {
+        if (CONFIG.DEBUG) {console.log("SET_WORLD_MAP_ROWS");}
+        state.worldRows = val;
+    },
+    SET_WORLD_MAP_ZOOM: function(state, val) {
+        if (CONFIG.DEBUG) {console.log("SET_WORLD_MAP_ZOOM");}
+        state.worldZoom = val;
+    },
+    SET_WORLD_DPI: function(state, val) {
+        if (CONFIG.DEBUG) {console.log("SET_WORLD_DPI");}
+        state.worldHighDPI = val;
+    },
+    SET_WORLD_SCALE: function(state, val) {
+        if (CONFIG.DEBUG) {console.log("SET_WORLD_SCALE");}
+        state.worldScale = val;
+    },
+    SET_WORLD_HEIGHTMAP: function(state, val) {
+        if (CONFIG.DEBUG) {console.log("SET_WORLD_HEIGHTMAP");}
+        state.worldMapHeightmap = val;
+    },
+    SET_WORLD_HEIGHT: function(state, val) {
+        if (CONFIG.DEBUG) {console.log("SET_WORLD_HEIGHT");}
+        state.worldMapHeight = val;
+    },
+
     SET_MAPTYPE: function(state, val) {
         if (CONFIG.DEBUG) {console.log("SET_MAPTYPE");}
         if (MapboxTypeEnum.hasOwnProperty(val)) {

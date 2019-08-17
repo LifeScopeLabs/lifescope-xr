@@ -43,6 +43,10 @@ AFRAME.registerComponent('mapbox-terrain', {
 			type: 'boolean',
 			default: false
 		},
+		heightmapscale: {
+			type: 'number',
+			default: 1
+		},
 		offsetx: {
 			type: 'number',
 			default: 0
@@ -249,6 +253,7 @@ AFRAME.registerPrimitive('a-mapbox-terrain', AFRAME.utils.extendDeep({}, AFRAME.
 		'innerrow': 'mapbox-terrain.innerrow',
 		'highdpi': 'mapbox-terrain.highdpi',
 		'heightmap': 'mapbox-terrain.heightmap',
+		'heightmapscale': 'mapbox-terrain.heightmapscale',
 		'offsetx': 'mapbox-terrain.offsetx',
 		'offsety': 'mapbox-terrain.offsety',
 		'type': 'mapbox-terrain.type'

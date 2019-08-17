@@ -38,12 +38,18 @@
         position="0 0.1 0" :scale="floorScale + ' 1 ' + floorScale"
         :latitude="mapLatitude" :longitude="mapLongitude"
         :zoom-level="floorZoom" :rows="floorRows"
-        :highdpi="floorHighdpi"
+        :highdpi="floorHighDPI"
+        :heightmap="floorMapHeightmap"
+        :heightmapheight="floorMapHeight"
         :type="mapboxType"></a-mapbox-terrain>
     <!-- World -->
     <a-mapbox-terrain v-if="worldMapActive == true"
-        :latitude="mapLatitude" :longitude="mapLongitude" position="0 -4 0" :zoom-level="worldZoom" scale="8 1 8"
-        :rows="worldRows"></a-mapbox-terrain>
+        position="0 -4 0" :scale="worldScale + ' 1 ' + worldScale"
+        :latitude="mapLatitude" :longitude="mapLongitude"
+        :zoom-level="worldZoom" :rows="worldRows"
+        :highdpi="worldHighDPI"
+        :heightmap="worldMapHeightmap"
+        :heightmapheight="worldMapHeight"></a-mapbox-terrain>
 
   </a-entity>
 </template>
@@ -87,13 +93,22 @@ export default {
                 'worldMapActive',
                 'mapLatitude',
                 'mapLongitude',
+                'mapboxType',
+
                 'floorRows',
                 'floorZoom',
-                'floorHighdpi',
+                'floorHighDPI',
                 'floorScale',
+                'floorMapHeightmap',
+                'floorMapHeight',
+
                 'worldRows',
                 'worldZoom',
-                'mapboxType'
+                'worldHighDPI',
+                'worldScale',
+                'worldMapHeightmap',
+                'worldMapHeight',
+
             ]
         ),
 
