@@ -1,11 +1,11 @@
 .loading {
     z-index: 10010;
 }
-.xr-settings {
+.xr-settings-container {
     z-index: 10005;
 }
 
-.settings-toggle {
+.xr-settings-menu-toggle {
     pointer-events: visible;
 
     position: absolute;
@@ -16,16 +16,16 @@
     color:    #aeaeae;
 }
 
-.desktop-hud .settings-toggle {
+.desktop-hud .xr-settings-menu-toggle {
     left: 97.5%;
 }
 
-.mobile-hud .settings-toggle {
+.mobile-hud .xr-settings-menu-toggle {
     left: 92.5%;
     font-size: 20px;
 }
 
-.help-settings {
+.xr-help-settings {
     z-index:10005;
     pointer-events: visible;
 
@@ -53,7 +53,7 @@
     overflow: scroll;
 }
 
-.help-settings .help-header {
+.xr-help-settings .help-header {
     line-height: 1em;
     text-align: center;
     font-size: 1.5em;
@@ -63,7 +63,7 @@
     margin: -15px;
 }
 
-.help-settings input {
+.xr-help-settings input {
     padding: 5px;
     border: 2px solid #ccc;
     -webkit-border-radius: 5px;

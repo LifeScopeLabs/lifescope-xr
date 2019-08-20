@@ -1,15 +1,17 @@
 .paginator {
     position: absolute;
-    top: 88%;
-    left: 46%;
-    width: 8%;
+    top: 5.5%;
+    left: 40%;
+    width: 20%;
     min-width: 75px;
-    height: 10%;
+    height: 15%;
     box-sizing: border-box;
 
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-around;
 
     border: 1px solid #7b7b7b;
     border-radius: 24px;
@@ -50,4 +52,44 @@
 
 .paginatorFill {
     flex-grow: 2;
+}
+
+.paginator-latlong {
+    display: flex;
+    justify-content: space-around;
+}
+
+.paginator-latlong input {
+    min-width: 30px;
+    max-width: 50px;
+}
+
+.paginator-lat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.paginator-long {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.paginator-icons {
+    display: flex;
+    justify-content: space-around;
+
+}
+
+.paginator-icons input {
+    /* width: 5%; */
+    width: 20px;
+}
+
+.paginator-input-time {
+    display: flex;
+    justify-content: center;
 }

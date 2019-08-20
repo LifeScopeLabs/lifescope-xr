@@ -21,7 +21,8 @@ export const state = function () {
         bump: false,
         normal: false,
         quality: GraphicsQualityEnum.HIGH,
-        shading: ShadingEnum.DEFAULT
+        shading: ShadingEnum.DEFAULT,
+        globeActive: true
     };
 };
 
@@ -65,6 +66,10 @@ export const mutations = {
     SET_SKYTIME: function(state, value) {
         if (CONFIG.DEBUG) {console.log(`SET_SKYTIME: ${value}`)}
         state.skytime = value;
+    },
+    SET_GLOBE_ACTIVE: function(state, active=true) {
+        if (CONFIG.DEBUG) {console.log("SET_GLOBE_ACTIVE");}
+        state.globeActive = active;
     },
 };
 

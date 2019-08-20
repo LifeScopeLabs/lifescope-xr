@@ -16,16 +16,18 @@
         <gallery-carousel />
       
         <!-- Earth -->
-        <a-sphere id="Earth" class="boundry"
-                    :position="'0 1.5 0' " 
-                    radius=".99" 
-                    material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;"
-                    animation="property: rotation; easing: linear; to: 0 360; dur: 150000; loop: true;">
+        <a-sphere v-if="globeActive"
+                id="Earth" class="boundry"
+                :position="'0 1.5 0' " 
+                radius=".99" 
+                material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;"
+                animation="property: rotation; easing: linear; to: 0 360; dur: 150000; loop: true;">
 
         </a-sphere>
 
         <!-- Logo  -->
-        <a-entity id="Logo" :position="'0 2.6 0'"
+        <a-entity v-if="globeActive"
+                id="Logo" :position="'0 2.6 0'"
                 rotation="0 0 0"
                 animation="property: rotation; easing: linear; to: 0 -360; dur: 42000; loop: true;">
             <a-gltf-model src="#logo" scale="0.075 0.075 0.075">
@@ -84,6 +86,7 @@ export default {
                 'normal',
                 'quality',
                 'shading',
+                'globeActive'
             ]
         ),
         

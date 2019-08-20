@@ -1,11 +1,11 @@
 <template>
-    <div class="xr-settings" :class="{ 'desktop-hud': !isMobile, 'mobile-hud': isMobile }">
+    <div class="xr-settings-container" :class="{ 'desktop-hud': !isMobile, 'mobile-hud': isMobile }">
 
-        <div class="settings-toggle">
+        <div class="xr-settings-menu-toggle">
             <div class="fas fa-cog" @click="toggleSettingsVisibility"></div>
         </div>
 
-        <div class="help-settings" :style="settingsStyleObject">
+        <div class="xr-help-settings" :style="settingsStyleObject">
 
             <div class="help-header"> Settings </div>
 
@@ -25,6 +25,8 @@
                             <label for="sky-setting-sun">Sun</label>
                         </div>
                     </div>
+
+
 
                     <div class="setting-title"> Time </div>
 
@@ -103,7 +105,13 @@
 
                     <div class="setting-title"> Map </div>
 
-                    <div class="latlong">
+                        <div class="input-globe">
+                            <input type="checkbox" id="globe-setting-active" name="globe"
+                                    v-model="globeActive">
+                                <label for="globe-setting-active">Globe</label>
+                        </div>
+
+                    <div class="settings-latlong">
                         <input type="number" id="map-setting-lat" name="lat"
                                 v-model="inputMapLatitude"
                                 min="-90" max="90">
@@ -157,7 +165,7 @@
                         <input type="number" id="map-floor-setting-height" name="floor-height"
                                 v-model="inputMapFloorHeight"
                                 min="1">
-                        <label for="map-floor-setting-zoom">Height Scale</label>
+                        <label for="map-floor-setting-zoom">Height</label>
 
                         <!-- <div>
                         <select v-model="maptype" id="map-setting-type">
@@ -215,7 +223,7 @@
                         <input type="number" id="map-world-setting-height" name="world-height"
                                 v-model="inputMapWorldHeight"
                                 min="1">
-                        <label for="map-world-setting-zoom">Height Scale</label>
+                        <label for="map-world-setting-zoom">Height</label>
                     </div>           
                     
                 </div>  <!-- settings right -->
@@ -266,7 +274,7 @@ export default {
                 segments: 24,
                 radius: 5
             },
-            time: 0
+            time: '0:00'
         }
     },
 
@@ -354,7 +362,7 @@ export default {
         inputTime: {
             get () { return this.time },
             set (val) { 
-                console.log(`inputTime: ${val}`);
+                // console.log(`inputTime: ${val}`);
                 this.time = val }
         },
 
@@ -370,6 +378,10 @@ export default {
         normal: {
             get () { return this.$store.state.xr.graphics.normal;},
             set (val) { this.$store.commit('xr/graphics/SET_NORMAL', val); }
+        },
+        globeActive: {
+            get () { return this.$store.state.xr.graphics.globeActive;},
+            set (val) { this.$store.commit('xr/graphics/SET_GLOBE_ACTIVE', val); }
         },
         ...mapState('xr',
         [
@@ -425,6 +437,9 @@ export default {
     mounted() {
         var self = this;
         self.hudUtils = new HudUtils();
+
+        self.time = self.hudUtils.timeStringFromNumber(this.skytime);
+
         document.body.addEventListener('keypress', self.keypressListener);
         
         self.inputMapLatitude = self.mapLatitude;

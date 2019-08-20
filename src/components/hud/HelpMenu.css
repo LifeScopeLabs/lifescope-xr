@@ -1,4 +1,4 @@
-.help-menu {
+.xr-help-menu {
     z-index: 10015;
 
     pointer-events: visible;
@@ -21,21 +21,46 @@
     overflow: scroll;
 }
 
-.help-menu.desktop-menu {
+.xr-help-menu-container {
+    z-index: 10015;
+}
+
+
+.xr-help-menu-toggle {
+    pointer-events: visible;
+
+    position: absolute;
+    top: 1%;
+    width: 5%;
+    height: 5%;
+
+    color:    #aeaeae;
+}
+
+.desktop-hud .xr-help-menu-toggle {
+    left: 95%;
+}
+
+.mobile-hud .xr-help-menu-toggle {
+    left: 87.5%;
+    font-size: 20px;
+}
+
+.xr-help-menu.desktop-hud {
     display: grid;
     grid-template-columns: 1fr 1fr;
     /* pointer-events: visible; */
 }
 
-div.help-menu .desktop-controls {
+div.xr-help-menu .desktop-controls {
     line-height: 3em;
 }
 
-.help-menu.desktop-menu .help-controls {
+.help-menu.desktop-hud .help-controls {
     grid-column: 1;
 }
 
-.help-menu h2 {
+.xr-help-menu h2 {
     line-height: 1em;
 }
 

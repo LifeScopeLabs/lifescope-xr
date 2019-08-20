@@ -1,6 +1,6 @@
 export default class HudUtils {
     constructor() {
-        this.hudOpacity = 0.6;
+        this.hudOpacity = 0.95;
     }
 
     toggleHud(styleObject, dur=0.5) {
@@ -25,5 +25,14 @@ export default class HudUtils {
                 }
             }
         })
+    }
+
+    timeStringFromNumber(timeNum) {
+        var hours = Math.floor(timeNum);
+        var hourDecimal = timeNum - hours;
+        var minutes = hourDecimal * 60;
+        var minutesStr = minutes.toString().padStart(2, '0');
+        var timeStr = `${hours}:${minutesStr}`;
+        return timeStr;
     }
 }
