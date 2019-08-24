@@ -7,7 +7,8 @@
         <!-- <a-light type='hemisphere' color='#FFF' groundColor='#00F' intensity='0.8' ></a-light> -->
 
         <!-- Floor -->
-        <a-wooden-floor class="boundry"
+        <a-wooden-floor v-if="floorActive"
+            class="boundry"
             :radius='floorRadius' :radialsegments='numberOfSegments'
             :bump="bump" :normal="normal" :quality="quality" :shading="textureShading"
             rotation="0 135 0"></a-wooden-floor>
@@ -86,12 +87,12 @@ export default {
                 'normal',
                 'quality',
                 'shading',
-                'globeActive'
             ]
         ),
         
         ...mapState('xr/map',
             [
+                'globeActive',
                 'floorMapActive',
                 'worldMapActive',
                 'mapLatitude',
@@ -117,6 +118,7 @@ export default {
 
         ...mapState('xr/carousel',
             [
+                'floorActive',
                 'floorRadius',
                 'numberOfSegments'
             ]

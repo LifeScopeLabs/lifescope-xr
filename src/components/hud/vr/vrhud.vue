@@ -1,14 +1,18 @@
 <template>
   <a-entity id="vrhudentity" class="hud">
-    <helpmenu id="vrhelpmenu" v-if="hudhelpactive && inVR"
+    <helpmenu id="vrhelpmenu" v-if="vrHelpActive && inVR"
         position="0 0 -1.5"/>
-    <settings id="vrsettings" v-if="hudsettingsactive && inVR"
+    <settings id="vrsettings" v-if="vrSettingsActive && inVR"
         position="0 0 -1.5"/>
+    <a-entity id="vrkeyboard" v-if="showKeyboard"
+        position="0 0 -0.5"
+        :super-keyboard="'hand: #rightHandCursor; imagePath:/static/aframe/aframe-super-keyboard/;' + ' model: ' + vrKeyboardModel + ';'"
+        />
   </a-entity>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 import helpmenu from "./HelpMenu.vue";
 import settings from "./settings.vue";
@@ -19,34 +23,48 @@ export default {
         settings,
     },
 
-    data() {
-        return {
-            hudhelpactive: false,
-            hudsettingsactive: false,
-            menus: ['','vrhelpmenu', 'vrsettings'],
-            currentMenuIndex: 0
-        }
-    },
 
     computed: {
       ...mapState('xr',
       [
         'inVR',
         'isMobile',
-      ])
+      ]),
+      ...mapState('xr/hud',
+      [
+        'vrKeyboardActive',
+        'vrKeyboardModel',
+        'vrSettingsActive',
+        'vrHelpActive',
+        'vrActiveHud'
+      ]),
+      showKeyboard() {
+        return this.vrKeyboardActive && this.inVR;
+      },
     },
 
     mounted() {
         document.body.addEventListener('keypress', this.keypressHandler);
-        document.body.addEventListener('cyclehud', this.cycleHud);
+        document.body.addEventListener('cyclehud', this.cycleHudHandler);
     },
 
     beforeDestroy() {
         document.body.removeEventListener('keypress', this.keypressHandler);
-        document.body.removeEventListener('cyclehud', this.cycleHud);
+        document.body.removeEventListener('cyclehud', this.cycleHudHandler);
     },
 
     methods: {
+      ...mapActions('xr/hud',
+      [
+        'cycleHud'
+      ]),
+
+      cycleHudHandler () {
+        if (CONFIG.DEBUG) {console.log("cycleHudHandler");}
+        this.updateHudPosition('#vrhud');
+        this.cycleHud();
+      },
+
       toggleHudHelp () {
         var self = this;
         if (self.hudhelpactive) {
@@ -73,28 +91,6 @@ export default {
         }
       },
 
-      cycleHud () {
-        var self = this;
-        self.currentMenuIndex = ((self.currentMenuIndex + 1) % self.menus.length);
-        switch (self.currentMenuIndex) {
-          case 0:
-            self.hudhelpactive = false;
-            self.hudsettingsactive = false;
-            break;
-          case 1:
-            self.hudhelpactive = true;
-            self.hudsettingsactive = false;
-            self.updateHudPosition('#vrhud');
-            break;
-          case 2:
-            self.hudhelpactive = false;
-            self.hudsettingsactive = true;
-            self.updateHudPosition('#vrhud');
-            break;
-          default:
-            break;
-        }
-      },
 
       keypressHandler (evt) {
         if (evt.key == 'h') {

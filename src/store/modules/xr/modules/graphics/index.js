@@ -1,3 +1,5 @@
+import TimeUtils from '../../../../../util/TimeUtils';
+
 const SkyboxEnum = Object.freeze({
     STARS: 1,
     SUN: 2
@@ -17,14 +19,28 @@ const ShadingEnum = Object.freeze({
 export const state = function () {
     return {
         skybox: SkyboxEnum.STARS,
-        skytime: 11, // 24 hours
+        skytime: 11, // 24 hours, number
         bump: false,
         normal: false,
         quality: GraphicsQualityEnum.HIGH,
         shading: ShadingEnum.DEFAULT,
-        globeActive: true
     };
 };
+
+export const getters = {
+    timeHours: state => {
+        return TimeUtils.getTimeHours(state.skytime);
+    },
+    timeMinutes: state => {
+        return TimeUtils.getTimeMinutes(state.skytime);
+    },
+    timeMinutesHourDecimal: (state, getters) => {
+        return TimeUtils.minutesToHourDecimal(getters.timeMinutes);
+    },
+    timeMinutesString: (state, getters) => {
+        return TimeUtils.getPaddedMinutesString(getters.timeMinutes);
+    }
+}
 
 export const mutations = {
     SET_SKYBOX: function(state, val) {
@@ -67,10 +83,6 @@ export const mutations = {
         if (CONFIG.DEBUG) {console.log(`SET_SKYTIME: ${value}`)}
         state.skytime = value;
     },
-    SET_GLOBE_ACTIVE: function(state, active=true) {
-        if (CONFIG.DEBUG) {console.log("SET_GLOBE_ACTIVE");}
-        state.globeActive = active;
-    },
 };
 
 export const actions = {
@@ -83,12 +95,24 @@ export const actions = {
         var hourDecimal = minutes / 60;
         timeNum = hours + hourDecimal;
         context.commit('SET_SKYTIME', timeNum);
-    }
+    },
+    updateTimeHours: function(context, hours) {
+        if (CONFIG.DEBUG) {console.log("updateTimeHours");}
+        var newTime = +hours + +context.getters.timeMinutesHourDecimal;
+        console.log(`hours ${hours}, newTime: ${newTime}`);
+        context.commit('SET_SKYTIME', newTime);
+    },
+    updateTimeMinutes: function(context, minutes) {
+        if (CONFIG.DEBUG) {console.log("updateTimeMinutes");}
+        var newTime = +context.getters.timeHours + +TimeUtils.minutesToHourDecimal(minutes);
+        context.commit('SET_SKYTIME', newTime);
+    },
 };
 
 const graphicsModule = {
     namespaced: true,
     state,
+    getters,
     mutations,
     actions
 }

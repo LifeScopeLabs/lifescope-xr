@@ -53,6 +53,7 @@
         "aframe-input-mapping-component": "^0.1.3",
         "aframe-src-fit-component": "git+https://git@github.com/lifescopelabs/aframe-src-fit-component",
         "aframe-sun-sky": "^3.0.3",
+        "aframe-super-keyboard": "^2.0.2",
         "aframe-teleport-controls": "git+https://github.com/mohrtw/aframe-teleport-controls",
         "async": "^2.6.1",
         "aws-sdk": "^2.244.1",

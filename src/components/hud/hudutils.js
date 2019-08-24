@@ -28,11 +28,19 @@ export default class HudUtils {
     }
 
     timeStringFromNumber(timeNum) {
-        var hours = Math.floor(timeNum);
-        var hourDecimal = timeNum - hours;
-        var minutes = hourDecimal * 60;
+        var hours = this.getTimeHours(timeNum);
+        var minutes = this.getTimeMinutes(timeNum);
         var minutesStr = minutes.toString().padStart(2, '0');
         var timeStr = `${hours}:${minutesStr}`;
         return timeStr;
+    }
+    getTimeHours(time) {
+        return Math.floor(time);
+    }
+    getTimeMinutes(time) {
+        return 60 * (time - Math.floor(time));
+    }
+    minutesToHourDecimal(minutes) {
+        return minutes/60;
     }
 }

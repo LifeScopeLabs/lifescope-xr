@@ -39,6 +39,11 @@
                     </div>
 
                     <div class="setting-title"> Carousel </div>
+                    <div class="input-floor-active">
+                        <input type="checkbox" id="floor-setting-active" name="floor-active"
+                                v-model="floorActive">
+                            <label for="floor-setting-active">Floor</label>
+                    </div>
                     <div class="input-carousel">
                         <input type="number" id="car-setting-segements" name="segments"
                                 v-model="inputSegments"
@@ -279,10 +284,15 @@ export default {
     },
 
     computed: {
+        inputSegments: {
+            get () { return this.carouselDimensions.segments },
+            set (val) { this.carouselDimensions.segments = val }
+        },
         inputFloorRadius: {
             get () { return this.carouselDimensions.radius },
             set (val) { this.carouselDimensions.radius = val }
         },
+
         mapLatitude: {
             get () { return this.$store.state.xr.map.mapLatitude;},
             set (val) { this.$store.commit('xr/map/SET_MAP_LATITUDE', val); }
@@ -353,10 +363,7 @@ export default {
             set (val) { this.worldMapHeight= val }
         },
 
-        inputSegments: {
-            get () { return this.carouselDimensions.segments },
-            set (val) { this.carouselDimensions.segments = val }
-        },
+
 
 
         inputTime: {
@@ -380,8 +387,12 @@ export default {
             set (val) { this.$store.commit('xr/graphics/SET_NORMAL', val); }
         },
         globeActive: {
-            get () { return this.$store.state.xr.graphics.globeActive;},
-            set (val) { this.$store.commit('xr/graphics/SET_GLOBE_ACTIVE', val); }
+            get () { return this.$store.state.xr.map.globeActive;},
+            set (val) { this.$store.commit('xr/map/SET_GLOBE_ACTIVE', val); }
+        },
+        floorActive: {
+            get () { return this.$store.state.xr.carousel.floorActive;},
+            set (val) { this.$store.commit('xr/carousel/SET_FLOOR_ACTIVE', val); }
         },
         ...mapState('xr',
         [

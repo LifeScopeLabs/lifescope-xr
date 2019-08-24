@@ -281,6 +281,122 @@ AFRAME.registerPrimitive( 'a-rail', {
 });
 
 
+
+AFRAME.registerComponent('diorama-column', {
+    schema: {
+        x: { type: 'number', default: 0},
+        y: { type: 'number', default: 0},
+        z: { type: 'number', default: 0},
+
+        railheight: { type: 'number', default: 1.2 },
+        baseheight: { type: 'number', default: 0.075 },
+        trimheight: { type: 'number', default: 0.01 },
+        basedepth: { type: 'number', default: 0.03 },
+        columnradius: { type: 'number', default: 0.05 },
+
+        radialsegments: { type: 'number', default: 36 },
+        floorradius: { type: 'number', default: 6},
+
+        color: { default: 0xe8f1ff}, //0xe8f1ff
+        opacity: { type: 'number', default: 0.2 },
+        metalness: { type: 'number', default: 0.0 },
+        reflectivity: { type: 'number', default: 0.5 },
+        roughness: { type: 'number', default: 0.2 },
+
+        repeatU: { type: 'number', default: 4},
+        repeatV: { type: 'number', default: 1},
+
+        withBump: { default: false },
+        withNormal: { default: false },
+        quality: { default: 'l' }, //, oneOf: ['s', 'm', 'l']
+        shading: { default: 'default' },
+
+        withTrim: { default: false }
+    },
+
+    multiple: true,
+
+    update: function() {
+        var self = this;
+        if (self.el.object3DMap.hasOwnProperty(self.id)) {
+            self.el.removeObject3D(self.id);
+        }
+        if (self.id != undefined) {
+            self._createRail();
+        }
+    },
+
+    remove: function () {
+        if (this.el.object3DMap.hasOwnProperty(this.id)) {
+            this.el.removeObject3D(this.id);
+        }
+    },
+
+    _createRail() {
+        var data = this.data;
+        this._createDioramaComponent('brass', 'column');
+        this._createDioramaComponent('brass', 'sphere');
+        if (data.withTrim) {
+            this._createDioramaComponent('wood-panel', 'base');
+            // this._createDioramaComponent('wood-panel', 'base', 'top');
+            this._createDioramaComponent('brass', 'trim', '', 'front');
+            this._createDioramaComponent('brass', 'trim', '', 'back');
+        }
+        // this._createDioramaComponent('brass', 'trim', 'top', 'front');
+        // this._createDioramaComponent('brass', 'trim', 'top', 'back');
+        // this._createDioramaComponent('glass', 'glass', '', '', {
+        //     color: data.color,
+        //     metalness: data.metalness,
+        //     reflectivity: data.reflectivity,
+        //     roughness: data.roughness,
+        //     opacity: data.opacity,
+        // });
+    },
+
+    _createDioramaComponent(type, shape,  pos='', side='front', props={}) {
+        var self = this;
+        var material, geom, mesh;
+        var data = self.data;
+        data.pos = pos;
+        data.side = side;
+    
+        material = _buildMaterial(data.shading, type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props);
+        geom = _buildGeometry(shape, data);
+        if (shape == 'base' && material.map != undefined) {
+            var texture = material.map;
+            var offsetx = (data.floorradius) * Math.sin(2 * Math.PI / data.radialsegments);
+            var offsety = data.baseheight / 2
+            texture.rotation = Math.PI / 2;
+            texture.offset.set( offsetx, offsety );
+        }
+        mesh = new THREE.Mesh(geom, material);
+    
+        var group = self.el.getObject3D(self.id) || new THREE.Group();
+        group.add(mesh);
+        self.el.setObject3D(self.id, group); 
+    },
+
+});
+
+AFRAME.registerPrimitive( 'a-diorama-column', {
+    defaultComponents: {
+        'diorama-column__column': { 
+            repeatV: 1,
+            withTrim: true
+        },
+
+    },
+    mappings: {
+        'radius': 'diorama-column__column.floorradius',
+        'bump': 'diorama-column__column.withBump',
+        'normal': 'diorama-column__column.withNormal',
+        'quality': 'diorama-column__column.quality',
+        'radialsegments': 'diorama-column__column.radialsegments',
+        'railheight': 'diorama-column__column.railheight',
+        'shading': 'diorama-column__column.shading',
+    }
+});
+
 AFRAME.registerComponent('diorama-case', {
     schema: {
         x: { type: 'number', default: 0},
@@ -312,7 +428,11 @@ AFRAME.registerComponent('diorama-case', {
         withBump: { default: false },
         withNormal: { default: false },
         quality: { default: 'l' }, //, oneOf: ['s', 'm', 'l']
-        shading: { default: 'default' }
+        shading: { default: 'default' },
+
+        withGlass: { default: true },
+        withBronze: { default: true },
+
     },
 
     multiple: true,
@@ -349,35 +469,39 @@ AFRAME.registerComponent('diorama-case', {
         var self = this;
         var data = self.data;
 
-        self._createCase(
-            'glass',
-            data.imagewidth + data.casemargin,
-            data.imageheight + data.casemargin,
-            data.casedepth,
-            {
-                x: 0,
-                y: data.railheight + 0.3,
-                z: -.15 + data.casedepth/2 + 2*data.bronzedepth
-            },
-            {
-                color: data.color,
-                metalness: data.metalness,
-                reflectivity: data.reflectivity,
-                roughness: data.roughness,
-                opacity: data.opacity,
-            }
-        );
-        self._createCase(
-            'brass',
-            data.imagewidth,
-            data.imageheight,
-            data.bronzedepth,
-            {
-                x: 0,
-                y: data.railheight + 0.3,
-                z: -.15 + 1.5*data.bronzedepth
-            }
-        );
+        if (data.withGlass) {
+            self._createCase(
+                'glass',
+                data.imagewidth + data.casemargin,
+                data.imageheight + data.casemargin,
+                data.casedepth,
+                {
+                    x: 0,
+                    y: data.railheight + 0.3,
+                    z: -.15 + data.casedepth/2 + 2*data.bronzedepth
+                },
+                {
+                    color: data.color,
+                    metalness: data.metalness,
+                    reflectivity: data.reflectivity,
+                    roughness: data.roughness,
+                    opacity: data.opacity,
+                }
+            );
+        }
+        if (data.withBronze) {
+            self._createCase(
+                'brass',
+                data.imagewidth,
+                data.imageheight,
+                data.bronzedepth,
+                {
+                    x: 0,
+                    y: data.railheight + 0.3,
+                    z: -.15 + 1.5*data.bronzedepth
+                }
+            );
+        }
         self._createCase(
             'wood-panel',
             data.imagewidth + 0.06,
@@ -476,9 +600,10 @@ AFRAME.registerComponent('diorama-case', {
 
 AFRAME.registerPrimitive( 'a-diorama', {
     defaultComponents: {
-        'diorama-case__case': { 
+        'diorama-case__case': {
+            withGlass: false,
+            withBronze: false
         },
-
     },
     mappings: {
         'bump': 'diorama-case__case.withBump',

@@ -1,16 +1,18 @@
 <template>
     <a-entity class="gallery-carousel">
-        <a-rail v-for="n in radialsegments"
-            :key="'railSegment' + n"
-            :rotation="railRotation(n-1)"
-            :position="railPosition(n-1)"
-            :radius="floorRadius"
-            :railheight="railHeight"
-            :radialsegments="numberOfSegments"
-            :bump="bump"
-            :normal="normal"
-            :quality="textureQuality"
-            :shading="textureShading"/>
+        <a-entity v-if="floorActive">
+            <a-diorama-column v-for="n in radialsegments"
+                :key="'railSegment' + n"
+                :rotation="railRotation(n-1)"
+                :position="railPosition(n-1)"
+                :radius="floorRadius"
+                :railheight="railHeight"
+                :radialsegments="numberOfSegments"
+                :bump="bump"
+                :normal="normal"
+                :quality="textureQuality"
+                :shading="textureShading"/>
+        </a-entity>
         <a-diorama v-for="n in numberOfItemsToDisplay"
             :key="'carouselImage' + n"
             :src="imageSrc(items[n-1])"
@@ -83,7 +85,8 @@ export default {
                 'pageStart',
                 'numberOfSegments',
                 'floorRadius',
-                'railHeight'
+                'railHeight',
+                'floorActive'
             ]
         ),
         ...mapState('xr/graphics',

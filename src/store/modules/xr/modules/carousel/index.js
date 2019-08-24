@@ -4,7 +4,8 @@ export const state = function () {
         pageStep: 5,
         numberOfSegments: 24,
         floorRadius: 5,
-        railHeight: 1.2
+        railHeight: 1.2,
+        floorActive: true
      };
 };
 
@@ -40,6 +41,10 @@ export const mutations = {
         if (num < 1) {num = 1;}
         // if (num > 24) {num = 24;}
         state.floorRadius = num;
+    },
+    SET_FLOOR_ACTIVE: function(state, active=true) {
+        if (CONFIG.DEBUG) {console.log("SET_FLOOR_ACTIVE");}
+        state.floorActive = active;
     },
 };
      

@@ -36,6 +36,8 @@ export const state = function () {
         mapboxType: MapboxTypeEnum.SATELLITE,
         worldRows: 10,
         worldZoom: 8,
+
+        globeActive: true,
     };
 };
 
@@ -113,7 +115,6 @@ export const mutations = {
         if (CONFIG.DEBUG) {console.log("SET_WORLD_HEIGHT");}
         state.worldMapHeight = val;
     },
-
     SET_MAPTYPE: function(state, val) {
         if (CONFIG.DEBUG) {console.log("SET_MAPTYPE");}
         if (MapboxTypeEnum.hasOwnProperty(val)) {
@@ -122,6 +123,10 @@ export const mutations = {
         else {
             console.log(`cannot set mapboxType, ${val} is not a MapboxTypeEnum`);
         }
+    },
+    SET_GLOBE_ACTIVE: function(state, active=true) {
+        if (CONFIG.DEBUG) {console.log("SET_GLOBE_ACTIVE");}
+        state.globeActive = active;
     },
 };
 

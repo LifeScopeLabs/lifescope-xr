@@ -13,8 +13,8 @@ import 'aframe-input-mapping-component';
 import 'aframe-teleport-controls';
 import 'aframe-extras';
 import 'aframe-gui';
+import 'aframe-super-keyboard';
 import 'aframe-sun-sky';
-// import 'aframe-forcegraph-component';
 import 'nipplejs';
 import './components/aframe/play-gaze.js';
 import './components/aframe/dynamic-autoplay.js';
@@ -55,8 +55,9 @@ Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity',
  'a-animation', 'a-sky', 'a-light', 'a-asset-item',
  'a-mapbox-terrain',
  'a-sun-sky',
- 'a-rail', 'a-diorama', 'a-wooden-floor',
- 'a-gui-flex-container', 'a-gui-label', 'a-gui-radio', 'a-gui-cursor', 'a-gui-toggle'];
+ 'a-rail', 'a-diorama', 'a-wooden-floor', 'a-diorama-column',
+ 'a-gui-flex-container', 'a-gui-label', 'a-gui-radio', 'a-gui-cursor', 'a-gui-toggle', 'a-gui-input',
+ 'a-gui-button'];
 
 // mobile swipe controls
 Vue.use(VueHammer);

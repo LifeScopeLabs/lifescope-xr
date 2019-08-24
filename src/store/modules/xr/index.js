@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import avatarModule from './modules/avatar';
 import carouselModule from './modules/carousel';
+import hudModule from './modules/hud';
 import graphicsModule from './modules/graphics';
 import mapModule from './modules/map';
 
@@ -10,6 +11,7 @@ export const modules = {
         avatar: avatarModule,
         carousel: carouselModule,
         graphics: graphicsModule,
+        hud: hudModule,
         map: mapModule
 };
 
