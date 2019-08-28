@@ -1,8 +1,12 @@
+
+@import 'HudUtils';
+$paginator-width: 20%;
+
 .paginator {
     position: absolute;
     top: 5.5%;
-    left: 40%;
-    width: 20%;
+    width: $paginator-width;
+    @include centerElFromWidth($paginator-width);
     min-width: 75px;
     height: 15%;
     box-sizing: border-box;
@@ -57,12 +61,17 @@
 .paginator-latlong {
     display: flex;
     justify-content: space-around;
+    input {
+        height: 1.5rem;
+        min-width: 30px;
+        max-width: 50px;
+    }
 }
 
-.paginator-latlong input {
-    min-width: 30px;
-    max-width: 50px;
-}
+// .paginator-latlong input {
+//     min-width: 30px;
+//     max-width: 50px;
+// }
 
 .paginator-lat {
     display: flex;
@@ -81,13 +90,16 @@
 .paginator-icons {
     display: flex;
     justify-content: space-around;
-
+    input {
+        /* width: 5%; */
+        width: 20px;
+    }
 }
 
-.paginator-icons input {
-    /* width: 5%; */
-    width: 20px;
-}
+// .paginator-icons input {
+//     /* width: 5%; */
+//     width: 20px;
+// }
 
 .paginator-input-time {
     display: flex;

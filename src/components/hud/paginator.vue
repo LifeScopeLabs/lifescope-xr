@@ -140,4 +140,4 @@ export default {
 }
 </script>
 
-<style src="./paginator.css"></style>
+<style src="./paginator.scss"></style>

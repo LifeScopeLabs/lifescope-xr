@@ -519,4 +519,4 @@ export default {
 }
 </script>
 
-<style src="./settings.css"></style>
+<style src="./settings.scss"></style>

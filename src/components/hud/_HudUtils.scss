@@ -1,0 +1,3 @@
+@mixin centerElFromWidth($width) {
+    left: 50% - ($width/2);
+}

@@ -45,9 +45,6 @@ export default {
         items() {
             return this.sortedLSObjs.slice(this.pageStart, this.pageStart + this.numberOfSegments);
         },
-        totalItems() {
-            return this.LSObjs.length;
-        },
         numberOfItemsToDisplay() {
             return Math.min(this.numberOfSegments, this.items.length);
         },
@@ -73,7 +70,6 @@ export default {
                     return 'default';
             }
         },
-        // vuex store
         ...mapState('xr',
             [
                 'LSObjs',

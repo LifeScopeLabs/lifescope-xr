@@ -59,4 +59,4 @@ export default {
 }
 </script>
 
-<style src="./hud.css"></style>
+<style src="./hud.scss"></style>

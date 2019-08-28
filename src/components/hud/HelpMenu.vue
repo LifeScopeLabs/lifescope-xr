@@ -87,4 +87,4 @@ export default {
 }
 </script>
 
-<style src="./HelpMenu.css"></style>
+<style src="./HelpMenu.scss"></style>

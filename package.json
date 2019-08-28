@@ -12,7 +12,7 @@
         "debug": "babel-node ./dist/server.js --inspect-brk=localhost:8080"
     },
     "engines": {
-        "node": "8.11.1"
+        "node": "12.*"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
@@ -66,7 +66,9 @@
         "fs": "0.0.1-security",
         "networked-aframe": "git+https://github.com/MozillaReality/networked-aframe",
         "nipplejs": "^0.7.1",
+        "node-sass": "^4.12.0",
         "npm": "^6.1.0",
+        "sass-loader": "^7.3.1",
         "socket.io": "^2.1.0",
         "socket.io-client": "^2.1.1",
         "underscore": "^1.9.1",

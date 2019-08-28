@@ -31,4 +31,4 @@ export default {
 }
 </script>
 
-<style src="./RoomDisplay.css"></style>
+<style src="./RoomDisplay.scss"></style>

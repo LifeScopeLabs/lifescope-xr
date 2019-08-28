@@ -17,11 +17,15 @@
     pointer-events: visible;
     color:    #aeaeae;
     box-shadow: 0 0 5px 1px #edeeee;
+
+    :hover {
+        border-radius: 24px;
+        .room-links {
+            display: block;
+        }
+    }
 }
 
-.room-display:hover {
-    border-radius: 24px;
-}
 
 .current-room {
     border-bottom: solid;
@@ -29,33 +33,28 @@
 
 .room-links {
     display: none;
-}
-
-.room-links a:link {
-    color: #aeaeae;
-}
-
-.room-links a:hover {
-    color: #2AC1DE;
-}
-
-.room-links a:visited {
-    color: #aeaeae;
-}
-
-.room-links a:visited:hover {
-    color: #2AC1DE;
-}
-.room-links a:visited:active {
-    color: #f93;
-}
-
-.room-links a:active {
-    color: #f93;
-}
-
-.room-display:hover .room-links {
-    display: block;
+    
+    a:link {
+        color: #aeaeae;
+    }
+    a:hover {
+        color: #2AC1DE;
+    }
+    
+    a:visited {
+        color: #aeaeae;
+    }
+    
+    a:visited:hover {
+        color: #2AC1DE;
+    }
+    a:visited:active {
+        color: #f93;
+    }
+    
+    a:active {
+        color: #f93;
+    }
 }
 
 .mobile-hud {

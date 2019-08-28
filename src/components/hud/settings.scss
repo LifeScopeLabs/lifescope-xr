@@ -51,24 +51,24 @@
     line-height: 2em;
     box-shadow: 0 0 5px 1px #edeeee;
     overflow: scroll;
-}
 
-.xr-help-settings .help-header {
-    line-height: 1em;
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: bold;
+    .help-header {
+        line-height: 1em;
+        text-align: center;
+        font-size: 1.5em;
+        font-weight: bold;
+    
+        border-bottom: solid;
+        margin: -15px;
+    }
 
-    border-bottom: solid;
-    margin: -15px;
-}
-
-.xr-help-settings input {
-    padding: 5px;
-    border: 2px solid #ccc;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    font-size: 1em;
+    input {
+        padding: 5px;
+        border: 2px solid #ccc;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        font-size: 1em;
+    }
 }
 
 .settings-grid {
@@ -92,11 +92,15 @@
     display: flex;
     /* grid-template-columns: 1fr 1fr; */
     flex-direction: row;
+
+    div {
+        margin-inline-end: 10px;
+    }
 }
 
-.input-sky div {
-    margin-inline-end: 10px;
-}
+// .input-sky div {
+//     margin-inline-end: 10px;
+// }
 
 .input-map {
     display: grid;
@@ -106,18 +110,25 @@
 .input-quality {
     display: flex;
     flex-direction: row;
+    div {
+        margin-inline-end: 10px;
+    }
 }
 
-.input-quality div {
-    margin-inline-end: 10px;
+// .input-quality div {
+//     margin-inline-end: 10px;
+// }
+
+.floormapsettings {
+    select {
+        font-size: 1em;
+    }
 }
 
-.floormapsettings select {
-    font-size: 1em;
-}
-
-.worldmapsettings select {
-    font-size: 1em;
+.worldmapsettings {
+    select {
+        font-size: 1em;
+    }
 }
 
 .setting-title {
