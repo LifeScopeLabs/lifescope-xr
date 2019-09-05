@@ -5,6 +5,12 @@ import carouselModule from './modules/carousel';
 import hudModule from './modules/hud';
 import graphicsModule from './modules/graphics';
 import mapModule from './modules/map';
+// import gridModule from './modules/grid';
+
+const SceneLayoutEnum = Object.freeze({
+    GALLERY: 1,
+    GRID: 2
+});
 
 
 export const modules = {
@@ -12,7 +18,8 @@ export const modules = {
         carousel: carouselModule,
         graphics: graphicsModule,
         hud: hudModule,
-        map: mapModule
+        map: mapModule,
+        // grid: gridModule
 };
 
 export const state = function () {
@@ -24,7 +31,14 @@ export const state = function () {
         rooms: [],
         sceneLoaded: false,
         isMobile: false,
-        inVR: false
+        inVR: false,
+        sceneLayout: SceneLayoutEnum.GALLERY
+    }
+};
+
+export const getters = {
+    totalItems: (state) => {
+        return state.LSObjs.length;
     }
 };
 
@@ -119,8 +133,10 @@ const xrModule = {
     namespaced: true,
     modules,
     state,
+    getters,
     mutations,
     actions
 };
 
+export { SceneLayoutEnum };
 export default xrModule;

@@ -1,33 +1,50 @@
 <template>
-    <div class="paginator" :class="{ 'desktop-menu': !isMobile, 'mobile-menu': isMobile }">
+    <div class="map-hud " :class="{ 'desktop-menu': !isMobile, 'mobile-menu': isMobile }">
 
-        <div class="pageLeft fas fa-chevron-left" @click="pageLeft">
-        </div>
-
-        <div class="paginator-center-col">
-            <!-- <div class="room-display">
-                <div class="room-selector">
-                    <div class="current-room">
-                    {{ roomName }}
-                    </div>
-                    <div class="room-links">
-                        <div v-for="(room, index) in rooms" :key="index">
-                            <a :href="link(room)"> {{room}} </a>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-            <div class="pages">
-                {{ pageRange }} / {{ totalItems }}
+        <div class="map-hud-row">
+            <div class="paginator-input-time">
+                <input type="time" id="sky-setting-time" name="time"
+                        v-model="inputTime">
             </div>
         </div>
-            <div class="pageRight fas fa-chevron-right" @click="pageRight">
+
+        <div class="map-hud-row">
+            <div>
+                <input type="number" id="map-setting-lat" name="lat"
+                        v-model="inputMapLatitude"
+                        min="-90" max="90"
+                        step=0.000001>
+                <label for="map-setting-lat">Lat</label>
             </div>
+        </div>
+
+        <div class="map-hud-row">
+            <div>
+                <input type="number" id="map-setting-long" name="long"
+                        v-model="inputMapLongitude"
+                        min="-180" max="180"
+                        step=0.000001>
+                <label for="map-setting-long">Long</label>
+            </div>
+        </div>
+
+        <div class="map-hud-row">
+            <input class="paginator-set-latlong-btn" type="button" v-on:click="setMap" id="map-setting-latlon" name="coords"
+                value="Update Coordinates">
+        </div>
+
+        <div class="map-hud-row paginator-icons">
+            <div  id="paginator-weather" class="fas fa-cloud-sun-rain" ></div>
+            <div  id="paginator-sky" class="fas"
+                    v-bind:class="{ 'fa-sun': skybox == SkyboxEnum.STARS,
+                    'fa-star': skybox == SkyboxEnum.SUN }"
+                    @click="toggleSky"></div>
+        </div>
     </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 
 import { SkyboxEnum } from '../../store/modules/xr/modules/graphics';
 
@@ -46,25 +63,12 @@ export default {
     computed: {
         ...mapState('xr',
         [
-            'isMobile',
-            'roomName',
-            'roomConfig',
-            'rooms',
+        'isMobile',
         ]),
-        ...mapGetters('xr',
-        [
-            'totalItems',
-        ]
-        ),
         ...mapState('xr/graphics',
         [
             'skytime',
             'skybox',
-        ]),
-        ...mapState('xr/carousel',
-        [
-            'pageStart',
-            'numberOfSegments',
         ]),
         inputLatLong: {
             get () { return this.latlong },
@@ -94,12 +98,6 @@ export default {
                 this.time = val;
                 this.$store.dispatch('xr/graphics/setTimeFromString', this.time); }
         },
-        pageRange() {
-            if (this.totalItems == 0) {
-                return '0';
-            }
-            return `${this.pageStart + 1}  - ${this.pageStart + this.numberOfSegments}`;
-        }
     },
 
     methods: {
@@ -109,7 +107,7 @@ export default {
         },
         pageRight() {
             if(CONFIG.DEBUG) {console.log("hud pageRight");}
-            this.$store.dispatch('xr/carousel/pageRight', { length: this.totalItems });
+            this.$store.dispatch('xr/carousel/pageRight');
         },
 
         setMap() {
@@ -142,4 +140,4 @@ export default {
 }
 </script>
 
-<style src="./paginator.scss"></style>
+<style src="./MapHud.scss"></style>

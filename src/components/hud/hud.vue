@@ -1,11 +1,12 @@
 <template>
-  <div id="hud" class="hud">
-        <room-display/>
+  <div id="hud" class="hud ">
         <help-menu
             :class="helpClassObject"
             v-hammer:swipe.up.down="(event) => changeHelpVisibility(event)"/>
         <paginator v-if="!isMobile"/>
         <settings/>
+        <map-hud/>
+        <naf-hud/>
   </div>
 </template>
 
@@ -14,15 +15,17 @@ import { mapState } from 'vuex';
 
 import HelpMenu from './HelpMenu.vue';
 import paginator from './paginator.vue';
-import RoomDisplay from './RoomDisplay.vue';
 import settings from './settings.vue';
+import MapHud from './MapHud.vue';
+import NafHud from './NAFHud.vue';
 
 export default {
     components: {
         HelpMenu,
         paginator,
-        RoomDisplay,
-        settings
+        settings,
+        MapHud,
+        NafHud
     },
 
     data() {

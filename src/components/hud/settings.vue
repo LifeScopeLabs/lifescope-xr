@@ -7,10 +7,11 @@
 
         <div class="xr-help-settings" :style="settingsStyleObject">
 
-            <div class="help-header"> Settings </div>
+            <!-- <div class="help-header"> Settings </div> -->
 
-            <div class="settings-grid">
-                <div class="settings-left">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
                     <div class="setting-title"> Sky </div>
                     <div class="input-sky">
                         <div>
@@ -44,17 +45,22 @@
                                 v-model="floorActive">
                             <label for="floor-setting-active">Floor</label>
                     </div>
-                    <div class="input-carousel">
+                    
+                    <div class="input-carousel row">
+                        <div class="col">
                         <input type="number" id="car-setting-segements" name="segments"
                                 v-model="inputSegments"
                                 min="12" max="121">
                         <label for="car-setting-segements">Segments</label>
-
+                        </div>
+                        <div class="col">
                         <input type="number" id="car-setting-radius" name="floorradius"
                                 v-model="inputFloorRadius"
                                 min="1">
                         <label for="car-setting-radius">Floor Radius</label>
+                        </div>
                     </div>
+
                     <input type="button" v-on:click="updateCarousel" id="car-setting-button" name="car-settings"
                         value="Update Carousel">
                     
@@ -106,7 +112,7 @@
 
                 </div>   <!-- settings right -->
 
-                <div class="settings-right">
+                <div class="col-sm">
 
                     <div class="setting-title"> Map </div>
 
@@ -148,30 +154,37 @@
                             <label for="map-floor-setting-heightmap">Height Map</label>
                         </div>
 
+                        <div class="row">
                         <!-- scale -->
-                        <input type="number" id="map-floor-scale" name="floor-scale"
-                                v-model="inputFloorScale"
-                                min="1">
-                        <label for="map-floor-scale">Scale</label>
+                        <div class="col-sm">
+                            <label for="map-floor-scale">Scale</label>
+                            <input type="number" id="map-floor-scale" name="floor-scale"
+                                    v-model="inputFloorScale"
+                                    min="1">
+                        </div>
+                        <!-- rows -->   
+                        <div class="col-sm">
+                            <label for="map-floor-setting-rows">Tile Rows</label>
+                            <input type="number" id="map-floor-setting-rows" name="floor-rows"
+                                    v-model="inputMapFloorRows"
+                                    min="1" max="10">
+                        </div>
 
-                        <!-- rows -->
-                        <input type="number" id="map-floor-setting-rows" name="floor-rows"
-                                v-model="inputMapFloorRows"
-                                min="1" max="10">
-                        <label for="map-floor-setting-rows">Tile Rows</label>
-
-                        <!-- zoom -->
-                        <input type="number" id="map-floor-setting-zoom" name="floor-zoom"
-                                v-model="inputMapFloorZoom"
-                                min="0" max="19">
-                        <label for="map-floor-setting-zoom">Zoom</label>
-
+                            <!-- zoom -->
+                        <div class="col-sm">
+                            <label for="map-floor-setting-zoom">Zoom</label>
+                            <input type="number" id="map-floor-setting-zoom" name="floor-zoom"
+                                    v-model="inputMapFloorZoom"
+                                    min="0" max="19">
+                        </div>
                         <!-- height scale -->
-                        <input type="number" id="map-floor-setting-height" name="floor-height"
-                                v-model="inputMapFloorHeight"
-                                min="1">
-                        <label for="map-floor-setting-zoom">Height</label>
-
+                        <div class="col-sm">
+                            <label for="map-floor-setting-zoom">Height</label>
+                            <input type="number" id="map-floor-setting-height" name="floor-height"
+                                    v-model="inputMapFloorHeight"
+                                    min="1">
+                        </div>
+                        </div>
                         <!-- <div>
                         <select v-model="maptype" id="map-setting-type">
                             <option value="SATELLITE">Satellite</option>
@@ -206,33 +219,41 @@
                             <label for="map-world-setting-heightmap">Height Map</label>
                         </div>
 
+                        <div class="row">
                         <!-- scale -->
-                        <input type="number" id="map-world-scale" name="world-scale"
-                                v-model="inputWorldScale"
-                                min="1">
-                        <label for="map-world-scale">Scale</label>
-
+                        <div class="col-sm">
+                            <label for="map-world-scale">Scale</label>
+                            <input type="number" id="map-world-scale" name="world-scale"
+                                    v-model="inputWorldScale"
+                                    min="1">
+                        </div>
                         <!-- rows -->
-                        <input type="number" id="map-world-setting-rows" name="world-rows"
-                                v-model="inputMapWorldRows"
-                                min="1" max="10">
-                        <label for="map-world-setting-rows">Tile Rows</label>
-
+                        <div class="col-sm">
+                            <label for="map-world-setting-rows">Tile Rows</label>
+                            <input type="number" id="map-world-setting-rows" name="world-rows"
+                                    v-model="inputMapWorldRows"
+                                    min="1" max="10">
+                        </div>
                         <!-- zoom -->
-                        <input type="number" id="map-world-setting-zoom" name="world-zoom"
-                                v-model="inputMapWorldZoom"
-                                min="0" max="19">
-                        <label for="map-world-setting-zoom">Zoom</label>
-
+                        <div class="col-sm">
+                            <label for="map-world-setting-zoom">Zoom</label>
+                            <input type="number" id="map-world-setting-zoom" name="world-zoom"
+                                    v-model="inputMapWorldZoom"
+                                    min="0" max="19">
+                        </div>
                         <!-- height scale -->
-                        <input type="number" id="map-world-setting-height" name="world-height"
-                                v-model="inputMapWorldHeight"
-                                min="1">
-                        <label for="map-world-setting-zoom">Height</label>
+                        <div class="col-sm">
+                            <label for="map-world-setting-zoom">Height</label>
+                            <input type="number" id="map-world-setting-height" name="world-height"
+                                    v-model="inputMapWorldHeight"
+                                    min="1">
+                        </div>
+                        </div>
                     </div>           
                     
                 </div>  <!-- settings right -->
             </div>  <!-- settings grid -->
+            </div>
         </div> <!-- help settings -->
     </div>
 

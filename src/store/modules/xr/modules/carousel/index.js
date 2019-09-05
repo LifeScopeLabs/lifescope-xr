@@ -20,11 +20,12 @@ export const mutations = {
         }
     },
     PAGE_RIGHT: function(state, length) {
-        if (CONFIG.DEBUG) {console.log("PAGE_RIGHT");}
+        if (CONFIG.DEBUG) {console.log(`PAGE_RIGHT`);}
+        if (length == 0) {return;}
         if (state.pageStep + state.pageStart + state.numberOfSegments < length) {
             state.pageStart += state.pageStep;
         }
-        else {
+        else if (length - state.numberOfSegments >= 0) {
             state.pageStart = length - state.numberOfSegments;
         }
     },

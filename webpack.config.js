@@ -32,7 +32,7 @@ module.exports = {
         { 
           test: /\.css$/, 
           loader: "style-loader!css-loader" ,
-          exclude: /node_modules/
+          // exclude: /node_modules/
         },
 
         // scss
@@ -41,6 +41,16 @@ module.exports = {
           use: [
             'style-loader',
             'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                plugins: function () {
+                  return [
+                    require('autoprefixer')
+                  ];
+                }
+              }
+            },
             'sass-loader',
           ],
           exclude: /node_modules/

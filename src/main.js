@@ -3,6 +3,9 @@ import VueRouter from 'vue-router';
 import store from './store';
 import { VueHammer } from 'vue2-hammer';
 
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import './lib/three/three';
 import BufferGeometryUtils from './lib/three/BufferGeometryUtils';
 THREE.BufferGeometryUtils = BufferGeometryUtils;
@@ -55,7 +58,7 @@ Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity',
  'a-animation', 'a-sky', 'a-light', 'a-asset-item',
  'a-mapbox-terrain',
  'a-sun-sky',
- 'a-rail', 'a-diorama', 'a-wooden-floor', 'a-diorama-column',
+ 'a-rail', 'a-diorama', 'a-wooden-floor', 'a-diorama-column', 'a-diorama-image',
  'a-gui-flex-container', 'a-gui-label', 'a-gui-radio', 'a-gui-cursor', 'a-gui-toggle', 'a-gui-input',
  'a-gui-button'];
 

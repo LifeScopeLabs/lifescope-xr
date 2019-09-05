@@ -1,0 +1,96 @@
+
+@import 'HudUtils';
+$maphud-width: 12.5%;
+
+.map-hud {
+    position: absolute;
+    top: 1%;
+    width: $maphud-width;
+    left: 1%;
+    // min-width: 75px;
+    // height: 20%;
+    max-height: 50%;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    // flex-wrap: nowrap;
+    overflow: hidden;
+
+    align-items: center;
+    justify-content: space-around;
+
+    border: 1px solid #7b7b7b;
+    border-radius: 5px;
+    background-color: $hud-bg-color;
+
+    pointer-events: visible;
+}
+
+
+
+.map-hud-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 12px;
+    width: 100%;
+    padding-top: 1px;
+    padding-left: 5px;
+    padding-bottom: 1px;
+    padding-right: 5px;
+    input {
+        // height: 1rem;
+        // min-width: 30px;
+        max-width: 80px;
+        // background: #F0F;
+        background-color: $hud-bg-color;
+        color: $hud-text-color;
+    }
+    input[type=time] {
+        max-width: 90px;
+        // remove clear button on Firefox
+        clip-path: inset(0 17px 0 0);
+        border: none;
+        outline:none;
+        outline:0;
+    }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+    input[type=number] {
+        -moz-appearance: textfield;
+        border: none;
+        outline:none;
+        outline:0;
+    }
+    input[type=time]::-webkit-clear-button,
+    input[type=time]::-ms-clear {
+        display: none;
+    }
+    input[type=button]{
+        border: 1px solid #7b7b7b;
+        border-radius: 24px;
+        max-width: none;
+    }
+    label {
+        color: $hud-text-color;
+        margin-bottom: 0;
+    }
+}
+
+.paginator-input-time {
+    display: flex;
+    justify-content: center;
+}
+
+.paginator-icons {
+    display: flex;
+    justify-content: space-around;
+    color: $hud-text-color;
+    font-size: 16px;
+    margin: 3px;
+}

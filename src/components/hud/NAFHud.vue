@@ -1,33 +1,16 @@
 <template>
-    <div class="paginator" :class="{ 'desktop-menu': !isMobile, 'mobile-menu': isMobile }">
-
-        <div class="pageLeft fas fa-chevron-left" @click="pageLeft">
+    <div class="naf-hud" :class="{ 'desktop-menu': !isMobile, 'mobile-menu': isMobile }">
+        <div class="naf-icons">
+            <div id="naf-players-icon"
+                class="fas fa-user-friends" ></div>
+            <span class="naf-players-count"> 1
+            </span>
         </div>
-
-        <div class="paginator-center-col">
-            <!-- <div class="room-display">
-                <div class="room-selector">
-                    <div class="current-room">
-                    {{ roomName }}
-                    </div>
-                    <div class="room-links">
-                        <div v-for="(room, index) in rooms" :key="index">
-                            <a :href="link(room)"> {{room}} </a>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-            <div class="pages">
-                {{ pageRange }} / {{ totalItems }}
-            </div>
-        </div>
-            <div class="pageRight fas fa-chevron-right" @click="pageRight">
-            </div>
     </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 
 import { SkyboxEnum } from '../../store/modules/xr/modules/graphics';
 
@@ -46,25 +29,12 @@ export default {
     computed: {
         ...mapState('xr',
         [
-            'isMobile',
-            'roomName',
-            'roomConfig',
-            'rooms',
+        'isMobile',
         ]),
-        ...mapGetters('xr',
-        [
-            'totalItems',
-        ]
-        ),
         ...mapState('xr/graphics',
         [
             'skytime',
             'skybox',
-        ]),
-        ...mapState('xr/carousel',
-        [
-            'pageStart',
-            'numberOfSegments',
         ]),
         inputLatLong: {
             get () { return this.latlong },
@@ -94,12 +64,6 @@ export default {
                 this.time = val;
                 this.$store.dispatch('xr/graphics/setTimeFromString', this.time); }
         },
-        pageRange() {
-            if (this.totalItems == 0) {
-                return '0';
-            }
-            return `${this.pageStart + 1}  - ${this.pageStart + this.numberOfSegments}`;
-        }
     },
 
     methods: {
@@ -109,7 +73,7 @@ export default {
         },
         pageRight() {
             if(CONFIG.DEBUG) {console.log("hud pageRight");}
-            this.$store.dispatch('xr/carousel/pageRight', { length: this.totalItems });
+            this.$store.dispatch('xr/carousel/pageRight');
         },
 
         setMap() {
@@ -142,4 +106,4 @@ export default {
 }
 </script>
 
-<style src="./paginator.scss"></style>
+<style src="./NAFHud.scss"></style>

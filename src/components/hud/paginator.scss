@@ -4,11 +4,11 @@ $paginator-width: 20%;
 
 .paginator {
     position: absolute;
-    top: 5.5%;
+    top: 10px;
     width: $paginator-width;
     @include centerElFromWidth($paginator-width);
     min-width: 75px;
-    height: 15%;
+    // height: 5%;
     box-sizing: border-box;
 
     display: flex;
@@ -21,57 +21,14 @@ $paginator-width: 20%;
     border-radius: 24px;
     background-color: #3c3c3c;
 
+    color: $hud-text-color;
+
     pointer-events: visible;
 }
 
 .mobile-menu {
     font-size: 12px;
 }
-
-.pageLeft {
-    float: left;
-    align-self: center;
-    flex-grow: 1;
-
-    width: 0; 
-    height: 0; 
-    border-top: 25px solid transparent;
-    border-bottom: 25px solid transparent; 
-    
-    border-right: 25px solid #aeaeae; 
-}
-
-.pageRight {
-    float: right;
-    align-self: center;
-    flex-grow: 1;
-
-    width: 0; 
-    height: 0; 
-    border-top: 25px solid transparent;
-    border-bottom: 25px solid transparent;
-    
-    border-left: 25px solid #aeaeae;
-}
-
-.paginatorFill {
-    flex-grow: 2;
-}
-
-.paginator-latlong {
-    display: flex;
-    justify-content: space-around;
-    input {
-        height: 1.5rem;
-        min-width: 30px;
-        max-width: 50px;
-    }
-}
-
-// .paginator-latlong input {
-//     min-width: 30px;
-//     max-width: 50px;
-// }
 
 .paginator-lat {
     display: flex;
@@ -96,12 +53,79 @@ $paginator-width: 20%;
     }
 }
 
-// .paginator-icons input {
-//     /* width: 5%; */
-//     width: 20px;
-// }
 
 .paginator-input-time {
     display: flex;
     justify-content: center;
+}
+
+
+.room-display {
+    // z-index:10001;
+    // border: 1px solid #7b7b7b;
+    // border-radius: 24px 24px 0 0;
+    // background-color: #3c3c3c;
+    /*#e8f1ff;*/
+
+    align-self: center;
+    // left: 1%;222
+    // margin-left: auto;
+    // margin-right: auto;
+    // margin-bottom: 10px;
+    text-align: center;
+    position: relative;
+    // top: 10px;
+    // width: 15%;
+    font-weight: bold;
+    font-size: 24px;
+    pointer-events: visible;
+    color:    #aeaeae;
+    // box-shadow: 0 0 5px 1px #edeeee;
+
+    :hover {
+        border-radius: 24px;
+        .room-links {
+            display: block;
+        }
+    }
+}
+
+.paginator-center-col {
+    display: flex;
+    flex-direction: column;
+}
+
+
+// .current-room {
+//     border-bottom: solid;
+// }
+
+.room-links {
+    display: none;
+    
+    a:link {
+        color: #aeaeae;
+    }
+    a:hover {
+        color: #2AC1DE;
+    }
+    
+    a:visited {
+        color: #aeaeae;
+    }
+    
+    a:visited:hover {
+        color: #2AC1DE;
+    }
+    a:visited:active {
+        color: #f93;
+    }
+    
+    a:active {
+        color: #f93;
+    }
+}
+
+.mobile-hud {
+    font-size: 12px;
 }

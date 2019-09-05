@@ -1,3 +1,6 @@
 @mixin centerElFromWidth($width) {
     left: 50% - ($width/2);
 }
+
+$hud-bg-color: #3c3c3c;
+$hud-text-color: #aeaeae;

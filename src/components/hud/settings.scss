@@ -1,3 +1,6 @@
+@import 'HudUtils';
+$settings-width: 75%;
+
 .loading {
     z-index: 10010;
 }
@@ -39,8 +42,8 @@
     padding: 15px;
     position: absolute;
     top: 6%;
-    left: 12.5%;
-    width: 75%;
+    width: $settings-width;
+    @include centerElFromWidth($settings-width);
     height: 75%;
     box-sizing: border-box;
 
@@ -48,14 +51,14 @@
     margin-left: auto;
     margin-right: auto;
 
-    line-height: 2em;
+    line-height: 2rem;
     box-shadow: 0 0 5px 1px #edeeee;
     overflow: scroll;
 
     .help-header {
-        line-height: 1em;
+        line-height: 1rem;
         text-align: center;
-        font-size: 1.5em;
+        font-size: 1.5rem;
         font-weight: bold;
     
         border-bottom: solid;
@@ -67,7 +70,16 @@
         border: 2px solid #ccc;
         -webkit-border-radius: 5px;
         border-radius: 5px;
-        font-size: 1em;
+        font-size: 1rem;
+    }
+
+    input[type=number] {
+        text-align: center;
+        width: 60px;
+    }
+
+    .settings-latlong input {
+        width: 90px;
     }
 }
 
@@ -121,17 +133,17 @@
 
 .floormapsettings {
     select {
-        font-size: 1em;
+        font-size: 1rem;
     }
 }
 
 .worldmapsettings {
     select {
-        font-size: 1em;
+        font-size: 1rem;
     }
 }
 
 .setting-title {
-    font-size: 1.5em;
+    font-size: 1.5rem;
     font-weight: bold;
 }
