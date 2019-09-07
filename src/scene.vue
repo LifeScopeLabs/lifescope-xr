@@ -29,7 +29,8 @@
     </a-assets>
 
     <!-- gallery -->
-    <gallery/>
+    <gallery v-if="sceneLayout == SceneLayoutEnum.GALLERY"/>
+    <!-- <grid-layout v-else-if="sceneLayout == SceneLayoutEnum.GRID"/> -->
 
     <avatar ref="avatar"
       position="0 1.6 -2"/>
@@ -54,20 +55,24 @@ import socketIO from 'socket.io-client';
 import easyrtc from '../static/easyrtc/easyrtc.js';
 
 import gallery from "./components/gallery.vue";
+// import GridLayout from "./components/GridLayout.vue"
 
 import avatar from "./components/avatar/avatar.vue";
 
 import { SkyboxEnum } from './store/modules/xr/modules/graphics';
+import { SceneLayoutEnum } from './store/modules/xr';
 
 export default {
     components: {
         gallery,
+        // GridLayout,
         avatar,
     },
     data() {
       return {
         avatar: {},
         SkyboxEnum: SkyboxEnum,
+        SceneLayoutEnum: SceneLayoutEnum,
         hudhelpactive: false,
         hudsettingsactive: false,
       }
@@ -77,7 +82,8 @@ export default {
       ...mapState('xr',
         [
           'inVR',
-          'roomName'
+          'roomName',
+          'sceneLayout'
         ]
       ),
 
@@ -125,8 +131,14 @@ export default {
       });
 
       document.body.addEventListener('clientConnected', function (evt) {
-        console.log('clientConnected event. clientId =', evt.detail.clientId);
-        console.log('roomName: ' + self.roomName);
+        if (CONFIG.DEBUG) {console.log('clientConnected event. clientId =', evt.detail.clientId);};
+        if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);}
+        self.$store.commit('xr/naf/INCREMENT_PLAYERS');
+      });
+
+      document.body.addEventListener('clientDisconnected', function (evt) {
+        if (CONFIG.DEBUG) {console.log('clientDisconnected event. clientId =', evt.detail.clientId);};
+        self.$store.commit('xr/naf/DECREMENT_PLAYERS');
       });
 
 

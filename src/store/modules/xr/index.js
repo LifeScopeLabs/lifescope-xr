@@ -5,6 +5,7 @@ import carouselModule from './modules/carousel';
 import hudModule from './modules/hud';
 import graphicsModule from './modules/graphics';
 import mapModule from './modules/map';
+import nafModule from './modules/naf';
 // import gridModule from './modules/grid';
 
 const SceneLayoutEnum = Object.freeze({
@@ -19,6 +20,7 @@ export const modules = {
         graphics: graphicsModule,
         hud: hudModule,
         map: mapModule,
+        naf: nafModule,
         // grid: gridModule
 };
 

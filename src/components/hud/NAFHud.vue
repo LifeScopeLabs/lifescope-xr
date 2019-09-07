@@ -3,7 +3,7 @@
         <div class="naf-icons">
             <div id="naf-players-icon"
                 class="fas fa-user-friends" ></div>
-            <span class="naf-players-count"> 1
+            <span class="naf-players-count"> {{ numberOfPlayers }}
             </span>
         </div>
     </div>
@@ -29,7 +29,11 @@ export default {
     computed: {
         ...mapState('xr',
         [
-        'isMobile',
+            'isMobile',
+        ]),
+        ...mapState('xr/naf',
+        [
+            'numberOfPlayers',
         ]),
         ...mapState('xr/graphics',
         [
