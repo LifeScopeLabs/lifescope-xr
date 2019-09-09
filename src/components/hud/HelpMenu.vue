@@ -75,7 +75,7 @@ export default {
 
     methods: {
         keypressListener(evt) {
-            if (evt.key == 'h') {
+            if (evt.target.tagName == 'BODY' && evt.key == 'h') {
                 this.toggleHelpVisibility();
             }
         },

@@ -7,6 +7,7 @@
         <settings/>
         <map-hud/>
         <naf-hud/>
+        <chat-hud/>
   </div>
 </template>
 
@@ -18,6 +19,7 @@ import paginator from './paginator.vue';
 import settings from './settings.vue';
 import MapHud from './MapHud.vue';
 import NafHud from './NAFHud.vue';
+import ChatHud from './ChatHud.vue';
 
 export default {
     components: {
@@ -25,7 +27,8 @@ export default {
         paginator,
         settings,
         MapHud,
-        NafHud
+        NafHud,
+        ChatHud
     },
 
     data() {

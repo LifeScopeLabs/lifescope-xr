@@ -128,17 +128,23 @@ export default {
         if (CONFIG.DEBUG) {console.log('connected event. clientId =', evt.detail.clientId);};
         if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);};
 
+        // setup chat
+        self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
+        NAF.connection.subscribeToDataChannel('chat', self.chatCB);
+        NAF.connection.subscribeToDataChannel('nameUpdate', self.nameUpdateCB);
       });
 
       document.body.addEventListener('clientConnected', function (evt) {
         if (CONFIG.DEBUG) {console.log('clientConnected event. clientId =', evt.detail.clientId);};
         if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);}
-        self.$store.commit('xr/naf/INCREMENT_PLAYERS');
+        self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
+        NAF.connection.sendData(evt.detail.clientId, 'nameUpdate', self.$store.state.xr.naf.playerNames.get(NAF.clientId));
       });
 
       document.body.addEventListener('clientDisconnected', function (evt) {
         if (CONFIG.DEBUG) {console.log('clientDisconnected event. clientId =', evt.detail.clientId);};
-        self.$store.commit('xr/naf/DECREMENT_PLAYERS');
+        // self.$store.commit('xr/naf/DECREMENT_PLAYERS');
+        self.$store.dispatch('xr/naf/removePlayer', { clientId: evt.detail.clientId });
       });
 
 
@@ -219,6 +225,22 @@ export default {
         if (CONFIG.DEBUG) {console.log("!isMobile");};
         this.$refs.avatar.setupDesktop();
       },
+
+      chatCB(fromClientId, dataType, data, source) {
+          this.$store.commit('xr/chat/MESSAGE_RECEIVED', {
+            fromClientId: fromClientId,
+            dataType: dataType,
+            data: data,
+            source: source}
+          );
+      },
+
+      nameUpdateCB(fromClientId, dataType, data, source) {
+          this.$store.commit('xr/naf/CHANGE_PLAYER_NAME', {
+            clientId: fromClientId,
+            name: data}
+          );
+      }
     }
   }
 </script>

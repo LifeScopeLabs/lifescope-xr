@@ -1,10 +1,23 @@
 <template>
     <div class="naf-hud" :class="{ 'desktop-menu': !isMobile, 'mobile-menu': isMobile }">
+        <div class="naf-player-list" :class="{ hidden: playerNames.size == 0 }"
+            :style="playerListStyleObject">
+            <div v-for="name of nameArray"
+                :key="'naf-player-names-' + name[0]"
+                v-scroll-on-insert
+                class="naf-player-name" >
+                {{ name[1] }}
+            </div>
+        </div>
         <div class="naf-icons">
-            <div id="naf-players-icon"
+            <div id="naf-players-icon"  @click="togglePlayerListVisibility"
                 class="fas fa-user-friends" ></div>
             <span class="naf-players-count"> {{ numberOfPlayers }}
             </span>
+            <div v-if="playerListStyleObject.visibility != 'hidden'" class="player-name-edit">
+                <input type="text" id="player-name-input" name="player-name-input" v-model="nameChangeText" 
+                placeholder="Change name" @keyup.enter="changePlayerName">
+            </div>
         </div>
     </div>
 </template>
@@ -12,17 +25,17 @@
 <script>
 import { mapState } from 'vuex';
 
-import { SkyboxEnum } from '../../store/modules/xr/modules/graphics';
+import HudUtils from './hudutils';
 
 export default {
 
     data() {
         return {
-            latlong: '0,0',
-            lat: 0,
-            lon: 0,
-            time: '0:00',
-            SkyboxEnum: SkyboxEnum
+            playerListStyleObject: {
+                visibility: 'hidden',
+                opacity: 0
+            },
+            nameChangeText: ''
         }
     },
 
@@ -34,78 +47,30 @@ export default {
         ...mapState('xr/naf',
         [
             'numberOfPlayers',
+            'playerNames',
+            'updateNames'
         ]),
-        ...mapState('xr/graphics',
-        [
-            'skytime',
-            'skybox',
-        ]),
-        inputLatLong: {
-            get () { return this.latlong },
-            set (val) { 
-                this.latlong = val }
+        nameArray() {
+            // changes to numberOfPlayers triggers Vue reactivity
+            return this.updateNames && this.numberOfPlayers && Array.from(this.playerNames);
         },
 
-        mapLatitude: {
-            get () { return this.$store.state.xr.map.mapLatitude;},
-            set (val) { this.$store.commit('xr/map/SET_MAP_LATITUDE', val); }
-        },
-        mapLongitude: {
-            get () { return this.$store.state.xr.map.mapLongitude;},
-            set (val) { this.$store.commit('xr/map/SET_MAP_LONGITUDE', val); }
-        },
-        inputMapLatitude: {
-            get () { return this.lat },
-            set (val) { this.lat = val }
-        },
-        inputMapLongitude: {
-            get () { return this.lon },
-            set (val) { this.lon = val }
-        },
-        inputTime: {
-            get () { return this.time },
-            set (val) { 
-                this.time = val;
-                this.$store.dispatch('xr/graphics/setTimeFromString', this.time); }
-        },
     },
 
     methods: {
-        pageLeft() {
-            if(CONFIG.DEBUG) {console.log("hud pageLeft");}
-            this.$store.dispatch('xr/carousel/pageLeft');
+        togglePlayerListVisibility() {
+            this.hudUtils.toggleHud(this.playerListStyleObject);
         },
-        pageRight() {
-            if(CONFIG.DEBUG) {console.log("hud pageRight");}
-            this.$store.dispatch('xr/carousel/pageRight');
-        },
-
-        setMap() {
-            this.$store.commit('xr/map/SET_MAP_LATITUDE', this.lat);
-            this.$store.commit('xr/map/SET_MAP_LONGITUDE', this.lon);
-        },
-
-        toggleSky() {
-            var newVal = this.skybox == SkyboxEnum.STARS ? 'SUN' : 'STARS';
-            this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
-        },
-
-
-        timeStringFromNumber(timeNum) {
-            var hours = Math.floor(timeNum);
-            var hourDecimal = timeNum - hours;
-            var minutes = hourDecimal * 60;
-            var minutesStr = minutes.toString().padStart(2, '0');
-            var timeStr = `${hours}:${minutesStr}`;
-            return timeStr;
+        changePlayerName() {
+            NAF.connection.broadcastData('nameUpdate', this.nameChangeText);
+            this.$store.commit('xr/naf/CHANGE_PLAYER_NAME', {clientId: NAF.clientId, name: this.nameChangeText});
+            this.nameChangeText = '';
         }
     },
 
     mounted() {
         var self = this;
-        self.inputMapLatitude = self.mapLatitude;
-        self.inputMapLongitude = self.mapLongitude;
-        this.inputTime = this.timeStringFromNumber(this.skytime);
+        self.hudUtils = new HudUtils();
     }
 }
 </script>

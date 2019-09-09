@@ -1,27 +1,57 @@
 export const state = function () {
     return {
-        numberOfPlayers: 1,
-        players: []
+        numberOfPlayers: 0,
+        playerNames: new Map(),
+        updateNames: 1,
     };
 };
 
 export const mutations = {
-    INCREMENT_PLAYERS: function(state,) {
+    INCREMENT_PLAYERS: function(state) {
         if (CONFIG.DEBUG) {console.log("INCREMENT_PLAYERS");}
         state.numberOfPlayers += 1;
     },
-    DECREMENT_PLAYERS: function(state,) {
+    DECREMENT_PLAYERS: function(state) {
         if (CONFIG.DEBUG) {console.log("DECREMENT_PLAYERS");}
-        if (state.numberOfPlayers > 1) {
+        if (state.numberOfPlayers > 0) {
             state.numberOfPlayers -= 1;
         }
     },
+    // payload: clientId, name
+    CHANGE_PLAYER_NAME: function(state, payload) {
+        if (CONFIG.DEBUG) {console.log(`CHANGE_PLAYER_NAME (${payload.clientId}, ${payload.name})`);}
+        // only set name to clientId if it isn't already in map
+        if ( (payload.clientId != payload.name) ||
+            (payload.clientId == payload.name && !state.playerNames.has(payload.clientId))) {
+                console.log('Changing name');
+                state.playerNames.set(payload.clientId, payload.name);
+                state.updateNames += 1;
+        }
+    }
+};
+
+
+export const actions = {
+    // payload: clientId, name
+    addPlayer: function(context, payload) {
+        if (CONFIG.DEBUG) {console.log("addPlayer");}
+        console.log(`${payload.clientId}, ${payload.name}`)
+        context.commit('INCREMENT_PLAYERS');
+        context.state.playerNames.set(payload.clientId, payload.name);
+    },
+    // payload: clientId
+    removePlayer: function(context, payload) {
+        if (CONFIG.DEBUG) {console.log("removePlayer");}
+        context.commit('DECREMENT_PLAYERS');
+        // context.state.playerNames.delete(payload.clientId);
+    }
 };
 
 const nafModule = {
     namespaced: true,
     state,
-    mutations
+    mutations,
+    actions
 }
 
 export default nafModule;

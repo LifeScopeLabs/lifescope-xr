@@ -496,7 +496,7 @@ export default {
 
     methods: {
         keypressListener(evt) {
-            if (evt.key == 'g') {
+            if (evt.target.tagName == 'BODY' && evt.key == 'g') {
                 this.toggleSettingsVisibility();
             }
         },
