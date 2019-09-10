@@ -34,11 +34,15 @@
     width: 5%;
     height: 5%;
 
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
     color:    #aeaeae;
 }
 
 .desktop-hud .xr-help-menu-toggle {
-    left: 95%;
+    left: 92.5%;
 }
 
 .mobile-hud .xr-help-menu-toggle {

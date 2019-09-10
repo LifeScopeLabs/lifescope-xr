@@ -615,3 +615,173 @@ AFRAME.registerPrimitive( 'a-diorama', {
         'shading': 'diorama-case__case.shading',
     }
 });
+
+
+AFRAME.registerComponent('diorama-image', {
+    schema: {
+        x: { type: 'number', default: 0},
+        y: { type: 'number', default: 0},
+        z: { type: 'number', default: 0},
+        rotationx: { type: 'number', default: 30 }, // degrees
+
+        imageURL: {type: 'string', default: ''},
+        srcFit: { type: 'string', default: 'width' },
+
+        imagewidth: { type: 'number', default: 0.6 },
+        imageheight: { type: 'number', default: 0.6 },
+        depth: { type: 'number', default: 0.01 },
+
+        color: { default: 0xe8f1ff}, //0xe8f1ff
+        opacity: { type: 'number', default: 0.2 },
+        metalness: { type: 'number', default: 0.0 },
+        reflectivity: { type: 'number', default: 0.5 },
+        roughness: { type: 'number', default: 0.2 },
+
+        repeatU: { type: 'number', default: 4},
+        repeatV: { type: 'number', default: 1},
+
+        hovering: { type: 'boolean', default: false },
+        borderwidth: { type: 'number', default: 0.02 },
+        aspectratio: { type: 'number', default: 0 },
+    },
+  
+    multiple: true,
+
+    update: function() {
+        var self = this;
+        if (self.el.object3DMap.hasOwnProperty(self.id)) {
+            self.el.removeObject3D(self.id);
+        }
+        if (self.el.object3DMap.hasOwnProperty('image')) {
+            self.el.removeObject3D('image');
+        }
+        if (this.el.object3DMap.hasOwnProperty('hover')) {
+            this.el.removeObject3D('hover');
+        }
+
+        if (self.data.imageURL != '') {
+            self._createImage();
+        }
+
+        if (self.data.hovering) {
+            self._createHover();
+        }
+        
+    },
+
+    remove: function () {
+        if (this.el.object3DMap.hasOwnProperty(this.id)) {
+            this.el.removeObject3D(this.id);
+        }
+        if (this.el.object3DMap.hasOwnProperty('image')) {
+            this.el.removeObject3D('image');
+        }
+        if (this.el.object3DMap.hasOwnProperty('hover')) {
+            this.el.removeObject3D('hover');
+        }
+    },
+
+
+    _createImage() {
+        var self = this;
+        var data = self.data;
+
+        var imgMaterial, colorMaterial, geom, mesh;
+
+        data.offset = {
+            x: 0 + data.x,
+            y: 0 + data.y,//data.railheight + 0.3,
+            z: 0 + data.z,//-.15
+        }
+    
+        var texture = new THREE.TextureLoader().load( data.imageURL, function () {
+            var srcWidth = texture.image.videoWidth || texture.image.width;
+            var srcHeight = texture.image.videoHeight || texture.image.height;
+            var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
+            if (!data.aspectratio || data.aspectratio != aspectRatio) {
+                data.aspectratio = aspectRatio;
+            }
+            var geomWidth, geomHeight;
+            if (data.srcFit == 'width') {
+                geomWidth = data.imagewidth;
+                geomHeight = data.imagewidth / aspectRatio;
+            }
+            else {
+                geomWidth = data.imageheight * aspectRatio;
+                geomHeight = data.imageheight;
+            }
+            
+            geom = new THREE.BoxBufferGeometry(geomWidth, geomHeight, data.depth );
+            // geom.rotateX(2 * Math.PI * data.rotationx / 360);
+            geom.translate(data.offset.x, data.offset.y, data.offset.z);
+    
+            imgMaterial = new THREE.MeshBasicMaterial( { map: texture } );
+            colorMaterial = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0xffffff )} );
+    
+            var materials = [
+                colorMaterial,        // Left side
+                colorMaterial,       // Right side
+                colorMaterial,         // Top side
+                colorMaterial,      // Bottom side
+                colorMaterial,       // Front side
+                imgMaterial         // Back side
+            ];
+            mesh = new THREE.Mesh(geom, materials);
+    
+            var group = self.el.getObject3D('image') || new THREE.Group();
+            group.add(mesh);
+            self.el.setObject3D('image', group);   
+        } );
+    },
+
+    _createHover() {
+        var self = this;
+        var data = self.data;
+
+        var geom, mat, mesh;
+
+        data.offset = {
+            x: 0 + data.x,
+            y: 0 + data.y,//data.railheight + 0.3,
+            z: 0 + data.z,//-.15
+        }
+    
+        var geomWidth, geomHeight;
+        geomWidth = data.imagewidth;
+        geomHeight = data.imageheight;
+
+        if (data.aspectratio) {
+            if (data.srcFit == 'width') {
+                geomHeight = data.imagewidth / data.aspectratio;
+            }
+            else {
+                geomWidth = data.imageheight * data.aspectratio;
+            }
+        }
+        
+        geom = new THREE.PlaneBufferGeometry( geomWidth + data.borderwidth, geomHeight + data.borderwidth);
+        geom.translate(data.offset.x, data.offset.y, data.offset.z);
+
+        mat = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0x04FF5F ), side: THREE.DoubleSide} );
+        mesh = new THREE.Mesh(geom, mat);
+
+        var group = self.el.getObject3D('hover') || new THREE.Group();
+        group.add(mesh);
+        self.el.setObject3D('hover', group);   
+    },
+});
+
+
+AFRAME.registerPrimitive( 'a-diorama-image', {
+    defaultComponents: {
+        'diorama-image__image': {
+        },
+    },
+    mappings: {
+        'src': 'diorama-image__image.imageURL',
+        'srcfit': 'diorama-image__image.srcFit',
+        'width': 'diorama-image__image.imagewidth',
+        'height': 'diorama-image__image.imageheight',
+        'hovering': 'diorama-image__image.hovering',
+    }
+});

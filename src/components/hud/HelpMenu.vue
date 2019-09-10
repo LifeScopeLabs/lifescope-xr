@@ -3,6 +3,9 @@
 
         <div class="xr-help-menu-toggle">
             <div class="fas fa-question-circle" @click="toggleHelpVisibility"></div>
+            <div class="fas " v-bind:class="{ 'fa-th-large': sceneLayout == SceneLayoutEnum.GALLERY,
+                    'fa-circle': sceneLayout == SceneLayoutEnum.GRID }"
+                    @click="toggleLayout"></div>
         </div>
 
         <div class="xr-help-menu" :style="helpStyleObject">
@@ -44,6 +47,8 @@ import { mapState } from 'vuex';
 
 import HudUtils from './hudutils';
 
+import { SceneLayoutEnum } from '../../store/modules/xr';
+
 export default {
 
     data() {
@@ -52,6 +57,7 @@ export default {
                 visibility: 'hidden',//'visible',
                 opacity: 0
             },
+            SceneLayoutEnum: SceneLayoutEnum,
         }
     },
 
@@ -59,6 +65,7 @@ export default {
       ...mapState('xr',
       [
         'isMobile',
+        'sceneLayout',
       ])
     },
 
@@ -82,6 +89,11 @@ export default {
         toggleHelpVisibility() {
             if (CONFIG.DEBUG) {console.log("toggleHelpVisibility");}
             this.hudUtils.toggleHud(this.helpStyleObject);
+        },
+        toggleLayout() {
+            if (CONFIG.DEBUG) {console.log("toggleLayout");}
+            var newVal = this.sceneLayout == SceneLayoutEnum.GRID ? 'GALLERY' : 'GRID';
+            this.$store.commit('xr/SET_LAYOUT', newVal);
         },
     },
 }

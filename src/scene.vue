@@ -30,10 +30,12 @@
 
     <!-- gallery -->
     <gallery v-if="sceneLayout == SceneLayoutEnum.GALLERY"/>
-    <!-- <grid-layout v-else-if="sceneLayout == SceneLayoutEnum.GRID"/> -->
+    <grid-layout v-else-if="sceneLayout == SceneLayoutEnum.GRID"
+      offsetz="2"/>
 
-    <avatar ref="avatar"
+    <avatar v-if="sceneLayout == SceneLayoutEnum.GALLERY" ref="avatar"
       position="0 1.6 -2"/>
+    <grid-camera v-else-if="sceneLayout == SceneLayoutEnum.GRID" ref="avatar"/>
 
     <!-- Sky id="Sky" -->
     <a-sky v-if="skybox==SkyboxEnum.STARS"
@@ -55,9 +57,10 @@ import socketIO from 'socket.io-client';
 import easyrtc from '../static/easyrtc/easyrtc.js';
 
 import gallery from "./components/gallery.vue";
-// import GridLayout from "./components/GridLayout.vue"
+import GridLayout from "./components/grid/GridLayout.vue"
 
 import avatar from "./components/avatar/avatar.vue";
+import GridCamera from "./components/grid/GridCamera.vue";
 
 import { SkyboxEnum } from './store/modules/xr/modules/graphics';
 import { SceneLayoutEnum } from './store/modules/xr';
@@ -65,7 +68,8 @@ import { SceneLayoutEnum } from './store/modules/xr';
 export default {
     components: {
         gallery,
-        // GridLayout,
+        GridLayout,
+        GridCamera,
         avatar,
     },
     data() {

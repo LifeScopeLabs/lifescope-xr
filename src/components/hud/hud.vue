@@ -3,9 +3,9 @@
         <help-menu
             :class="helpClassObject"
             v-hammer:swipe.up.down="(event) => changeHelpVisibility(event)"/>
-        <paginator v-if="!isMobile"/>
+        <paginator v-if="!isMobile && sceneLayout == SceneLayoutEnum.GALLERY"/>
         <settings/>
-        <map-hud/>
+        <map-hud v-if="sceneLayout == SceneLayoutEnum.GALLERY"/>
         <naf-hud/>
         <chat-hud/>
   </div>
@@ -20,6 +20,8 @@ import settings from './settings.vue';
 import MapHud from './MapHud.vue';
 import NafHud from './NAFHud.vue';
 import ChatHud from './ChatHud.vue';
+
+import { SceneLayoutEnum } from '../../store/modules/xr';
 
 export default {
     components: {
@@ -39,6 +41,7 @@ export default {
             helpClassObject: {
                 fakehidden: false,
             },
+            SceneLayoutEnum: SceneLayoutEnum,
         }
     },
 
@@ -46,6 +49,7 @@ export default {
       ...mapState('xr',
       [
         'isMobile',
+        'sceneLayout'
       ])
     },
 

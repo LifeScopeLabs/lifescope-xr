@@ -7,7 +7,7 @@ import hudModule from './modules/hud';
 import graphicsModule from './modules/graphics';
 import mapModule from './modules/map';
 import nafModule from './modules/naf';
-// import gridModule from './modules/grid';
+import gridModule from './modules/grid';
 
 const SceneLayoutEnum = Object.freeze({
     GALLERY: 1,
@@ -23,7 +23,7 @@ export const modules = {
         hud: hudModule,
         map: mapModule,
         naf: nafModule,
-        // grid: gridModule
+        grid: gridModule
 };
 
 export const state = function () {
@@ -36,7 +36,7 @@ export const state = function () {
         sceneLoaded: false,
         isMobile: false,
         inVR: false,
-        sceneLayout: SceneLayoutEnum.GALLERY
+        sceneLayout: SceneLayoutEnum.GALLERY,
     }
 };
 
@@ -85,6 +85,15 @@ export const mutations = {
             }
             else {
                 state.isMobile = AFRAME.utils.device.isMobile();
+            }
+        },
+        SET_LAYOUT: function(state, val) {
+            if (CONFIG.DEBUG) {console.log("SET_LAYOUT");}
+            if (SceneLayoutEnum.hasOwnProperty(val)) {
+                state.sceneLayout = SceneLayoutEnum[val];
+            }
+            else {
+                console.log(`cannot set sceneLayout, ${val} is not a SceneLayoutEnum`);
             }
         },
 };
