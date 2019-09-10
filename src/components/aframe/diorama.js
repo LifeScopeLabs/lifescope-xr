@@ -640,7 +640,8 @@ AFRAME.registerComponent('diorama-image', {
         repeatU: { type: 'number', default: 4},
         repeatV: { type: 'number', default: 1},
 
-        hovering: { type: 'boolean', default: false },
+        hover: { type: 'boolean', default: false },
+        active: { type: 'boolean', default: false },
         borderwidth: { type: 'number', default: 0.02 },
         aspectratio: { type: 'number', default: 0 },
     },
@@ -655,16 +656,17 @@ AFRAME.registerComponent('diorama-image', {
         if (self.el.object3DMap.hasOwnProperty('image')) {
             self.el.removeObject3D('image');
         }
-        if (this.el.object3DMap.hasOwnProperty('hover')) {
-            this.el.removeObject3D('hover');
+        if (this.el.object3DMap.hasOwnProperty('border')) {
+            this.el.removeObject3D('border');
         }
 
         if (self.data.imageURL != '') {
             self._createImage();
         }
 
-        if (self.data.hovering) {
-            self._createHover();
+        if (self.data.hover || self.data.active) {
+            // console.log('border update');
+            self._createBorder();
         }
         
     },
@@ -676,8 +678,8 @@ AFRAME.registerComponent('diorama-image', {
         if (this.el.object3DMap.hasOwnProperty('image')) {
             this.el.removeObject3D('image');
         }
-        if (this.el.object3DMap.hasOwnProperty('hover')) {
-            this.el.removeObject3D('hover');
+        if (this.el.object3DMap.hasOwnProperty('border')) {
+            this.el.removeObject3D('border');
         }
     },
 
@@ -734,7 +736,7 @@ AFRAME.registerComponent('diorama-image', {
         } );
     },
 
-    _createHover() {
+    _createBorder() {
         var self = this;
         var data = self.data;
 
@@ -762,12 +764,13 @@ AFRAME.registerComponent('diorama-image', {
         geom = new THREE.PlaneBufferGeometry( geomWidth + data.borderwidth, geomHeight + data.borderwidth);
         geom.translate(data.offset.x, data.offset.y, data.offset.z);
 
-        mat = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0x04FF5F ), side: THREE.DoubleSide} );
+        var color = data.active ? 0xFFD704 : data.hover ? 0x04FF5F : 0xe8f1ff;
+        mat = new THREE.MeshBasicMaterial( {color: new THREE.Color( color ), side: THREE.DoubleSide} );
         mesh = new THREE.Mesh(geom, mat);
 
-        var group = self.el.getObject3D('hover') || new THREE.Group();
+        var group = self.el.getObject3D('border') || new THREE.Group();
         group.add(mesh);
-        self.el.setObject3D('hover', group);   
+        self.el.setObject3D('border', group);   
     },
 });
 
@@ -782,6 +785,7 @@ AFRAME.registerPrimitive( 'a-diorama-image', {
         'srcfit': 'diorama-image__image.srcFit',
         'width': 'diorama-image__image.imagewidth',
         'height': 'diorama-image__image.imageheight',
-        'hovering': 'diorama-image__image.hovering',
+        'hover': 'diorama-image__image.hover',
+        'active': 'diorama-image__image.active',
     }
 });

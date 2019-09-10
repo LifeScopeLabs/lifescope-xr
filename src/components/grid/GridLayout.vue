@@ -6,6 +6,16 @@
         <a-light type='point' color='#FFF' intensity='0.8' position="10 10 0" ></a-light>
         <!-- <a-light type='hemisphere' color='#FFF' groundColor='#00F' intensity='0.8' ></a-light> -->
     
+        <a-arrow class="grid-arrow-left clickable" direction="left" :position="leftArrowPosition"
+            :width="arrowWidth" :height="arrowHeight"
+            :disabled="!canPageLeft"
+            @raycaster-intersected="hoverListener"
+            @raycaster-intersected-cleared="hoverEndListener"
+            @mousedown="activeListener"
+            @mouseup="activeEndListener"
+            @click="handlePageLeft"
+            />
+
         <a-diorama-image v-for="n in numberOfItemsToDisplay"
             :key="'grid-image-' + n"
             :id="'grid-image-' + n"
@@ -14,9 +24,21 @@
             :width="cellWidth"
             :rotation="dioramaRotation(n-1)"
             :position="dioramaPosition(n-1)"
-            @raycaster-intersected="cellIntersectedListener"
-            @raycaster-intersected-cleared="cellIntersectedClearedListener"
+            @raycaster-intersected="hoverListener"
+            @raycaster-intersected-cleared="hoverEndListener"
+            @mousedown="activeListener"
+            @mouseup="activeEndListener"
             @click="cellClickedHandler"
+            />
+
+        <a-arrow class="grid-arrow-right clickable" direction="right" :position="rightArrowPosition"
+            :width="arrowWidth" :height="arrowHeight"
+            :disabled="!canPageRight"
+            @raycaster-intersected="hoverListener"
+            @raycaster-intersected-cleared="hoverEndListener"
+            @mousedown="activeListener"
+            @mouseup="activeEndListener"
+            @click="handlePageRight"
             />
 
     <!-- Demo Map -->
@@ -42,7 +64,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 
 export default {
 
@@ -122,18 +144,37 @@ export default {
                 'radius',
                 'top',
                 'bottom',
-                'cellWidth'
+                'cellWidth',
+                'arrowWidth',
+                'arrowHeight',
             ]
         ),
 
         ...mapGetters('xr/grid',
             [
                 'itemsPerPage',
+                'canPageLeft',
+                'canPageRight'
             ]
         ),
+
+        leftArrowPosition() {
+            return `-0.5 ${this.bottom} ${-this.offsetz - 1.4}`;
+        },
+
+        rightArrowPosition() {
+            return `0.5 ${this.bottom} ${-this.offsetz - 1.4}`;
+        }
     },
 
     methods: {
+
+        ...mapActions('xr/grid/',
+        [
+            'pageRight',
+            'pageLeft'
+        ]),
+
         imageSrc: function (image) {
             if(!image)
                 return '';
@@ -162,7 +203,7 @@ export default {
             
             var row = 0;
             var n = itemNum;
-            while ( n > this.columns) {
+            while ( n >= this.columns) {
                 row += 1;
                 n -= this.columns;
             }
@@ -186,12 +227,20 @@ export default {
             return `${x} ${y} ${z}`;
         },
 
-        cellIntersectedListener(evt) {
-            evt.target.setAttribute('hovering', true);
+        hoverListener(evt) {
+            evt.target.setAttribute('hover', true);
         },
-        cellIntersectedClearedListener(evt) {
-            evt.target.setAttribute('hovering', false);
+        hoverEndListener(evt) {
+            evt.target.setAttribute('hover', false);
         },
+
+        activeListener(evt) {
+            evt.target.setAttribute('active', true);
+        },
+        activeEndListener(evt) {
+            evt.target.setAttribute('active', false);
+        },
+
         cellClickedHandler(evt) {
             var self = this;
             var el = evt.target;
@@ -270,7 +319,25 @@ export default {
                 z: rotz,
                 duration: self.dur*1000
             });
-        }
+        },
+        unFocusFoscusedCell() {
+            if (this.focusedCell) {
+                var focusedCellEl = document.querySelector('#' + this.focusedCell);
+                this.focusedCell = '';
+                this.unFocusCell(focusedCellEl);
+            }
+        },
+
+        handlePageLeft() {
+            this.unFocusFoscusedCell();
+            this.pageLeft();
+        },
+
+        handlePageRight() {
+            this.unFocusFoscusedCell();
+            this.pageRight();
+        },
+
     }
 }
 </script>

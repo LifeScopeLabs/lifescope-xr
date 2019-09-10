@@ -19,6 +19,7 @@ import 'aframe-gui';
 import 'aframe-super-keyboard';
 import 'aframe-sun-sky';
 import 'nipplejs';
+import './components/aframe/arrow.js';
 import './components/aframe/play-gaze.js';
 import './components/aframe/dynamic-autoplay.js';
 import './components/aframe/avatar-rig';
@@ -60,6 +61,7 @@ Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity',
  'a-mapbox-terrain',
  'a-sun-sky',
  'a-rail', 'a-diorama', 'a-wooden-floor', 'a-diorama-column', 'a-diorama-image',
+ 'a-arrow',
  'a-gui-flex-container', 'a-gui-label', 'a-gui-radio', 'a-gui-cursor', 'a-gui-toggle', 'a-gui-input',
  'a-gui-button'];
 
