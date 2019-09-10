@@ -168,13 +168,6 @@ export default {
       .then(() => {
           return this.$store.dispatch('xr/avatar/getAvatars');
       })
-      .then(() => {
-            if (AFRAME.utils.device.isMobile()) {
-              self.setupMobile();
-            } else {
-              self.setupDesktop();
-            }
-      })
       .catch( ( error ) => {
         console.log(error);
       });

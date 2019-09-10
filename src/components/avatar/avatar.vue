@@ -65,16 +65,26 @@ export default {
         },
     },
 
+    mounted() {
+        var self = this;
+        if (self.sceneLoaded) {
+            self.onSceneLoaded();
+        }
+    },
+
     methods: {
         setupDesktop() {
             if (CONFIG.DEBUG) {console.log("setupDesktop");};
             var self = this;
-            var playerRig = document.getElementById('playerRig');
-            playerRig.sceneEl.addEventListener('enter-vr', function() {
-                console.log('enter-vr event captured on sceneEl');
-                self.tearDownDesktop();
-            },
-            true);
+            var playerRig = self.$el;
+            if (playerRig.hasLoaded) {
+                playerRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop);
+            }
+            else {
+                playerRig.addEventListener('loaded', function () {
+                    playerRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop);
+                })
+            }
             try {
                 if (playerRig) {
                     playerRig.setAttribute("wasd-controls", {'enabled': true, 'acceleration': 100});
@@ -94,7 +104,7 @@ export default {
 
         tearDownDesktop() {
             if (CONFIG.DEBUG) {console.log("tearDownDesktop");};
-            var playerRig = document.getElementById('playerRig');
+            var playerRig = this.$el;
             try {
                 if (playerRig) {
                     playerRig.removeAttribute("wasd-controls");
@@ -112,7 +122,7 @@ export default {
 
         setupMobile() {
             if (CONFIG.DEBUG) {console.log("setupMobile");};
-            var playerRig = document.getElementById('playerRig');
+            var playerRig = this.$el;
             var camera = playerRig.querySelector('#player-camera');
             var sceneEl = document.getElementsByTagName('a-scene')[0];
             try {
@@ -135,7 +145,7 @@ export default {
 
         tearDownMobile() {
             if (CONFIG.DEBUG) {console.log("tearDownMobile");};
-            var playerRig = document.getElementById('playerRig');
+            var playerRig = this.$el;
             var camera = playerRig.querySelector('#player-camera');
             var sceneEl = document.getElementsByTagName('a-scene')[0];
             try {
@@ -184,10 +194,12 @@ export default {
         },
 
         onSceneLoaded() {
-            // this.createAvatarRigTemplate();
-            // this.createAvatarGLTFTemplate();
+            if (AFRAME.utils.device.isMobile()) {
+                this.setupMobile();
+            } else {
+                this.setupDesktop();
+            }
             this.createAvatarTemplate();
-            // this.addAvatarRigTemplate();
             this.addAvatarTemplate();
             this.networkAvatarRig();
         },
@@ -379,9 +391,9 @@ export default {
         },
 
         fixVRCameraPosition() {
-            console.log('fixVRCameraPosition');
+            if(CONFIG.DEBUG){console.log('fixVRCameraPosition');}
 
-            var playerRig = document.getElementById('playerRig');
+            var playerRig = this.$el;
 
             var playerCamera = document.getElementById('player-camera');
             var cameraRig = document.getElementById('camera-rig');
