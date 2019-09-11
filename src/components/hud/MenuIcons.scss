@@ -1,0 +1,25 @@
+.xr-menu-toggle {
+    pointer-events: visible;
+
+    position: absolute;
+    top: 1%;
+    width: 7.5%;
+    height: 5%;
+    right: 1%;
+
+
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-around;
+
+    color:    #aeaeae;
+}
+
+// .desktop-hud .xr-menu-toggle {
+//     // left: 92.5%;
+// }
+
+.mobile-hud .xr-menu-toggle {
+    // left: 87.5%;
+    font-size: 20px;
+}

@@ -1,36 +1,38 @@
 <template>
   <div id="hud" class="hud ">
+        <chat-hud/>
         <help-menu
             :class="helpClassObject"
             v-hammer:swipe.up.down="(event) => changeHelpVisibility(event)"/>
+        <map-hud v-if="sceneLayout == SceneLayoutEnum.GALLERY"/>
+        <menu-icons/>
+        <naf-hud/>
         <paginator v-if="!isMobile && sceneLayout == SceneLayoutEnum.GALLERY"/>
         <settings/>
-        <map-hud v-if="sceneLayout == SceneLayoutEnum.GALLERY"/>
-        <naf-hud/>
-        <chat-hud/>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 
+import ChatHud from './ChatHud.vue';
 import HelpMenu from './HelpMenu.vue';
+import MapHud from './MapHud.vue';
+import MenuIcons from './MenuIcons.vue';
+import NafHud from './NAFHud.vue';
 import paginator from './paginator.vue';
 import settings from './settings.vue';
-import MapHud from './MapHud.vue';
-import NafHud from './NAFHud.vue';
-import ChatHud from './ChatHud.vue';
-
 import { SceneLayoutEnum } from '../../store/modules/xr';
 
 export default {
     components: {
+        ChatHud,
         HelpMenu,
+        MapHud,
+        MenuIcons,
+        NafHud,
         paginator,
         settings,
-        MapHud,
-        NafHud,
-        ChatHud
     },
 
     data() {

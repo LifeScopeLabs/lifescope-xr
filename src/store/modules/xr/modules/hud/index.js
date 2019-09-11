@@ -12,6 +12,9 @@ export const state = function () {
         vrSettingsActive: false,
         vrHelpActive: false,
         vrActiveHud: VRHudEnum.NONE,
+
+        helpMenuVisible: false,
+        graphicsMenuVisible: false,
     };
 };
 
@@ -47,6 +50,14 @@ export const mutations = {
         else {
             console.log(`cannot set active hud, ${val} is not a VRHudEnum`);
         }
+    },
+    SET_HELP_MENU_ACTIVE: function(state, active=true) {
+        if (CONFIG.DEBUG) {console.log(`SET_HELP_MENU_ACTIVE: ${active}`);}
+        state.helpMenuVisible = active;
+    },
+    SET_GRAPHICS_MENU_ACTIVE: function(state, active=true) {
+        if (CONFIG.DEBUG) {console.log(`SET_GRAPHICS_MENU_ACTIVE: ${active}`);}
+        state.graphicsMenuVisible = active;
     },
 };
 

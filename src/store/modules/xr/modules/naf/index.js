@@ -23,7 +23,6 @@ export const mutations = {
         // only set name to clientId if it isn't already in map
         if ( (payload.clientId != payload.name) ||
             (payload.clientId == payload.name && !state.playerNames.has(payload.clientId))) {
-                console.log('Changing name');
                 state.playerNames.set(payload.clientId, payload.name);
                 state.updateNames += 1;
         }
@@ -35,7 +34,6 @@ export const actions = {
     // payload: clientId, name
     addPlayer: function(context, payload) {
         if (CONFIG.DEBUG) {console.log("addPlayer");}
-        console.log(`${payload.clientId}, ${payload.name}`)
         context.commit('INCREMENT_PLAYERS');
         context.state.playerNames.set(payload.clientId, payload.name);
     },

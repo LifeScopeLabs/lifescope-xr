@@ -1,12 +1,6 @@
 <template>
     <div class="xr-help-menu-container"  :class="{ 'desktop-hud': !isMobile, 'mobile-menu': isMobile }">
 
-        <div class="xr-help-menu-toggle">
-            <div class="fas fa-question-circle" @click="toggleHelpVisibility"></div>
-            <div class="fas " v-bind:class="{ 'fa-th-large': sceneLayout == SceneLayoutEnum.GALLERY,
-                    'fa-circle': sceneLayout == SceneLayoutEnum.GRID }"
-                    @click="toggleLayout"></div>
-        </div>
 
         <div class="xr-help-menu" :style="helpStyleObject">
 
@@ -66,12 +60,26 @@ export default {
       [
         'isMobile',
         'sceneLayout',
-      ])
+      ]),
+
+      ...mapState('xr/hud', [
+          'helpMenuVisible'
+      ]),
+    },
+
+    watch: {
+        helpMenuVisible: function (newVal, oldVal) {
+            this.toggleHelpVisibility();
+        },
     },
 
     mounted() {
         var self = this;
         self.hudUtils = new HudUtils();
+
+        if (this.helpMenuVisible) {
+            this.toggleHelpVisibility();
+        }
 
         document.body.addEventListener('keypress', self.keypressListener);
     },
@@ -83,7 +91,7 @@ export default {
     methods: {
         keypressListener(evt) {
             if (evt.target.tagName == 'BODY' && evt.key == 'h') {
-                this.toggleHelpVisibility();
+                this.$store.commit('xr/hud/SET_HELP_MENU_ACTIVE', !this.helpMenuVisible);
             }
         },
         toggleHelpVisibility() {

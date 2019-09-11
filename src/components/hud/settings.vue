@@ -1,10 +1,6 @@
 <template>
     <div class="xr-settings-container" :class="{ 'desktop-hud': !isMobile, 'mobile-hud': isMobile }">
 
-        <div class="xr-settings-menu-toggle">
-            <div class="fas fa-cog" @click="toggleSettingsVisibility"></div>
-        </div>
-
         <div class="xr-help-settings" :style="settingsStyleObject">
 
             <!-- <div class="help-header"> Settings </div> -->
@@ -438,7 +434,10 @@ export default {
             'worldRows',
             'worldZoom',
             'worldScale',
-        ])
+        ]),
+        ...mapState('xr/hud', [
+            'graphicsMenuVisible'
+        ]),
     },
 
     watch: {
@@ -463,7 +462,10 @@ export default {
         },
         mapWorldCheck: function (newVal, oldVal) {
             this.$store.commit('xr/map/SET_WORLD_MAP_ACTIVE', newVal);
-        }
+        },
+        graphicsMenuVisible: function (newVal, oldVal) {
+            this.toggleSettingsVisibility();
+        },
     },
 
     mounted() {
@@ -487,6 +489,10 @@ export default {
         self.inputFloorRadius = self.floorRadius;
 
         document.body.addEventListener('swapsky', self.swapskyListener);
+
+        if (this.graphicsMenuVisible) {
+            this.toggleSettingsVisibility();
+        }
     },
 
     beforeDestroy() {
@@ -497,7 +503,7 @@ export default {
     methods: {
         keypressListener(evt) {
             if (evt.target.tagName == 'BODY' && evt.key == 'g') {
-                this.toggleSettingsVisibility();
+                this.$store.commit('xr/hud/SET_GRAPHICS_MENU_ACTIVE', !this.graphicsMenuVisible);
             }
         },
         swapskyListener(evt) {
