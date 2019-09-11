@@ -21,6 +21,7 @@
             :railheight="railHeight"
             :bump="bump"
             :normal="normal"
+            :rail="floorActive"
             :quality="textureQuality"
             :shading="textureShading"/>
     </a-entity>

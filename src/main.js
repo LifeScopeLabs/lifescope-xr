@@ -39,7 +39,7 @@ import {mappings, inputActions} from './controls/input-mappings';
 import { runInThisContext } from 'vm';
 
 import App from './App.vue';
-import textureLoaderHelper from './util/textureLoaderHelper';
+import TextureLoaderHelper from './util/TextureLoaderHelper';
 
 
 //console.log(mappings);

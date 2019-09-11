@@ -1,4 +1,4 @@
-export default class textureLoaderHelper {
+export default class TextureLoaderHelper {
     constructor() {
         this.baseUrl = 'https://s3.amazonaws.com/lifescope-static/static/xr/textures/';
         this.brassUrl = this.baseUrl + 'brass/';
@@ -14,21 +14,21 @@ export default class textureLoaderHelper {
           };
     }
 
-    loadTexture(material, type='base', quality='l', ext='jpg', success) {
+    loadTexture(material, type='base', quality='l', ext='jpg', onLoad, onProgress, onError) {
         const url = this.materialUrls[material] + type + '-' + quality + '.' + ext;
         // console.log(`loadTexture: ${url}`);
-        return new THREE.TextureLoader().load( url, success );
+        return new THREE.TextureLoader().load( url, onLoad, onProgress, onError );
     }
 
-    getOrLoadTexture(material, type='base', quality='l', ext='jpg', success) {
+    getOrLoadTexture(material, type='base', quality='l', ext='jpg', onLoad, onProgress, onError) {
         const url = this.materialUrls[material] + type + '-' + quality + '.' + ext;
         
         var texture =  THREE.Cache.files[url];
         if (texture !== undefined) {
-            success(texture);
+            onLoad(texture);
         }
         return texture !== undefined ?
-            texture : new THREE.TextureLoader().load( url, success );
+            texture : new THREE.TextureLoader().load( url, onLoad, onProgress, onError );
     }
 }
 

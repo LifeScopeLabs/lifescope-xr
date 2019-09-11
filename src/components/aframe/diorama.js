@@ -1,4 +1,4 @@
-import textureLoaderHelper from '../../util/textureLoaderHelper.js';
+import TextureLoaderHelper from '../../util/TextureLoaderHelper.js';
 import GradientShader from '../../shaders/GradientShader';
 import CelShader from '../../shaders/CelShader';
 
@@ -11,66 +11,80 @@ var materialColors =  new Map([
 ])
 
 function _buildMaterial(shading, type, quality='l', withBump=false, withNormal=false, repeatU=1, repeatV=1, props={}) {
-    var material, baseTexture, bumpTexture, nomralTexture;
-    if (type=='glass') {
-        material = new THREE.MeshPhysicalMaterial( 
-            {
-                color: props.color,
-                metalness: props.metalness,
-                reflectivity: props.reflectivity,
-                roughness: props.roughness,
-                opacity: props.opacity,
-                side: THREE.DoubleSide,
-                transparent: true,
-                envMapIntensity: 5,
-                premultipliedAlpha: true,
-        });
-        return material
-    }
-
-    if (shading=='cel') {
-        var material = new CelShader(materialColors.get(type), props);
-        return material;
-    }
-
-    if (type=='gradient') {
-        var material = new GradientShader(0xACB6E5, 0x74ebd5);
-        return material;
-    }
+    return new Promise((resolve, reject) => {
     
-    var tlHelper = new textureLoaderHelper();
+        var material, baseTexture, bumpTexture, nomralTexture;
+        if (type=='glass') {
+            material = new THREE.MeshPhysicalMaterial( 
+                {
+                    color: props.color,
+                    metalness: props.metalness,
+                    reflectivity: props.reflectivity,
+                    roughness: props.roughness,
+                    opacity: props.opacity,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    envMapIntensity: 5,
+                    premultipliedAlpha: true,
+            });
+            resolve(material);
+        }
 
-    baseTexture = tlHelper.loadTexture( type, 'base', quality, 'jpg',
-        function (texture) {
-            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat.set( repeatU, repeatV );
+        if (shading=='cel') {
+            var material = new CelShader(materialColors.get(type), props);
+            resolve(material);
+        }
+
+        if (type=='gradient') {
+            var material = new GradientShader(0xACB6E5, 0x74ebd5);
+            resolve(material);
+        }
+        
+        var tlHelper = new TextureLoaderHelper();
+
+        baseTexture = tlHelper.loadTexture( type, 'base', quality, 'jpg',
+            // onLoad
+            function (texture) {
+                texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                texture.repeat.set( repeatU, repeatV );
+
+                material = new THREE.MeshPhongMaterial( { map: texture,//baseTexture,
+                    side:THREE.FrontSide,
+                    specular: 0x222222,
+                    shininess: 25,
+                    } );
+
+                if (withBump) {
+                    bumpTexture = tlHelper.loadTexture( type, 'height', quality, 'jpg',
+                        function (texture) {
+                            material.bumpMap = texture;
+                            material.bumpScale = 1;
+                        }
+                    );
+                }
+                if (withNormal) {
+                    nomralTexture = tlHelper.loadTexture( type, 'normal', quality, 'jpg',
+                        function (texture) {
+                            material.normalMap = texture;
+                        }
+                    );
+                }
+                material.needsUpdate = true;
+                resolve(material);
+            },
+            // onProgress
+            function (xhr) {
+                // console.log(xhr);
+            },
+            // onError
+            function (error) {
+                console.log('failed to load texture');
+                var material = new CelShader(materialColors.get(type), props);
+                resolve(material);
+            }
+        );
+    
     });
-    
-    
-    // Material
-    material = new THREE.MeshPhongMaterial( { map: baseTexture,
-        side:THREE.FrontSide,
-        specular: 0x222222,
-        shininess: 25,
-        } );
-
-    if (withBump) {
-        bumpTexture = tlHelper.loadTexture( type, 'height', quality, 'jpg',
-            function (texture) {
-                material.bumpMap = texture;
-                material.bumpScale = 1;
-            }
-        );
-    }
-    if (withNormal) {
-        nomralTexture = tlHelper.loadTexture( type, 'normal', quality, 'jpg',
-            function (texture) {
-                material.normalMap = texture;
-            }
-        );
-    }
-    material.needsUpdate = true;
-    return material;
 }
 
 function _buildGeometry(type, data) {
@@ -238,25 +252,27 @@ AFRAME.registerComponent('diorama-rail', {
 
     _createDioramaComponent(type, shape,  pos='', side='front', props={}) {
         var self = this;
-        var material, geom, mesh;
-        var data = self.data;
+        var geom, mesh;
+        var data = Object.assign({}, self.data);
         data.pos = pos;
         data.side = side;
     
-        material = _buildMaterial(data.shading, type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props);
-        geom = _buildGeometry(shape, data);
-        if (shape == 'base' && material.map != undefined) {
-            var texture = material.map;
-            var offsetx = (data.floorradius) * Math.sin(2 * Math.PI / data.radialsegments);
-            var offsety = data.baseheight / 2
-            texture.rotation = Math.PI / 2;
-            texture.offset.set( offsetx, offsety );
-        }
-        mesh = new THREE.Mesh(geom, material);
-    
-        var group = self.el.getObject3D(self.id) || new THREE.Group();
-        group.add(mesh);
-        self.el.setObject3D(self.id, group); 
+        _buildMaterial(data.shading, type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props)
+        .then( (material) => {
+            geom = _buildGeometry(shape, data);
+            if (shape == 'base' && material.map != undefined) {
+                var texture = material.map;
+                var offsetx = (data.floorradius) * Math.sin(2 * Math.PI / data.radialsegments);
+                var offsety = data.baseheight / 2
+                texture.rotation = Math.PI / 2;
+                texture.offset.set( offsetx, offsety );
+            }
+            mesh = new THREE.Mesh(geom, material);
+        
+            var group = self.el.getObject3D(self.id) || new THREE.Group();
+            group.add(mesh);
+            self.el.setObject3D(self.id, group); 
+        });
     },
 
 });
@@ -355,25 +371,27 @@ AFRAME.registerComponent('diorama-column', {
 
     _createDioramaComponent(type, shape,  pos='', side='front', props={}) {
         var self = this;
-        var material, geom, mesh;
-        var data = self.data;
+        var geom, mesh;
+        var data = Object.assign({}, self.data);
         data.pos = pos;
         data.side = side;
     
-        material = _buildMaterial(data.shading, type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props);
-        geom = _buildGeometry(shape, data);
-        if (shape == 'base' && material.map != undefined) {
-            var texture = material.map;
-            var offsetx = (data.floorradius) * Math.sin(2 * Math.PI / data.radialsegments);
-            var offsety = data.baseheight / 2
-            texture.rotation = Math.PI / 2;
-            texture.offset.set( offsetx, offsety );
-        }
-        mesh = new THREE.Mesh(geom, material);
-    
-        var group = self.el.getObject3D(self.id) || new THREE.Group();
-        group.add(mesh);
-        self.el.setObject3D(self.id, group); 
+        _buildMaterial(data.shading, type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props)
+        .then( (material) => {
+            geom = _buildGeometry(shape, data);
+            if (shape == 'base' && material.map != undefined) {
+                var texture = material.map;
+                var offsetx = (data.floorradius) * Math.sin(2 * Math.PI / data.radialsegments);
+                var offsety = data.baseheight / 2
+                texture.rotation = Math.PI / 2;
+                texture.offset.set( offsetx, offsety );
+            }
+            mesh = new THREE.Mesh(geom, material);
+        
+            var group = self.el.getObject3D(self.id) || new THREE.Group();
+            group.add(mesh);
+            self.el.setObject3D(self.id, group); 
+        });
     },
 
 });
@@ -432,6 +450,7 @@ AFRAME.registerComponent('diorama-case', {
 
         withGlass: { default: true },
         withBronze: { default: true },
+        withRail: { default: true },
 
     },
 
@@ -513,23 +532,25 @@ AFRAME.registerComponent('diorama-case', {
                 z: -.15 + data.casedepth + 3*data.bronzedepth
             }
         );
-        self._createCase(
-            'brass',
-            0.03,
-            0.03,
-            0.2,
-            {
-                x: 0,
-                y: data.railheight + 0.3 + Math.cos(2 * Math.PI * data.rotationx / 360) * -0.2 + 0.04,
-                z: -.05 + data.casedepth + 3*data.bronzedepth + Math.sin(2 * Math.PI * data.rotationx / 360) * -0.2 - 0.04
-            }
-            
-        );
+        if (data.withRail) {
+            self._createCase(
+                'brass',
+                0.03,
+                0.03,
+                0.2,
+                {
+                    x: 0,
+                    y: data.railheight + 0.3 + Math.cos(2 * Math.PI * data.rotationx / 360) * -0.2 + 0.04,
+                    z: -.05 + data.casedepth + 3*data.bronzedepth + Math.sin(2 * Math.PI * data.rotationx / 360) * -0.2 - 0.04
+                }
+                
+            );
+        }
     },
 
     _createImage() {
         var self = this;
-        var data = self.data;
+        var data = Object.assign({}, self.data);
 
         var imgMaterial, colorMaterial, geom, mesh;
 
@@ -614,21 +635,23 @@ AFRAME.registerComponent('diorama-case', {
 
     _createCase(type, width, height, depth, offset, props={}) {
         var self = this;
-        var material, geom, mesh;
-        var data = self.data;
+        var geom, mesh;
+        var data = Object.assign({}, self.data);
 
         data.width = width;
         data.height = height;
         data.depth = depth;
         data.offset = offset;
     
-        material = _buildMaterial(data.shading, type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props);
-        geom = _buildGeometry('case', data);
-        mesh = new THREE.Mesh(geom, material);
-    
-        var group = self.el.getObject3D(self.id) || new THREE.Group();
-        group.add(mesh);
-        self.el.setObject3D(self.id, group); 
+        _buildMaterial(data.shading, type, data.quality, data.withBump, data.withNormal, data.repeatU, data.repeatV, props)
+        .then( (material) => {
+            geom = _buildGeometry('case', data);
+            mesh = new THREE.Mesh(geom, material);
+        
+            var group = self.el.getObject3D(self.id) || new THREE.Group();
+            group.add(mesh);
+            self.el.setObject3D(self.id, group); 
+        });
     },
 
 });
@@ -644,6 +667,7 @@ AFRAME.registerPrimitive( 'a-diorama', {
     mappings: {
         'bump': 'diorama-case__case.withBump',
         'normal': 'diorama-case__case.withNormal',
+        'rail': 'diorama-case__case.withRail',
         'quality': 'diorama-case__case.quality',
         'src': 'diorama-case__case.imageURL',
         'srcfit': 'diorama-case__case.srcFit',
@@ -722,7 +746,7 @@ AFRAME.registerComponent('diorama-image', {
 
     _createImage() {
         var self = this;
-        var data = self.data;
+        var data = Object.assign({}, self.data);
 
         var imgMaterial, colorMaterial, geom, mesh;
 
@@ -810,7 +834,7 @@ AFRAME.registerComponent('diorama-image', {
 
     _createBorder() {
         var self = this;
-        var data = self.data;
+        var data = Object.assign({}, self.data);
 
         var geom, mat, mesh;
 
