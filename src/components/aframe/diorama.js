@@ -538,8 +538,41 @@ AFRAME.registerComponent('diorama-case', {
             y: data.railheight + 0.3,
             z: -.15
         }
-    
-        var texture = new THREE.TextureLoader().load( data.imageURL, function () {
+
+        var textureLoader = new THREE.TextureLoader();
+
+        var textureLoaderPromise = new Promise ( function(resolve, reject) {
+            textureLoader.load( data.imageURL,
+                // onLoad
+                function (texture) {
+                    resolve(texture);
+                },
+                // onProgress
+                function (xhr) {
+                    // console.log(xhr);
+                },
+                // onError
+                function (xhr) {
+                    if (CONFIG.DEBUG) {console.log(`failed to load ${data.imageURL}`)}
+                    textureLoader.load( '../../../static/images/LifeScope.png',
+                        // onLoad
+                        function (texture) {
+                            resolve(texture);
+                        },
+                        // onProgress
+                        function (xhr) {
+                            // console.log(xhr);
+                        },
+                        // onError
+                        function (xhr) {
+                            reject(xhr);
+                        }
+                    );
+                },
+            );
+        });
+
+        textureLoaderPromise.then( function(texture) {
             var srcWidth = texture.image.videoWidth || texture.image.width;
             var srcHeight = texture.image.videoHeight || texture.image.height;
             var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
@@ -573,7 +606,10 @@ AFRAME.registerComponent('diorama-case', {
             var group = self.el.getObject3D('image') || new THREE.Group();
             group.add(mesh);
             self.el.setObject3D('image', group);   
-        } );
+        })
+        .catch(function(error) {
+            console.error(error);
+        });
     },
 
     _createCase(type, width, height, depth, offset, props={}) {
@@ -695,8 +731,41 @@ AFRAME.registerComponent('diorama-image', {
             y: 0 + data.y,//data.railheight + 0.3,
             z: 0 + data.z,//-.15
         }
-    
-        var texture = new THREE.TextureLoader().load( data.imageURL, function () {
+
+        var textureLoader = new THREE.TextureLoader();
+
+        var textureLoaderPromise = new Promise ( function(resolve, reject) {
+            textureLoader.load( data.imageURL,
+                // onLoad
+                function (texture) {
+                    resolve(texture);
+                },
+                // onProgress
+                function (xhr) {
+                    // console.log(xhr);
+                },
+                // onError
+                function (xhr) {
+                    if (CONFIG.DEBUG) {console.log(`failed to load ${data.imageURL}`)}
+                    textureLoader.load( '../../../static/images/LifeScope.png',
+                        // onLoad
+                        function (texture) {
+                            resolve(texture);
+                        },
+                        // onProgress
+                        function (xhr) {
+                            // console.log(xhr);
+                        },
+                        // onError
+                        function (xhr) {
+                            reject(xhr);
+                        }
+                    );
+                },
+            );
+        });
+
+        textureLoaderPromise.then( function(texture) {
             var srcWidth = texture.image.videoWidth || texture.image.width;
             var srcHeight = texture.image.videoHeight || texture.image.height;
             var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
@@ -732,8 +801,11 @@ AFRAME.registerComponent('diorama-image', {
     
             var group = self.el.getObject3D('image') || new THREE.Group();
             group.add(mesh);
-            self.el.setObject3D('image', group);   
-        } );
+            self.el.setObject3D('image', group); 
+        })
+        .catch(function(error) {
+            console.error(error);
+        });
     },
 
     _createBorder() {
