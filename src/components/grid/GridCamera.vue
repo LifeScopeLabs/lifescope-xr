@@ -35,12 +35,43 @@ export default {
                 this.onSceneLoaded();
             }
         },
+        inVR: function (newVal, oldVal) {
+            if (newVal) {
+                if (AFRAME.utils.device.isMobile()) {
+                    this.tearDownMobile();
+                } else {
+                    this.tearDownDesktop();
+                }
+                this.setupVR();
+            }
+            else {
+                this.tearDownVR();
+                if (AFRAME.utils.device.isMobile()) {
+                    this.setupMobile();
+                } else {
+                    this.setupDesktop();
+                }
+            }
+        },
     },
 
     mounted() {
         var self = this;
         if (self.sceneLoaded) {
             self.onSceneLoaded();
+        }
+    },
+
+    beforeDestroy() {
+        if (this.$el.sceneEl.is('vr-mode')) {
+            this.tearDownVR();
+        }
+        else {
+            if (AFRAME.utils.device.isMobile()) {
+                this.tearDownMobile();
+            } else {
+                this.tearDownDesktop();
+            }
         }
     },
 
@@ -139,28 +170,25 @@ export default {
 
         setupVR() {
             if (CONFIG.DEBUG) {console.log("setupVR");};
-            if (this.isMobile) {
-                this.tearDownMobile();
-            }
-            else {
-                this.tearDownDesktop();
-            }
             var playerGridRig = document.getElementById('playerGridRig');
             playerGridRig.object3D.matrixAutoUpdate = true;
         },
 
         tearDownVR() {
             if (CONFIG.DEBUG) {console.log("tearDownVR");};
-            if (this.isMobile) {
-                this.setupMobile();
-            }
-            else {
-                this.setupDesktop();
-            }
         },
 
         onSceneLoaded() {
-            var self = this;
+            if (this.$el.sceneEl.is('vr-mode')) {
+                this.setupVR();
+            }
+            else {
+                if (AFRAME.utils.device.isMobile()) {
+                    this.setupMobile();
+                } else {
+                    this.setupDesktop();
+                }
+            }
         },
     }
 }

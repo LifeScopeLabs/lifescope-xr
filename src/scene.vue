@@ -34,7 +34,7 @@
       offsetz="2"/>
 
     <avatar v-if="sceneLayout == SceneLayoutEnum.GALLERY" ref="avatar"
-      position="0 1.6 -2"/>
+      :position="'0 ' + playerHeight + ' 0'"/>
     <grid-camera v-else-if="sceneLayout == SceneLayoutEnum.GRID" ref="avatar"/>
 
     <!-- Sky id="Sky" -->
@@ -100,7 +100,8 @@ export default {
 
       ...mapState('xr/avatar',
         [
-          'avatars'
+          'avatars',
+          'playerHeight',
         ]
       ),
     },
@@ -186,17 +187,15 @@ export default {
         var self = this;
         if (CONFIG.DEBUG) {console.log('entered vr');};
         self.$store.commit('xr/SET_IN_VR', true);
-        this.$refs.avatar.setupVR();
 
         if (AFRAME.utils.device.isMobile()) {
-              this.teardownMobile();
+          this.teardownMobile();
         }
       },
       onExitVR () {
         var self = this;
         if (CONFIG.DEBUG) {console.log('exited vr');};
         self.$store.commit('xr/SET_IN_VR', false);
-        self.$refs.avatar.tearDownVR();
 
         if (AFRAME.utils.device.isMobile()) {
           this.setupMobile();
@@ -205,7 +204,6 @@ export default {
 
       setupMobile () {
         if (CONFIG.DEBUG) {console.log("isMobile");};
-        this.$refs.avatar.setupMobile();
       },
 
       teardownMobile () {
@@ -220,7 +218,6 @@ export default {
 
       setupDesktop () {
         if (CONFIG.DEBUG) {console.log("!isMobile");};
-        this.$refs.avatar.setupDesktop();
       },
 
       chatCB(fromClientId, dataType, data, source) {

@@ -1,6 +1,6 @@
 <template>
   <a-entity id="playerRig"
-        position="0 1.6 0"
+        :position="'0 ' + playerHeight + ' 0'"
         >
         <vrhud id="vrhud" v-if="inVR"/>
         
@@ -52,7 +52,8 @@ export default {
         ...mapState('xr/avatar',
             [
                 'cursorActive',
-                'rightHandControllerActive'
+                'rightHandControllerActive',
+                'playerHeight'
             ]
         )
     },
@@ -63,12 +64,43 @@ export default {
                 this.onSceneLoaded();
             }
         },
+        inVR: function (newVal, oldVal) {
+            if (newVal) {
+                if (AFRAME.utils.device.isMobile()) {
+                    this.tearDownMobile();
+                } else {
+                    this.tearDownDesktop();
+                }
+                this.setupVR();
+            }
+            else {
+                this.tearDownVR();
+                if (AFRAME.utils.device.isMobile()) {
+                    this.setupMobile();
+                } else {
+                    this.setupDesktop();
+                }
+            }
+        },
     },
 
     mounted() {
         var self = this;
         if (self.sceneLoaded) {
             self.onSceneLoaded();
+        }
+    },
+
+    beforeDestroy() {
+        if (this.$el.sceneEl.is('vr-mode')) {
+            this.tearDownVR();
+        }
+        else {
+            if (AFRAME.utils.device.isMobile()) {
+                this.tearDownMobile();
+            } else {
+                this.tearDownDesktop();
+            }
         }
     },
 
@@ -167,12 +199,6 @@ export default {
 
         setupVR() {
             if (CONFIG.DEBUG) {console.log("setupVR");};
-            if (this.isMobile) {
-                this.tearDownMobile();
-            }
-            else {
-                this.tearDownDesktop();
-            }
             this.fixVRCameraPosition();
             this.$store.commit('xr/avatar/SET_RIGHT_HAND_CONTROLLER_ACTIVE', true);
             this.$refs.righthand.setupControls();
@@ -185,19 +211,19 @@ export default {
             if (CONFIG.DEBUG) {console.log("tearDownVR");};
             this.$store.commit('xr/avatar/SET_RIGHT_HAND_CONTROLLER_ACTIVE', false);
             this.$refs.righthand.tearDownControls();
-            if (this.isMobile) {
-                this.setupMobile();
-            }
-            else {
-                this.setupDesktop();
-            }
+            this.unFixVRCameraPosition();
         },
 
         onSceneLoaded() {
-            if (AFRAME.utils.device.isMobile()) {
-                this.setupMobile();
-            } else {
-                this.setupDesktop();
+            if (this.$el.sceneEl.is('vr-mode')) {
+                this.setupVR();
+            }
+            else {
+                if (AFRAME.utils.device.isMobile()) {
+                    this.setupMobile();
+                } else {
+                    this.setupDesktop();
+                }
             }
             this.createAvatarTemplate();
             this.addAvatarTemplate();
@@ -401,9 +427,27 @@ export default {
             var position, quaternion;
             position = playerRig.object3D.getWorldPosition();
             playerRig.object3D.worldToLocal(position);
-            cameraRig.object3D.position.set(position.x, -1.6, position.z);
+            cameraRig.object3D.position.set(position.x, -this.playerHeight, position.z);
             cameraRig.object3D.updateMatrix();
-        }
+        },
+
+        unFixVRCameraPosition() {
+            if(CONFIG.DEBUG){console.log('unFixVRCameraPosition');}
+
+            var playerRig = this.$el;
+
+            var playerCamera = document.getElementById('player-camera');
+            var cameraRig = document.getElementById('camera-rig');
+
+            var position, quaternion;
+            position = playerRig.object3D.getWorldPosition();
+            playerRig.object3D.worldToLocal(position);
+            cameraRig.object3D.position.set(position.x, 0, position.z);
+            cameraRig.object3D.updateMatrix();
+            playerCamera.object3D.position.set(0, 0, 0);
+            playerCamera.object3D.updateMatrix();
+        },
+        
 
     }
 }

@@ -5,7 +5,8 @@ export const state = function () {
         cursorActive: false,
         rightHandControllerActive: false,
         avatars: [],
-        avatarURLs: {}
+        avatarURLs: {},
+        playerHeight: 1.6
     };
 };
 

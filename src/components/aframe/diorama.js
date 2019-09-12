@@ -746,7 +746,7 @@ AFRAME.registerComponent('diorama-image', {
 
     _createImage() {
         var self = this;
-        var data = Object.assign({}, self.data);
+        var data = self.data;
 
         var imgMaterial, colorMaterial, geom, mesh;
 
