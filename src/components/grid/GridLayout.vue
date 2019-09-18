@@ -16,20 +16,21 @@
             @click="handlePageLeft"
             />
 
-        <a-diorama-image v-for="n in numberOfItemsToDisplay"
-            :key="'grid-image-' + n"
-            :id="'grid-image-' + n"
-            class="clickable gridImage"
-            :src="imageSrc(items[n-1])"
-            :width="cellWidth"
-            :rotation="dioramaRotation(n-1)"
-            :position="dioramaPosition(n-1)"
-            @raycaster-intersected="hoverListener"
-            @raycaster-intersected-cleared="hoverEndListener"
-            @mousedown="activeListener"
-            @mouseup="activeEndListener"
-            @click="cellClickedHandler"
-            />
+        <a-entity v-for="(item, n) in items"
+            :key="'grid-cell-' + n"
+            :rotation="dioramaRotation(n)"
+            :position="dioramaPosition(n)">
+            <a-diorama-grid-cell
+                class="clickable gridcell"
+                :id="'grid-cell-' + n"
+                :type="item.type"
+                :src="imageSrc(item)"
+                :width="cellWidth"
+                @mousedown="activeListener"
+                @mouseup="activeEndListener"
+                />
+
+        </a-entity>
 
         <a-arrow class="grid-arrow-right clickable" direction="right" :position="rightArrowPosition"
             :width="arrowWidth" :height="arrowHeight"
@@ -167,6 +168,15 @@ export default {
         }
     },
 
+    mounted() {
+        var self = this;
+        this.$el.addEventListener("cellclicked", self.cellClickedHandler);
+    },
+
+    beforeDestroy() {
+        this.$el.removeEvent("cellclicked", self.cellClickedHandler);
+    },
+
     methods: {
 
         ...mapActions('xr/grid/',
@@ -265,20 +275,23 @@ export default {
 
         focusCell(el) {
             var self = this;
-            if (CONFIG.DEBUG) {console.log('focusCell');}    
+            if (CONFIG.DEBUG) {console.log('focusCell');}   
             AFRAME.ANIME({
-                targets: el.object3D.position,
+                targets: el.parentEl.object3D.position,
                 easing: 'linear',
                 x: -0.3,
-                y: 0,
+                y: 0.1,
                 z: (-self.offsetz - 0.5),
                 duration: self.dur*1000,
                 begin: function(anim) {
                     self.focusedCell = el.id;
                 },
+                complete: function(anim) {
+                    el.setAttribute('selected', true);
+                }
             });
             AFRAME.ANIME({
-                targets: el.object3D.rotation,
+                targets: el.parentEl.object3D.rotation,
                 easing: 'linear',
                 x: 0,
                 y: Math.PI,
@@ -293,26 +306,29 @@ export default {
             var posx, posy, posz, rotx, roty, rotz;
             var id = el.id;
             var n = id.match(/\d+$/);
-            var position = self.dioramaPosition(+n-1);
+            var position = self.dioramaPosition(+n);
             var positionArray = position.split(' ');
             posx = +positionArray[0];
             posy = +positionArray[1];
             posz = +positionArray[2];
-            var rotation = self.dioramaRotation(+n-1);
+            var rotation = self.dioramaRotation(+n);
             var rotationArray = rotation.split(' ');
             rotx = +rotationArray[0] * (Math.PI/180) ;
             roty = +rotationArray[1] * (Math.PI/180);
             rotz = +rotationArray[2] * (Math.PI/180);
             AFRAME.ANIME({
-                targets: el.object3D.position,
+                targets: el.parentEl.object3D.position,
                 easing: 'linear',
                 x: posx,
                 y: posy,
                 z: posz,
-                duration: self.dur*1000
+                duration: self.dur*1000,
+                begin: function(anim) {
+                    el.setAttribute('selected', false);
+                }
             });
             AFRAME.ANIME({
-                targets: el.object3D.rotation,
+                targets: el.parentEl.object3D.rotation,
                 easing: 'linear',
                 x: rotx,
                 y: roty,

@@ -69,8 +69,13 @@ export default {
 
     mounted() {
         var self = this;
-        if (self.sceneLoaded) {
+        if (this.$el.hasLoaded) {
             self.onSceneLoaded();
+        }
+        else {
+            this.$el.addEventListener('loaded', function () {
+                self.onSceneLoaded();
+            });
         }
     },
 

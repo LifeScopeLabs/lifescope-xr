@@ -117,7 +117,17 @@ function _buildGeometry(type, data) {
                 z);
             break;
         case 'case':
-            geom = new THREE.BoxBufferGeometry( data.width, data.height, data.depth );
+            height = data.height;
+            width = data.width;
+            if (data.aspectratio) {
+                if (data.srcFit == 'width') {
+                    height = data.imagewidth / data.aspectratio;
+                }
+                else {
+                    width = data.imageheight * data.aspectratio;
+                }
+            }
+            geom = new THREE.BoxBufferGeometry( width, height, data.depth );
             geom.rotateX(2 * Math.PI * data.rotationx / 360);
             geom.translate(x + data.offset.x, y + data.offset.y, z + data.offset.z)
             break;
@@ -422,11 +432,13 @@ AFRAME.registerComponent('diorama-case', {
         z: { type: 'number', default: 0},
         rotationx: { type: 'number', default: 30 }, // degrees
 
+        type: { type: 'string', default: 'image' },
         imageURL: {type: 'string', default: ''},
         srcFit: { type: 'string', default: 'width' },
 
         imagewidth: { type: 'number', default: 0.6 },
         imageheight: { type: 'number', default: 0.6 },
+        depth: { type: 'number', default: 0.01 },
 
         casedepth: { type: 'number', default: 0.06 },
         bronzedepth: { type: 'number', default: 0.01 },
@@ -452,6 +464,7 @@ AFRAME.registerComponent('diorama-case', {
         withBronze: { default: true },
         withRail: { default: true },
 
+        aspectratio: { type: 'number', default: 0 },
     },
 
     multiple: true,
@@ -464,15 +477,22 @@ AFRAME.registerComponent('diorama-case', {
         if (self.el.object3DMap.hasOwnProperty('image')) {
             self.el.removeObject3D('image');
         }
+        if (this.el.object3DMap.hasOwnProperty('video')) {
+            this.el.removeObject3D('video');
+        }
+
+        if (self.data.imageURL != '' && self.data.type=="image") {
+            self._createImage();
+        }
+
+        if (self.data.imageURL != '' && self.data.type=="video") {
+            self._createVideo();
+        }
 
         if (self.id != undefined) {
             self._createDiorama();
         }
 
-        if (self.data.imageURL != '') {
-            self._createImage();
-        }
-        
     },
 
     remove: function () {
@@ -481,6 +501,9 @@ AFRAME.registerComponent('diorama-case', {
         }
         if (this.el.object3DMap.hasOwnProperty('image')) {
             this.el.removeObject3D('image');
+        }
+        if (this.el.object3DMap.hasOwnProperty('video')) {
+            this.el.removeObject3D('video');
         }
     },
 
@@ -550,7 +573,7 @@ AFRAME.registerComponent('diorama-case', {
 
     _createImage() {
         var self = this;
-        var data = Object.assign({}, self.data);
+        var data = self.data;//Object.assign({}, self.data);
 
         var imgMaterial, colorMaterial, geom, mesh;
 
@@ -598,6 +621,9 @@ AFRAME.registerComponent('diorama-case', {
             var srcHeight = texture.image.videoHeight || texture.image.height;
             var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
             var geomWidth, geomHeight;
+            if (!data.aspectratio || data.aspectratio != aspectRatio) {
+                self.el.setAttribute('aspectratio', aspectRatio);
+            }
             if (data.srcFit == 'width') {
                 geomWidth = data.imagewidth;
                 geomHeight = data.imagewidth / aspectRatio;
@@ -607,7 +633,7 @@ AFRAME.registerComponent('diorama-case', {
                 geomHeight = data.imageheight;
             }
             
-            geom = new THREE.BoxBufferGeometry(geomWidth, geomHeight, data.bronzedepth );
+            geom = new THREE.BoxBufferGeometry( geomWidth, geomHeight, data.depth );
             geom.rotateX(2 * Math.PI * data.rotationx / 360);
             geom.translate(data.offset.x, data.offset.y, data.offset.z);
     
@@ -627,6 +653,95 @@ AFRAME.registerComponent('diorama-case', {
             var group = self.el.getObject3D('image') || new THREE.Group();
             group.add(mesh);
             self.el.setObject3D('image', group);   
+        })
+        .catch(function(error) {
+            console.error(error);
+        });
+    },
+
+    _createVideo() {
+        var self = this;
+        var data = self.data;//Object.assign({}, self.data);
+
+        var videoMaterial, colorMaterial, geom, mesh;
+
+        data.offset = {
+            x: 0,
+            y: data.railheight + 0.3,
+            z: -.15
+        }
+
+        var textureLoaderHelper = new TextureLoaderHelper();
+
+        var textureLoaderPromise = new Promise ( function(resolve, reject) {
+            textureLoaderHelper.getVideoTexture(data.imageURL,
+                // onLoad
+                function (texture) {
+                    resolve(texture);
+                },
+                // onProgress
+                function (xhr) {
+                    // console.log(xhr);
+                },
+                // onError
+                function (xhr) {
+                    if (CONFIG.DEBUG) {console.log(`failed to load ${data.imageURL}`)}
+                    textureLoader.load( '../../../static/images/LifeScope.png',
+                        // onLoad
+                        function (texture) {
+                            resolve(texture);
+                        },
+                        // onProgress
+                        function (xhr) {
+                            // console.log(xhr);
+                        },
+                        // onError
+                        function (xhr) {
+                            reject(xhr);
+                        }
+                    );
+                },
+            );
+        });
+
+        textureLoaderPromise.then( function(texture) {
+            var srcWidth = texture.image.videoWidth || texture.image.width;
+            var srcHeight = texture.image.videoHeight || texture.image.height;
+            var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
+            var geomWidth, geomHeight;
+            if (!data.aspectratio || data.aspectratio != aspectRatio) {
+                self.el.setAttribute('aspectratio', aspectRatio);
+            }
+            if (data.srcFit == 'width') {
+                geomWidth = data.imagewidth;
+                geomHeight = data.imagewidth / aspectRatio;
+            }
+            else {
+                geomWidth = data.imageheight * aspectRatio;
+                geomHeight = data.imageheight;
+            }
+            
+            geom = new THREE.BoxBufferGeometry(geomWidth, geomHeight, data.depth );
+            geom.rotateX(2 * Math.PI * data.rotationx / 360);
+            geom.translate(data.offset.x, data.offset.y, data.offset.z);
+
+            videoMaterial = new THREE.MeshBasicMaterial( { map: texture } );
+            colorMaterial = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0xffffff )} );
+        
+            var materials = [
+                colorMaterial,        // Left side
+                colorMaterial,       // Right side
+                colorMaterial,         // Top side
+                colorMaterial,      // Bottom side
+                colorMaterial,       // Front side
+                videoMaterial         // Back side
+            ];
+
+            mesh = new THREE.Mesh(geom, materials);
+
+            var group = self.el.getObject3D('video') || new THREE.Group();
+            group.add(mesh);
+            self.el.setObject3D('video', group);
         })
         .catch(function(error) {
             console.error(error);
@@ -673,16 +788,20 @@ AFRAME.registerPrimitive( 'a-diorama', {
         'srcfit': 'diorama-case__case.srcFit',
         'railheight': 'diorama-case__case.railheight',
         'shading': 'diorama-case__case.shading',
+        'type': 'diorama-case__case.type',
     }
 });
 
 
-AFRAME.registerComponent('diorama-image', {
+AFRAME.registerComponent('diorama-grid-cell', {
     schema: {
+        id: { type: 'string', default: '' },
         x: { type: 'number', default: 0},
         y: { type: 'number', default: 0},
         z: { type: 'number', default: 0},
         rotationx: { type: 'number', default: 30 }, // degrees
+
+        type: { type: 'string', default: 'image' },
 
         imageURL: {type: 'string', default: ''},
         srcFit: { type: 'string', default: 'width' },
@@ -690,6 +809,11 @@ AFRAME.registerComponent('diorama-image', {
         imagewidth: { type: 'number', default: 0.6 },
         imageheight: { type: 'number', default: 0.6 },
         depth: { type: 'number', default: 0.01 },
+
+        hoverPlayButton: { type: 'boolean', default: false },
+        activePlayButton: { type: 'boolean', default: false },
+        videoprogess: { type: 'number', default: 0 },
+        isplaying: { type: 'boolean', default: false },
 
         color: { default: 0xe8f1ff}, //0xe8f1ff
         opacity: { type: 'number', default: 0.2 },
@@ -700,6 +824,7 @@ AFRAME.registerComponent('diorama-image', {
         repeatU: { type: 'number', default: 4},
         repeatV: { type: 'number', default: 1},
 
+        selected: { type: 'boolean', default: false },
         hover: { type: 'boolean', default: false },
         active: { type: 'boolean', default: false },
         borderwidth: { type: 'number', default: 0.02 },
@@ -708,27 +833,149 @@ AFRAME.registerComponent('diorama-image', {
   
     multiple: true,
 
-    update: function() {
+    init: function() {
         var self = this;
-        if (self.el.object3DMap.hasOwnProperty(self.id)) {
-            self.el.removeObject3D(self.id);
-        }
-        if (self.el.object3DMap.hasOwnProperty('image')) {
-            self.el.removeObject3D('image');
-        }
-        if (this.el.object3DMap.hasOwnProperty('border')) {
-            this.el.removeObject3D('border');
-        }
+        this.el.addEventListener("click", evt => {
+            if (self.intersectingRaycaster) {
+                const intersection = self.intersectingRaycaster.getIntersection(self.el);
+                if (intersection && ['video', 'image', 'border'].includes(intersection.object.name)) {
+                    var clickEvent = new Event('cellclicked', {bubbles: true});
+                    self.el.dispatchEvent(clickEvent);
+                }
+                else if (intersection && intersection.object.name == 'playPauseButton') {
+                    self._playPauseHandler();
+                }
 
-        if (self.data.imageURL != '') {
+            }
+        });
+        this.el.addEventListener("raycaster-intersected", evt => {
+            self.intersectingRaycaster = evt.detail.el.components.raycaster;
+            // console.log("raycaster-intersected");
+        });
+        this.el.addEventListener("raycaster-intersected-cleared", evt => {
+            // console.log('raycaster-intersected-cleared');
+            if (self.intersectingRaycaster != null) {
+                const intersection = self.intersectingRaycaster.getIntersection(self.el);
+                if (intersection == undefined) {
+                    self.intersectingRaycaster = null;
+                }
+                else {
+                    // console.log('intersecting:')
+                    // console.log(intersection.object.name);
+                }
+            }
+            else {
+                // console.log('self.intersectingRaycaster is null')
+            }
+            
+            if(self.data.hover) {
+                self.el.setAttribute('hover', false);
+            }
+            if (self.data.hoverPlayButton) {
+                self.el.setAttribute('hoverplaybutton', false);
+            }
+        });
+
+        if (self.data.imageURL != '' && self.data.type=="image") {
             self._createImage();
         }
 
+        if (self.data.imageURL != '' && self.data.type=="video") {
+            self._createVideo();
+            if (self.data.selected) {
+                self._createVideoControls();
+            }
+        }
+
         if (self.data.hover || self.data.active) {
-            // console.log('border update');
             self._createBorder();
         }
-        
+    },
+
+    tick: function() {
+        var self = this;
+        if (self.video && self.data.isplaying) {
+            self._updateProgressBar();
+        }
+
+        if (!this.intersectingRaycaster) {
+           return;
+        }
+   
+        const intersection = this.intersectingRaycaster.getIntersection(this.el);
+        self.intersection = intersection;
+        if (intersection) {
+            switch (intersection.object.name) {
+                case 'image':
+                case 'video':
+                    if(!self.data.hover) {
+                        self.el.setAttribute('hover', true);
+                        self.el.setAttribute('hoverplaybutton', false);
+                    }
+                    break;
+                case 'playPauseButton':
+                    if(!self.data.hoverPlayButton) {
+                        self.el.setAttribute('hoverplaybutton', true);
+                        self.el.setAttribute('hover', false);
+                    }
+                default:
+                    break;
+            }
+        }
+    },
+
+    update: function(oldData) {
+        // console.log(`update ${this.data.id}`)
+        var self = this;
+        var changedData = Object.keys(self.data).filter(x => self.data[x] != oldData[x]);
+        // console.log(changedData);
+        if ( self.el.object3DMap.hasOwnProperty('image') &&
+            ['imageURL', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio']
+            .some(prop => changedData.includes(prop))) {
+                // console.log('removing image');
+            self.el.removeObject3D('image');
+            if (self.data.imageURL != '' && self.data.type=="image") {
+                self._createImage();
+            }
+        }
+        if ( self.el.object3DMap.hasOwnProperty('video') &&
+            ['imageURL', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio']
+            .some(prop => changedData.includes(prop)) ) {
+                // console.log('removing video');
+            self.el.removeObject3D('video');
+            if (self.data.imageURL != '' && self.data.type=="video") {
+                self._createVideo();
+            }
+        }
+        if (
+            [ 'hover', 'active', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio']
+            .some(prop => changedData.includes(prop))
+            ) {
+                // console.log('updating border');
+            if (this.el.object3DMap.hasOwnProperty('border') ) {
+                // console.log('removing border');
+                this.el.removeObject3D('border');
+            }
+            if (self.data.hover || self.data.active) {
+                self._createBorder();
+            }
+        }
+        if (
+            [ 'hoverPlayButton', 'activePlayButton', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio',
+            'selected', 'isplaying' ]
+            .some(prop => changedData.includes(prop))) {
+                if (self.el.object3DMap.hasOwnProperty('videocontrols')) {
+                    // console.log('removing videocontrols');
+                    this.el.removeObject3D('videocontrols');
+                }
+                if (this.el.object3DMap.hasOwnProperty('progressbar')) {
+                    // console.log('removing progressbar');
+                    this.el.removeObject3D('progressbar');
+                }
+            if (self.data.selected) {
+                self._createVideoControls();
+            }
+        }
     },
 
     remove: function () {
@@ -738,8 +985,17 @@ AFRAME.registerComponent('diorama-image', {
         if (this.el.object3DMap.hasOwnProperty('image')) {
             this.el.removeObject3D('image');
         }
+        if (self.el.object3DMap.hasOwnProperty('video')) {
+            self.el.removeObject3D('video');
+        }
         if (this.el.object3DMap.hasOwnProperty('border')) {
             this.el.removeObject3D('border');
+        }
+        if (this.el.object3DMap.hasOwnProperty('videocontrols')) {
+            this.el.removeObject3D('videocontrols');
+        }
+        if (this.el.object3DMap.hasOwnProperty('progressbar')) {
+            this.el.removeObject3D('progressbar');
         }
     },
 
@@ -794,16 +1050,22 @@ AFRAME.registerComponent('diorama-image', {
             var srcHeight = texture.image.videoHeight || texture.image.height;
             var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
             if (!data.aspectratio || data.aspectratio != aspectRatio) {
-                data.aspectratio = aspectRatio;
+                self.el.setAttribute('aspectratio', aspectRatio);
             }
             var geomWidth, geomHeight;
             if (data.srcFit == 'width') {
                 geomWidth = data.imagewidth;
                 geomHeight = data.imagewidth / aspectRatio;
+                if (data.imageheight != geomHeight) {
+                    self.el.setAttribute('height', geomHeight);
+                }
             }
             else {
                 geomWidth = data.imageheight * aspectRatio;
                 geomHeight = data.imageheight;
+                if (data.imagewidth != geomWidth) {
+                    self.el.setAttribute('width', geomWidth);
+                }
             }
             
             geom = new THREE.BoxBufferGeometry(geomWidth, geomHeight, data.depth );
@@ -822,10 +1084,109 @@ AFRAME.registerComponent('diorama-image', {
                 imgMaterial         // Back side
             ];
             mesh = new THREE.Mesh(geom, materials);
+            mesh.name = 'image';
     
             var group = self.el.getObject3D('image') || new THREE.Group();
             group.add(mesh);
+            group.name = 'gImage';
             self.el.setObject3D('image', group); 
+        })
+        .catch(function(error) {
+            console.error(error);
+        });
+    },
+
+
+    _createVideo() {
+        var self = this;
+        var data = self.data;//Object.assign({}, self.data);
+
+        var videoMaterial, colorMaterial, geom, mesh;
+
+        data.offset = {
+            x: 0 + data.x,
+            y: 0 + data.y,
+            z: 0 + data.z,
+        }
+
+        var textureLoaderHelper = new TextureLoaderHelper();
+
+
+        var textureLoaderPromise = new Promise ( function(resolve, reject) {
+            textureLoaderHelper.getVideoTexture(data.imageURL,
+                // onLoad
+                function (texture) {
+                    resolve(texture);
+                },
+                // onProgress
+                function (xhr) {
+                    // console.log(xhr);
+                },
+                // onError
+                function (xhr) {
+                    if (CONFIG.DEBUG) {console.log(`failed to load ${data.imageURL}`)}
+                    textureLoader.load( '../../../static/images/LifeScope.png',
+                        // onLoad
+                        function (texture) {
+                            resolve(texture);
+                        },
+                        // onProgress
+                        function (xhr) {
+                            // console.log(xhr);
+                        },
+                        // onError
+                        function (xhr) {
+                            reject(xhr);
+                        }
+                    );
+                },
+            );
+        });
+        textureLoaderPromise.then( function(texture) {
+            self.video = texture.image;
+            var srcWidth = texture.image.videoWidth || texture.image.width;
+            var srcHeight = texture.image.videoHeight || texture.image.height;
+            var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
+            var geomWidth, geomHeight;
+            if (!data.aspectratio || data.aspectratio != aspectRatio) {
+                self.el.setAttribute('aspectratio', aspectRatio);
+            }
+            if (data.srcFit == 'width') {
+                geomWidth = data.imagewidth;
+                geomHeight = data.imagewidth / aspectRatio;
+                if (data.imageheight != geomHeight) {
+                    self.el.setAttribute('height', geomHeight);
+                }
+            }
+            else {
+                geomWidth = data.imageheight * aspectRatio;
+                geomHeight = data.imageheight;
+                if (data.imagewidth != geomWidth) {
+                    self.el.setAttribute('width', geomWidth);
+                }
+            }
+            
+            geom = new THREE.BoxBufferGeometry(geomWidth, geomHeight, data.depth );
+
+            videoMaterial = new THREE.MeshBasicMaterial( { map: texture } );
+            colorMaterial = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0xffffff )} );
+        
+            var materials = [
+                colorMaterial,        // Left side
+                colorMaterial,       // Right side
+                colorMaterial,         // Top side
+                colorMaterial,      // Bottom side
+                colorMaterial,       // Front side
+                videoMaterial         // Back side
+            ];
+
+            mesh = new THREE.Mesh(geom, materials);
+            mesh.name = 'video';
+
+            var group = self.el.getObject3D('video') || new THREE.Group();
+            group.add(mesh);
+            group.name='gVideo';
+            self.el.setObject3D('video', group);
         })
         .catch(function(error) {
             console.error(error);
@@ -841,7 +1202,7 @@ AFRAME.registerComponent('diorama-image', {
         data.offset = {
             x: 0 + data.x,
             y: 0 + data.y,//data.railheight + 0.3,
-            z: 0 + data.z,//-.15
+            z: 0.001 + data.z,//-.15
         }
     
         var geomWidth, geomHeight;
@@ -863,25 +1224,170 @@ AFRAME.registerComponent('diorama-image', {
         var color = data.active ? 0xFFD704 : data.hover ? 0x04FF5F : 0xe8f1ff;
         mat = new THREE.MeshBasicMaterial( {color: new THREE.Color( color ), side: THREE.DoubleSide} );
         mesh = new THREE.Mesh(geom, mat);
+        mesh.name = 'border';
 
         var group = self.el.getObject3D('border') || new THREE.Group();
         group.add(mesh);
+        group.name="gBorder";
         self.el.setObject3D('border', group);   
     },
+
+    _createProgressBar() {
+        var self = this;
+        var data = self.data;
+
+        var geomVideoLength = new THREE.CylinderGeometry( 0.01, 0.01, self.data.imagewidth, 64 );
+        var progressBarY = -self.data.imageheight/2 - 0.05;
+        geomVideoLength.rotateZ(Math.PI/2);
+        geomVideoLength.translate(0, progressBarY, 0);
+        var matVideoLength = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+        var meshVideoLength = new THREE.Mesh( geomVideoLength, matVideoLength );
+        meshVideoLength.name = 'videolength';
+        var group = self.el.getObject3D('progressbar') || new THREE.Group();
+        group.name = 'gProgressbar'
+        group.add(meshVideoLength);
+
+        var progressPercent = self.video.currentTime/self.video.duration;
+        var progressWidth = self.data.imagewidth * progressPercent + 0.001;//self.data.imagewidth/2;
+        var geomVideoProgress= new THREE.CylinderGeometry( 0.02, 0.02, progressWidth, 64 );
+        geomVideoProgress.rotateZ(Math.PI/2);
+
+        var progressX = (self.data.imagewidth - progressWidth)/2;
+        geomVideoProgress.translate(progressX, progressBarY, 0);
+
+        var matVideoProgress = new THREE.MeshBasicMaterial( {color: 0x27BEFF} );
+        var meshVideoProgress = new THREE.Mesh( geomVideoProgress, matVideoProgress );
+        meshVideoProgress.name ='videoprogress';
+        group.add(meshVideoProgress);
+        self.el.setObject3D('progressbar', group);   
+    },
+
+    _updateProgressBar() {
+        var self = this;
+        var group = self.el.getObject3D('progressbar') || new THREE.Group();
+        if (this.el.object3DMap.hasOwnProperty('progressbar')) {
+            var meshVideoProgress = group.children.find(function(obj) {
+                return obj.name == 'videoprogress';
+              });
+            group.remove(meshVideoProgress);
+        }
+        var progressPercent = self.video.currentTime/self.video.duration;
+        var progressWidth = self.data.imagewidth * progressPercent + 0.001;//self.data.imagewidth/2;
+        var geomVideoProgress= new THREE.CylinderGeometry( 0.02, 0.02, progressWidth, 64 );
+        geomVideoProgress.rotateZ(Math.PI/2);
+
+        var progressX = (self.data.imagewidth - progressWidth)/2;
+        var progressY = -self.data.imageheight/2 - 0.05;
+        geomVideoProgress.translate(progressX, progressY, 0);
+
+        var matVideoProgress = new THREE.MeshBasicMaterial( {color: 0x27BEFF} );
+        var meshVideoProgress = new THREE.Mesh( geomVideoProgress, matVideoProgress );
+        meshVideoProgress.name ='videoprogress';
+        group.add(meshVideoProgress);
+        
+    },
+
+    _createVideoControls() {
+        var self = this;
+        var data = self.data;
+        self._createProgressBar();
+
+        var group = self.el.getObject3D('videocontrols') || new THREE.Group();
+
+        // play/pause button
+        var playPauseButton = new THREE.Shape();
+        // var hole = new THREE.Shape();
+        var playWidth = 0.1;
+        var playHeight = 0.1;
+        var playDepth = 0.01;
+
+        // pause button
+        if (self.data.isplaying) {
+            playPauseButton.moveTo( -playWidth/2, -playHeight/2 );
+            playPauseButton.lineTo( -playWidth/2, playHeight/2 );
+            playPauseButton.moveTo( playWidth/2, playHeight/2 );
+            playPauseButton.lineTo( playWidth/2, -playHeight/2 );
+            // hole.moveTo( 0, -playHeight/2 );
+            // hole.lineTo( 0, playHeight/2 );
+            // playPauseButton.holes = [hole];
+        }
+        else { // play button
+            playPauseButton.moveTo( 0, playHeight/2 );
+            playPauseButton.lineTo( playWidth/2, -playHeight/2 );
+            playPauseButton.lineTo( -playWidth/2, -playHeight/2 );
+            playPauseButton.lineTo( 0, playHeight/2 );
+        }
+    
+        var extrudeSettings = {
+            steps: 2,
+            depth: playDepth,
+            //amount: self.data.depth, // aframe 8.2 / three.js r92
+            bevelEnabled: true,
+            bevelThickness: 0.01,
+            bevelSize: 0.01,
+            bevelSegments: 1
+        };
+        var geomPlayPauseButton = new THREE.ExtrudeBufferGeometry( playPauseButton, extrudeSettings );
+
+        var progressBarY = -self.data.imageheight/2 - 0.05;
+        var playPauseButtonOffsetX = self.data.imagewidth/2 - 0.1;
+        var playPauseButtonOffsetY = progressBarY - 0.1;
+        geomPlayPauseButton.rotateZ(Math.PI / 2);
+        geomPlayPauseButton.translate(playPauseButtonOffsetX, playPauseButtonOffsetY, 0);
+
+        var colorPlayPauseButton = data.disabled ? 0xA9A9A9 : data.activePlayButton ? 0x04FF5F : data.hoverPlayButton ? 0x04FF5F : data.color;
+        var opacity = data.disabled ? 0.2 : data.opacity;
+        var transparent = data.disabled ? true : false;
+        var matPlayPauseButton = new THREE.MeshBasicMaterial( {color: new THREE.Color( colorPlayPauseButton ),
+            transparent: transparent,
+            opacity: opacity} );
+    
+        var meshPlayPauseButton = new THREE.Mesh(geomPlayPauseButton, matPlayPauseButton);
+        meshPlayPauseButton.name = 'playPauseButton';
+        group.add(meshPlayPauseButton);
+        group.name = 'gVideocontrols';
+
+        self.el.setObject3D('videocontrols', group);   
+    },
+
+    _playPauseHandler() {
+        var self = this;
+        try {
+            if (self.video.paused) {
+                self.video.play();
+                self.el.setAttribute('isplaying', true);
+            }
+            else {
+                self.video.pause();
+                self.el.setAttribute('isplaying', false);
+            }
+        }
+        catch (error) {
+            console.log('error in _playPauseHandler');
+            console.error(error);
+        }
+    }
 });
 
 
-AFRAME.registerPrimitive( 'a-diorama-image', {
+AFRAME.registerPrimitive( 'a-diorama-grid-cell', {
     defaultComponents: {
-        'diorama-image__image': {
+        'diorama-grid-cell__cell': {
         },
     },
     mappings: {
-        'src': 'diorama-image__image.imageURL',
-        'srcfit': 'diorama-image__image.srcFit',
-        'width': 'diorama-image__image.imagewidth',
-        'height': 'diorama-image__image.imageheight',
-        'hover': 'diorama-image__image.hover',
-        'active': 'diorama-image__image.active',
+        'src': 'diorama-grid-cell__cell.imageURL',
+        'srcfit': 'diorama-grid-cell__cell.srcFit',
+        'width': 'diorama-grid-cell__cell.imagewidth',
+        'height': 'diorama-grid-cell__cell.imageheight',
+        'aspectratio': 'diorama-grid-cell__cell.aspectratio',
+        'hover': 'diorama-grid-cell__cell.hover',
+        'active': 'diorama-grid-cell__cell.active',
+        'selected': 'diorama-grid-cell__cell.selected',
+        'hoverplaybutton': 'diorama-grid-cell__cell.hoverPlayButton',
+        'activeplaybutton': 'diorama-grid-cell__cell.activePlayButton',
+        'isplaying': 'diorama-grid-cell__cell.isplaying',
+        'type': 'diorama-grid-cell__cell.type',
+        'id': 'diorama-grid-cell__cell.id'
     }
 });

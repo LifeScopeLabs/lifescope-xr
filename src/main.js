@@ -57,10 +57,10 @@ var router = new VueRouter({
 
 // ignore elements for Firefox
 Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere',
- 'a-animation', 'a-sky', 'a-light', 'a-asset-item',
+ 'a-animation', 'a-sky', 'a-light', 'a-asset-item', 'a-image',
  'a-mapbox-terrain',
  'a-sun-sky',
- 'a-rail', 'a-diorama', 'a-wooden-floor', 'a-diorama-column', 'a-diorama-image',
+ 'a-rail', 'a-diorama', 'a-wooden-floor', 'a-diorama-column', 'a-diorama-image', 'a-diorama-grid-cell',
  'a-arrow',
  'a-gui-flex-container', 'a-gui-label', 'a-gui-radio', 'a-gui-cursor', 'a-gui-toggle', 'a-gui-input',
  'a-gui-button'];

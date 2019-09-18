@@ -13,17 +13,21 @@
                 :quality="textureQuality"
                 :shading="textureShading"/>
         </a-entity>
-        <a-diorama v-for="n in numberOfItemsToDisplay"
-            :key="'carouselImage' + n"
-            :src="imageSrc(items[n-1])"
-            :rotation="dioramaRotation(n-1)"
-            :position="dioramaPosition(n-1)"
-            :railheight="railHeight"
-            :bump="bump"
-            :normal="normal"
-            :rail="floorActive"
-            :quality="textureQuality"
-            :shading="textureShading"/>
+        <a-entity v-for="(item, n) in items"
+            :key="'carouselItem' + n">
+            <a-diorama 
+                :type="item.type"
+                :src="imageSrc(item)"
+                :rotation="dioramaRotation(n-1)"
+                :position="dioramaPosition(n-1)"
+                :railheight="railHeight"
+                :bump="bump"
+                :normal="normal"
+                :rail="floorActive"
+                :quality="textureQuality"
+                :shading="textureShading"
+            />
+        </a-entity>
     </a-entity>
 </template>
 

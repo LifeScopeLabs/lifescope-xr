@@ -30,6 +30,35 @@ export default class TextureLoaderHelper {
         return texture !== undefined ?
             texture : new THREE.TextureLoader().load( url, onLoad, onProgress, onError );
     }
+
+    getVideoTexture(url, onLoad, onProgress, onError) {
+        var id = this.videoIdFromUrl(url);
+        var videoEl = document.querySelector('#' + id);
+        if  (videoEl != undefined) {
+            onLoad(new THREE.VideoTexture( videoEl ));
+            return;
+        }
+        var assets = AFRAME.scenes[0].querySelector('a-assets');
+        try {
+            videoEl = document.createElement('video');
+            videoEl.setAttribute('id', id);
+            videoEl.setAttribute('crossorigin', 'anonymous');
+            videoEl.setAttribute('src', url);
+            videoEl.addEventListener('loadedmetadata', (event) => {
+                onLoad(new THREE.VideoTexture( videoEl ));
+            });
+            assets.appendChild(videoEl);
+        }
+        catch (error) {
+            console.log(`getVideoTexture(${url}) error`);
+            console.log(error);
+            onError(error);
+        }
+    }
+
+    videoIdFromUrl(url) {
+        return url.match(/\/*(\w+\.\w+)$/)[1];
+    }
 }
 
 // wood texture author: Brandon Funk https://gumroad.com/l/wood_floor
