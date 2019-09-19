@@ -193,6 +193,156 @@ function _buildGeometry(type, data) {
 }
 
 
+function _buildMediaMesh(url, type, imagewidth, imageheight, depth, offset, srcFit, aspectratio=0) {
+    return new Promise((resolveMesh, rejectMesh) => {
+        var mediaMaterial, colorMaterial, geom, mesh;
+
+        var textureLoader = new THREE.TextureLoader();
+        var loadFunction;
+        if(type == 'video') {
+            var textureLoaderHelper = new TextureLoaderHelper();
+            loadFunction = textureLoaderHelper.getVideoTexture.bind(textureLoaderHelper);
+        }
+        else {
+            loadFunction = textureLoader.load.bind(textureLoader);
+        }
+
+        var textureLoaderPromise = new Promise ( function(resolve, reject) {
+            loadFunction( url,
+                // onLoad
+                function (texture) {
+                    resolve(texture);
+                },
+                // onProgress
+                function (xhr) {
+                    // console.log(xhr);
+                },
+                // onError
+                function (xhr) {
+                    if (CONFIG.DEBUG) {console.log(`failed to load ${url}`)}
+                    textureLoader.load( '../../../static/images/LifeScope.png',
+                        // onLoad
+                        function (texture) {
+                            resolve(texture);
+                        },
+                        // onProgress
+                        function (xhr) {
+                            // console.log(xhr);
+                        },
+                        // onError
+                        function (xhr) {
+                            reject(xhr);
+                        }
+                    );
+                },
+            );
+        });
+
+        textureLoaderPromise.then( function(texture) {
+            var srcWidth = texture.image.videoWidth || texture.image.width;
+            var srcHeight = texture.image.videoHeight || texture.image.height;
+            var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
+
+            var geomWidth, geomHeight;
+            if (srcFit == 'width') {
+                geomWidth = imagewidth;
+                geomHeight = imagewidth / aspectRatio;
+            }
+            else {
+                geomWidth = imageheight * aspectRatio;
+                geomHeight = imageheight;
+            }
+            
+            geom = new THREE.BoxBufferGeometry(geomWidth, geomHeight, depth );
+            geom.rotateX(2 * Math.PI * offset.rotx / 360);
+            geom.translate(offset.x, offset.y, offset.z);
+
+            mediaMaterial = new THREE.MeshBasicMaterial( { map: texture } );
+            mediaMaterial.name = type == 'video' ? 'mVideo' : "mImage";
+            colorMaterial = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0xffffff )} );
+            colorMaterial.name = "mColor";
+
+            var materials = [
+                colorMaterial,        // Left side
+                colorMaterial,       // Right side
+                colorMaterial,         // Top side
+                colorMaterial,      // Bottom side
+                colorMaterial,       // Front side
+                mediaMaterial         // Back side
+            ];
+            mesh = new THREE.Mesh(geom, materials);
+            mesh.name = type == 'video' ? 'video' : "image";
+            resolveMesh(mesh);
+        })
+        .catch(function(error) {
+            console.error(error);
+            rejectMesh(error);
+        });
+    });
+}
+
+
+function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0 }) {
+    var self = this;
+    var data = self.data;
+
+    var Type = data.type.charAt(0).toUpperCase() + data.type.slice(1);
+
+    _buildMediaMesh(data.imageURL, data.type, data.imagewidth, data.imageheight, data.depth, offset, data.srcFit,
+        data.aspectratio)
+    .then( (mesh) => {
+        self.media = mesh.material.find(function(mat) {
+            return mat.name == 'm' + Type;
+        }).map.image;
+        
+        switch (data.type) {
+            case 'video':
+                self.video = self.media;
+                break;
+            case 'image':
+                self.image = self.media;
+                break;
+            default:
+                break;
+        }
+
+        self._updateAspectRatio();
+        var group = self.el.getObject3D(data.type) || new THREE.Group();
+        group.add(mesh);
+        group.name = 'g' + Type;
+        self.el.setObject3D(data.type, group);
+    })
+    .catch(function(error) {
+        console.log('_createMedia error')
+        console.error(error);
+    });
+}
+
+function _updateAspectRatio() {
+    var self = this;
+    var data = self.data
+    var media = self.media;
+    var srcWidth = media.videoWidth || media.width;
+    var srcHeight = media.videoHeight || media.height;
+    var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
+    if (!data.aspectratio || data.aspectratio != aspectRatio) {
+        self.el.setAttribute('aspectratio', aspectRatio);
+    }
+    var geomWidth, geomHeight;
+    if (data.srcFit == 'width') {
+        geomHeight = data.imagewidth / aspectRatio;
+        if (data.imageheight != geomHeight) {
+            self.el.setAttribute('height', geomHeight);
+        }
+    }
+    else {
+        geomWidth = data.imageheight * aspectRatio;
+        if (data.imagewidth != geomWidth) {
+            self.el.setAttribute('width', geomWidth);
+        }
+    }
+}
+
 AFRAME.registerComponent('diorama-rail', {
     schema: {
         x: { type: 'number', default: 0},
@@ -468,29 +618,63 @@ AFRAME.registerComponent('diorama-case', {
     },
 
     multiple: true,
-  
-    update: function() {
+
+    init: function() {
         var self = this;
+        var data = self.data;
+
+        this._createMedia = _createMedia.bind(this);
+        this._updateAspectRatio = _updateAspectRatio.bind(this);
+
+        self._createDiorama();
+
+        if (self.data.imageURL != '' && 
+            (self.data.type=="image" || self.data.type=="video")) {
+            self._createMedia({ x: 0, y: data.railheight + 0.3, z: -.15, rotx: data.rotationx });
+        }
+
+        // if (self.data.imageURL != '' && self.data.type=="video") {
+        //     self._createMedia();
+        //     // if (self.data.selected) {
+        //     //     self._createVideoControls();
+        //     // }
+        // }
+
+    },
+
+  
+    update: function(oldData) {
+        var self = this;
+        var changedData = Object.keys(self.data).filter(x => self.data[x] != oldData[x]);
+
         if (self.el.object3DMap.hasOwnProperty(self.id)) {
             self.el.removeObject3D(self.id);
+
+            if (self.id != undefined) {
+                self._createDiorama();
+            }
         }
-        if (self.el.object3DMap.hasOwnProperty('image')) {
-            self.el.removeObject3D('image');
-        }
-        if (this.el.object3DMap.hasOwnProperty('video')) {
-            this.el.removeObject3D('video');
+        
+        if ( self.el.object3DMap.hasOwnProperty('image') &&
+            ['imageURL', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio', 'type', 'railheight']
+            .some(prop => changedData.includes(prop))) {
+                
+                if (self.el.object3DMap.hasOwnProperty('image')) {
+                    self.el.removeObject3D('image');
+                }
+            if (self.data.imageURL != '' && self.data.type=="image") {
+                self._createMedia({ x: 0, y: self.data.railheight + 0.3, z: -.15, rotx: self.data.rotationx });
+            }
         }
 
-        if (self.data.imageURL != '' && self.data.type=="image") {
-            self._createImage();
-        }
-
-        if (self.data.imageURL != '' && self.data.type=="video") {
-            self._createVideo();
-        }
-
-        if (self.id != undefined) {
-            self._createDiorama();
+        if ( self.el.object3DMap.hasOwnProperty('video') &&
+            ['imageURL', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio', 'type', 'railheight']
+            .some(prop => changedData.includes(prop)) ) {
+                // console.log('removing video');
+            self.el.removeObject3D('video');
+            if (self.data.imageURL != '' && self.data.type=="video") {
+                self._createMedia({ x: 0, y: self.data.railheight + 0.3, z: -.15, rotx: self.data.rotationx });
+            }
         }
 
     },
@@ -555,199 +739,23 @@ AFRAME.registerComponent('diorama-case', {
                 z: -.15 + data.casedepth + 3*data.bronzedepth
             }
         );
-        if (data.withRail) {
-            self._createCase(
-                'brass',
-                0.03,
-                0.03,
-                0.2,
-                {
-                    x: 0,
-                    y: data.railheight + 0.3 + Math.cos(2 * Math.PI * data.rotationx / 360) * -0.2 + 0.04,
-                    z: -.05 + data.casedepth + 3*data.bronzedepth + Math.sin(2 * Math.PI * data.rotationx / 360) * -0.2 - 0.04
-                }
+        // if (data.withRail) {
+        //     self._createCase(
+        //         'brass',
+        //         0.03,
+        //         0.03,
+        //         0.2,
+        //         {
+        //             x: 0,
+        //             y: data.railheight + 0.3 + Math.cos(2 * Math.PI * data.rotationx / 360) * -0.2 + 0.04,
+        //             z: -.05 + data.casedepth + 3*data.bronzedepth + Math.sin(2 * Math.PI * data.rotationx / 360) * -0.2 - 0.04
+        //         }
                 
-            );
-        }
+        //     );
+        // }
     },
 
-    _createImage() {
-        var self = this;
-        var data = self.data;//Object.assign({}, self.data);
-
-        var imgMaterial, colorMaterial, geom, mesh;
-
-        data.offset = {
-            x: 0,
-            y: data.railheight + 0.3,
-            z: -.15
-        }
-
-        var textureLoader = new THREE.TextureLoader();
-
-        var textureLoaderPromise = new Promise ( function(resolve, reject) {
-            textureLoader.load( data.imageURL,
-                // onLoad
-                function (texture) {
-                    resolve(texture);
-                },
-                // onProgress
-                function (xhr) {
-                    // console.log(xhr);
-                },
-                // onError
-                function (xhr) {
-                    if (CONFIG.DEBUG) {console.log(`failed to load ${data.imageURL}`)}
-                    textureLoader.load( '../../../static/images/LifeScope.png',
-                        // onLoad
-                        function (texture) {
-                            resolve(texture);
-                        },
-                        // onProgress
-                        function (xhr) {
-                            // console.log(xhr);
-                        },
-                        // onError
-                        function (xhr) {
-                            reject(xhr);
-                        }
-                    );
-                },
-            );
-        });
-
-        textureLoaderPromise.then( function(texture) {
-            var srcWidth = texture.image.videoWidth || texture.image.width;
-            var srcHeight = texture.image.videoHeight || texture.image.height;
-            var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
-            var geomWidth, geomHeight;
-            if (!data.aspectratio || data.aspectratio != aspectRatio) {
-                self.el.setAttribute('aspectratio', aspectRatio);
-            }
-            if (data.srcFit == 'width') {
-                geomWidth = data.imagewidth;
-                geomHeight = data.imagewidth / aspectRatio;
-            }
-            else {
-                geomWidth = data.imageheight * aspectRatio;
-                geomHeight = data.imageheight;
-            }
-            
-            geom = new THREE.BoxBufferGeometry( geomWidth, geomHeight, data.depth );
-            geom.rotateX(2 * Math.PI * data.rotationx / 360);
-            geom.translate(data.offset.x, data.offset.y, data.offset.z);
-    
-            imgMaterial = new THREE.MeshBasicMaterial( { map: texture } );
-            colorMaterial = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0xffffff )} );
-    
-            var materials = [
-                colorMaterial,        // Left side
-                colorMaterial,       // Right side
-                colorMaterial,         // Top side
-                colorMaterial,      // Bottom side
-                colorMaterial,       // Front side
-                imgMaterial         // Back side
-            ];
-            mesh = new THREE.Mesh(geom, materials);
-    
-            var group = self.el.getObject3D('image') || new THREE.Group();
-            group.add(mesh);
-            self.el.setObject3D('image', group);   
-        })
-        .catch(function(error) {
-            console.error(error);
-        });
-    },
-
-    _createVideo() {
-        var self = this;
-        var data = self.data;//Object.assign({}, self.data);
-
-        var videoMaterial, colorMaterial, geom, mesh;
-
-        data.offset = {
-            x: 0,
-            y: data.railheight + 0.3,
-            z: -.15
-        }
-
-        var textureLoaderHelper = new TextureLoaderHelper();
-
-        var textureLoaderPromise = new Promise ( function(resolve, reject) {
-            textureLoaderHelper.getVideoTexture(data.imageURL,
-                // onLoad
-                function (texture) {
-                    resolve(texture);
-                },
-                // onProgress
-                function (xhr) {
-                    // console.log(xhr);
-                },
-                // onError
-                function (xhr) {
-                    if (CONFIG.DEBUG) {console.log(`failed to load ${data.imageURL}`)}
-                    textureLoader.load( '../../../static/images/LifeScope.png',
-                        // onLoad
-                        function (texture) {
-                            resolve(texture);
-                        },
-                        // onProgress
-                        function (xhr) {
-                            // console.log(xhr);
-                        },
-                        // onError
-                        function (xhr) {
-                            reject(xhr);
-                        }
-                    );
-                },
-            );
-        });
-
-        textureLoaderPromise.then( function(texture) {
-            var srcWidth = texture.image.videoWidth || texture.image.width;
-            var srcHeight = texture.image.videoHeight || texture.image.height;
-            var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
-            var geomWidth, geomHeight;
-            if (!data.aspectratio || data.aspectratio != aspectRatio) {
-                self.el.setAttribute('aspectratio', aspectRatio);
-            }
-            if (data.srcFit == 'width') {
-                geomWidth = data.imagewidth;
-                geomHeight = data.imagewidth / aspectRatio;
-            }
-            else {
-                geomWidth = data.imageheight * aspectRatio;
-                geomHeight = data.imageheight;
-            }
-            
-            geom = new THREE.BoxBufferGeometry(geomWidth, geomHeight, data.depth );
-            geom.rotateX(2 * Math.PI * data.rotationx / 360);
-            geom.translate(data.offset.x, data.offset.y, data.offset.z);
-
-            videoMaterial = new THREE.MeshBasicMaterial( { map: texture } );
-            colorMaterial = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0xffffff )} );
-        
-            var materials = [
-                colorMaterial,        // Left side
-                colorMaterial,       // Right side
-                colorMaterial,         // Top side
-                colorMaterial,      // Bottom side
-                colorMaterial,       // Front side
-                videoMaterial         // Back side
-            ];
-
-            mesh = new THREE.Mesh(geom, materials);
-
-            var group = self.el.getObject3D('video') || new THREE.Group();
-            group.add(mesh);
-            self.el.setObject3D('video', group);
-        })
-        .catch(function(error) {
-            console.error(error);
-        });
-    },
-
+   
     _createCase(type, width, height, depth, offset, props={}) {
         var self = this;
         var geom, mesh;
@@ -780,6 +788,9 @@ AFRAME.registerPrimitive( 'a-diorama', {
         },
     },
     mappings: {
+        'width': 'diorama-case__case.imagewidth',
+        'height': 'diorama-case__case.imageheight',
+        'aspectratio': 'diorama-case__case.aspectratio',
         'bump': 'diorama-case__case.withBump',
         'normal': 'diorama-case__case.withNormal',
         'rail': 'diorama-case__case.withRail',
@@ -799,7 +810,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
         x: { type: 'number', default: 0},
         y: { type: 'number', default: 0},
         z: { type: 'number', default: 0},
-        rotationx: { type: 'number', default: 30 }, // degrees
+        // rotationx: { type: 'number', default: 30 }, // degrees
 
         type: { type: 'string', default: 'image' },
 
@@ -876,12 +887,15 @@ AFRAME.registerComponent('diorama-grid-cell', {
             }
         });
 
+        this._createMedia = _createMedia.bind(this);
+        this._updateAspectRatio = _updateAspectRatio.bind(this);
+
         if (self.data.imageURL != '' && self.data.type=="image") {
-            self._createImage();
+            self._createMedia();
         }
 
         if (self.data.imageURL != '' && self.data.type=="video") {
-            self._createVideo();
+            self._createMedia();
             if (self.data.selected) {
                 self._createVideoControls();
             }
@@ -935,7 +949,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
                 // console.log('removing image');
             self.el.removeObject3D('image');
             if (self.data.imageURL != '' && self.data.type=="image") {
-                self._createImage();
+                self._createMedia();
             }
         }
         if ( self.el.object3DMap.hasOwnProperty('video') &&
@@ -944,7 +958,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
                 // console.log('removing video');
             self.el.removeObject3D('video');
             if (self.data.imageURL != '' && self.data.type=="video") {
-                self._createVideo();
+                self._createMedia();
             }
         }
         if (
@@ -972,7 +986,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
                     // console.log('removing progressbar');
                     this.el.removeObject3D('progressbar');
                 }
-            if (self.data.selected) {
+            if (self.data.selected && self.data.type == 'video') {
                 self._createVideoControls();
             }
         }
@@ -985,8 +999,8 @@ AFRAME.registerComponent('diorama-grid-cell', {
         if (this.el.object3DMap.hasOwnProperty('image')) {
             this.el.removeObject3D('image');
         }
-        if (self.el.object3DMap.hasOwnProperty('video')) {
-            self.el.removeObject3D('video');
+        if (this.el.object3DMap.hasOwnProperty('video')) {
+            this.el.removeObject3D('video');
         }
         if (this.el.object3DMap.hasOwnProperty('border')) {
             this.el.removeObject3D('border');
@@ -997,200 +1011,6 @@ AFRAME.registerComponent('diorama-grid-cell', {
         if (this.el.object3DMap.hasOwnProperty('progressbar')) {
             this.el.removeObject3D('progressbar');
         }
-    },
-
-
-    _createImage() {
-        var self = this;
-        var data = self.data;
-
-        var imgMaterial, colorMaterial, geom, mesh;
-
-        data.offset = {
-            x: 0 + data.x,
-            y: 0 + data.y,//data.railheight + 0.3,
-            z: 0 + data.z,//-.15
-        }
-
-        var textureLoader = new THREE.TextureLoader();
-
-        var textureLoaderPromise = new Promise ( function(resolve, reject) {
-            textureLoader.load( data.imageURL,
-                // onLoad
-                function (texture) {
-                    resolve(texture);
-                },
-                // onProgress
-                function (xhr) {
-                    // console.log(xhr);
-                },
-                // onError
-                function (xhr) {
-                    if (CONFIG.DEBUG) {console.log(`failed to load ${data.imageURL}`)}
-                    textureLoader.load( '../../../static/images/LifeScope.png',
-                        // onLoad
-                        function (texture) {
-                            resolve(texture);
-                        },
-                        // onProgress
-                        function (xhr) {
-                            // console.log(xhr);
-                        },
-                        // onError
-                        function (xhr) {
-                            reject(xhr);
-                        }
-                    );
-                },
-            );
-        });
-
-        textureLoaderPromise.then( function(texture) {
-            var srcWidth = texture.image.videoWidth || texture.image.width;
-            var srcHeight = texture.image.videoHeight || texture.image.height;
-            var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
-            if (!data.aspectratio || data.aspectratio != aspectRatio) {
-                self.el.setAttribute('aspectratio', aspectRatio);
-            }
-            var geomWidth, geomHeight;
-            if (data.srcFit == 'width') {
-                geomWidth = data.imagewidth;
-                geomHeight = data.imagewidth / aspectRatio;
-                if (data.imageheight != geomHeight) {
-                    self.el.setAttribute('height', geomHeight);
-                }
-            }
-            else {
-                geomWidth = data.imageheight * aspectRatio;
-                geomHeight = data.imageheight;
-                if (data.imagewidth != geomWidth) {
-                    self.el.setAttribute('width', geomWidth);
-                }
-            }
-            
-            geom = new THREE.BoxBufferGeometry(geomWidth, geomHeight, data.depth );
-            // geom.rotateX(2 * Math.PI * data.rotationx / 360);
-            geom.translate(data.offset.x, data.offset.y, data.offset.z);
-    
-            imgMaterial = new THREE.MeshBasicMaterial( { map: texture } );
-            colorMaterial = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0xffffff )} );
-    
-            var materials = [
-                colorMaterial,        // Left side
-                colorMaterial,       // Right side
-                colorMaterial,         // Top side
-                colorMaterial,      // Bottom side
-                colorMaterial,       // Front side
-                imgMaterial         // Back side
-            ];
-            mesh = new THREE.Mesh(geom, materials);
-            mesh.name = 'image';
-    
-            var group = self.el.getObject3D('image') || new THREE.Group();
-            group.add(mesh);
-            group.name = 'gImage';
-            self.el.setObject3D('image', group); 
-        })
-        .catch(function(error) {
-            console.error(error);
-        });
-    },
-
-
-    _createVideo() {
-        var self = this;
-        var data = self.data;//Object.assign({}, self.data);
-
-        var videoMaterial, colorMaterial, geom, mesh;
-
-        data.offset = {
-            x: 0 + data.x,
-            y: 0 + data.y,
-            z: 0 + data.z,
-        }
-
-        var textureLoaderHelper = new TextureLoaderHelper();
-
-
-        var textureLoaderPromise = new Promise ( function(resolve, reject) {
-            textureLoaderHelper.getVideoTexture(data.imageURL,
-                // onLoad
-                function (texture) {
-                    resolve(texture);
-                },
-                // onProgress
-                function (xhr) {
-                    // console.log(xhr);
-                },
-                // onError
-                function (xhr) {
-                    if (CONFIG.DEBUG) {console.log(`failed to load ${data.imageURL}`)}
-                    textureLoader.load( '../../../static/images/LifeScope.png',
-                        // onLoad
-                        function (texture) {
-                            resolve(texture);
-                        },
-                        // onProgress
-                        function (xhr) {
-                            // console.log(xhr);
-                        },
-                        // onError
-                        function (xhr) {
-                            reject(xhr);
-                        }
-                    );
-                },
-            );
-        });
-        textureLoaderPromise.then( function(texture) {
-            self.video = texture.image;
-            var srcWidth = texture.image.videoWidth || texture.image.width;
-            var srcHeight = texture.image.videoHeight || texture.image.height;
-            var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
-            var geomWidth, geomHeight;
-            if (!data.aspectratio || data.aspectratio != aspectRatio) {
-                self.el.setAttribute('aspectratio', aspectRatio);
-            }
-            if (data.srcFit == 'width') {
-                geomWidth = data.imagewidth;
-                geomHeight = data.imagewidth / aspectRatio;
-                if (data.imageheight != geomHeight) {
-                    self.el.setAttribute('height', geomHeight);
-                }
-            }
-            else {
-                geomWidth = data.imageheight * aspectRatio;
-                geomHeight = data.imageheight;
-                if (data.imagewidth != geomWidth) {
-                    self.el.setAttribute('width', geomWidth);
-                }
-            }
-            
-            geom = new THREE.BoxBufferGeometry(geomWidth, geomHeight, data.depth );
-
-            videoMaterial = new THREE.MeshBasicMaterial( { map: texture } );
-            colorMaterial = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0xffffff )} );
-        
-            var materials = [
-                colorMaterial,        // Left side
-                colorMaterial,       // Right side
-                colorMaterial,         // Top side
-                colorMaterial,      // Bottom side
-                colorMaterial,       // Front side
-                videoMaterial         // Back side
-            ];
-
-            mesh = new THREE.Mesh(geom, materials);
-            mesh.name = 'video';
-
-            var group = self.el.getObject3D('video') || new THREE.Group();
-            group.add(mesh);
-            group.name='gVideo';
-            self.el.setObject3D('video', group);
-        })
-        .catch(function(error) {
-            console.error(error);
-        });
     },
 
     _createBorder() {
