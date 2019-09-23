@@ -21,12 +21,17 @@ AFRAME.registerComponent('arrow', {
   
     multiple: true,
 
-    update: function() {
+    init: function() {
+        this._createArrow();
+    },
+
+    update: function(oldData) {
         var self = this;
-        if (self.el.object3DMap.hasOwnProperty('arrow')) {
-            self.el.removeObject3D('arrow');
+        var changedData = Object.keys(self.data).filter(x => self.data[x] != oldData[x]);
+        if ( self.el.object3DMap.hasOwnProperty('arrow') && changedData != null ){ 
+                self.el.removeObject3D('arrow');
+            self._createArrow();
         }
-        self._createArrow();
     },
 
     remove: function () {
@@ -78,7 +83,7 @@ AFRAME.registerComponent('arrow', {
                 rotationZ = 180;
                 break;
             case 'right':
-                rotationZ = 270;
+                rotationZ = -90;
                 break;
             default:
                 break;

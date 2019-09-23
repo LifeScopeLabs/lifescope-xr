@@ -6,6 +6,23 @@
         <a-light type='point' color='#FFF' intensity='0.8' position="10 10 0" ></a-light>
         <!-- <a-light type='hemisphere' color='#FFF' groundColor='#00F' intensity='0.8' ></a-light> -->
     
+
+        <a-entity v-for="(item, n) in items"
+            :key="'grid-cell-' + n"
+            :rotation="dioramaRotation(n)"
+            :position="dioramaPosition(n)">
+            
+            <a-diorama-grid-cell
+                class="clickable gridcell"
+                :id="'grid-cell-' + n"
+                :type="item.type"
+                :src="imageSrc(item)"
+                :width="cellWidth"
+                @mousedown="activeListener"
+                @mouseup="activeEndListener"
+                />
+        </a-entity>
+
         <a-arrow class="grid-arrow-left clickable" direction="left" :position="leftArrowPosition"
             :width="arrowWidth" :height="arrowHeight"
             :disabled="!canPageLeft"
@@ -16,22 +33,6 @@
             @click="handlePageLeft"
             />
 
-        <a-entity v-for="(item, n) in items"
-            :key="'grid-cell-' + n"
-            :rotation="dioramaRotation(n)"
-            :position="dioramaPosition(n)">
-            <a-diorama-grid-cell
-                class="clickable gridcell"
-                :id="'grid-cell-' + n"
-                :type="item.type"
-                :src="imageSrc(item)"
-                :width="cellWidth"
-                @mousedown="activeListener"
-                @mouseup="activeEndListener"
-                />
-
-        </a-entity>
-
         <a-arrow class="grid-arrow-right clickable" direction="right" :position="rightArrowPosition"
             :width="arrowWidth" :height="arrowHeight"
             :disabled="!canPageRight"
@@ -41,6 +42,36 @@
             @mouseup="activeEndListener"
             @click="handlePageRight"
             />
+
+        <a-entity v-if="focusedCell != ''"
+            class="focused-cell-controls"
+            :position="-0.3 + ' ' + 0.1 + ' ' + (-offsetz - 0.5)">
+
+            <a-arrow
+                :disabled="focusedCellIndex==0 && !canPageLeft"
+                class="cell-arrow-left clickable" direction="left"
+                :position="-(cellWidth/2 + 0.05)+ ' 0 0'"
+                :width="0.3"
+                :height="0.04"
+                @raycaster-intersected="hoverListener"
+                @raycaster-intersected-cleared="hoverEndListener"
+                @mousedown="activeListener"
+                @mouseup="activeEndListener"
+                @click="previousCell"
+            />
+            <a-arrow 
+                :disabled="focusedCellIndex==(numberOfItemsToDisplay - 1) && !canPageRight"
+                class="cell-arrow-right clickable" direction="right"
+                :position="(cellWidth/2 + 0.05)+ ' 0 0'"
+                :width="0.3"
+                :height="0.04"
+                @raycaster-intersected="hoverListener"
+                @raycaster-intersected-cleared="hoverEndListener"
+                @mousedown="activeListener"
+                @mouseup="activeEndListener"
+                @click="nextCell"
+                />
+        </a-entity>
 
     <!-- Demo Map -->
     <!-- Floor -->
@@ -93,6 +124,13 @@ export default {
         },
         numberOfItemsToDisplay() {
             return Math.min(this.itemsPerPage, this.items.length);
+        },
+
+        focusedCellIndex() {
+            if (this.focusedCell == '') {
+                return -1;
+            }
+            return +(this.focusedCell.match(/\d+$/)[0]);
         },
 
         ...mapState('xr',
@@ -174,7 +212,7 @@ export default {
     },
 
     beforeDestroy() {
-        this.$el.removeEvent("cellclicked", self.cellClickedHandler);
+        this.$el.removeEventListener("cellclicked", self.cellClickedHandler);
     },
 
     methods: {
@@ -249,6 +287,34 @@ export default {
         },
         activeEndListener(evt) {
             evt.target.setAttribute('active', false);
+        },
+
+        nextCell(evt) {
+            var n = this.focusedCellIndex;
+            if (n == this.numberOfItemsToDisplay - 1 && this.canPageRight) {
+                this.pageRight();
+            }
+            var m = (n + 1) % this.numberOfItemsToDisplay;
+            var nextCellId = this.focusedCell.replace(/\d+$/, m);
+            var focusedCellEl = document.querySelector('#' + this.focusedCell);
+            var nextCellEl =  document.querySelector('#' + nextCellId);
+            this.unFocusCell(focusedCellEl);
+            this.focusCell(nextCellEl);
+        },
+
+        previousCell(evt) {
+            var n = this.focusedCellIndex;
+
+            if (n == 0 && this.canPageLeft) {
+                this.pageLeft();
+            }
+            var m = n == 0 ? this.numberOfItemsToDisplay - 1 : n - 1;
+
+            var previousCellId = this.focusedCell.replace(/\d+$/, m);
+            var focusedCellEl = document.querySelector('#' + this.focusedCell);
+            var previousCellEl =  document.querySelector('#' + previousCellId);
+            this.unFocusCell(focusedCellEl);
+            this.focusCell(previousCellEl);
         },
 
         cellClickedHandler(evt) {
