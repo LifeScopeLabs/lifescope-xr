@@ -311,6 +311,14 @@ function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0 }) {
         group.add(mesh);
         group.name = 'g' + Type;
         self.el.setObject3D(data.type, group);
+        AFRAME.ANIME({
+            targets: group.scale,
+            easing: 'linear',
+            x: [0, 1],
+            y: [0, 1],
+            z: [0, 1],
+            duration: 1000*(0.5)
+        });
     })
     .catch(function(error) {
         console.log('_createMedia error')
@@ -810,6 +818,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
         x: { type: 'number', default: 0},
         y: { type: 'number', default: 0},
         z: { type: 'number', default: 0},
+        scale: { type: 'number', default: 1 },
         // rotationx: { type: 'number', default: 30 }, // degrees
 
         type: { type: 'string', default: 'image' },
@@ -997,7 +1006,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
             this.el.removeObject3D(this.id);
         }
         if (this.el.object3DMap.hasOwnProperty('image')) {
-            this.el.removeObject3D('image');
+                    this.el.removeObject3D('image');
         }
         if (this.el.object3DMap.hasOwnProperty('video')) {
             this.el.removeObject3D('video');
@@ -1200,6 +1209,7 @@ AFRAME.registerPrimitive( 'a-diorama-grid-cell', {
         'srcfit': 'diorama-grid-cell__cell.srcFit',
         'width': 'diorama-grid-cell__cell.imagewidth',
         'height': 'diorama-grid-cell__cell.imageheight',
+        'scale': 'diorama-grid-cell__cell.scale',
         'aspectratio': 'diorama-grid-cell__cell.aspectratio',
         'hover': 'diorama-grid-cell__cell.hover',
         'active': 'diorama-grid-cell__cell.active',

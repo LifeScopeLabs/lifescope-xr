@@ -186,6 +186,8 @@ export default {
                 'cellWidth',
                 'arrowWidth',
                 'arrowHeight',
+                'animateInSeconds',
+                'animateOutSeconds',
             ]
         ),
 
@@ -193,7 +195,7 @@ export default {
             [
                 'itemsPerPage',
                 'canPageLeft',
-                'canPageRight'
+                'canPageRight',
             ]
         ),
 
@@ -412,14 +414,57 @@ export default {
 
         handlePageLeft() {
             this.unFocusFoscusedCell();
-            this.pageLeft();
+            this.pageAnimation(this.pageLeft);
         },
 
         handlePageRight() {
             this.unFocusFoscusedCell();
-            this.pageRight();
+            this.pageAnimation(this.pageRight);
         },
 
+        pageAnimation(pageCallback) {
+            var self = this;
+            var cellObjs = [];
+            var animationPromises = [];
+            for (var n=0; n < this.numberOfItemsToDisplay; n++) {
+                var cell = document.querySelector(`#grid-cell-${n}`);
+                animationPromises.push(this.animateCellRemovalPromise(cell.object3D));
+                cellObjs.push(cell.object3D);
+            }
+            Promise.all(animationPromises)
+            .then((results) => {
+                pageCallback();
+                cellObjs.forEach((obj) => self.resetCellScale(obj))
+            });
+        },
+
+        animateCellRemovalPromise(obj) {
+            var self = this;
+            return new Promise((resolve, reject) => {
+                try {
+                    AFRAME.ANIME({
+                        targets: obj.scale,
+                        easing: 'linear',
+                        x: [1, 0],
+                        y: [1, 0],
+                        z: [1, 0],
+                        duration: 1000*(self.animateOutSeconds),
+                        complete: function(anim) {
+                            resolve();
+                        }
+                    });
+                }
+                catch (error) {
+                    console.error('animateCellRemovalPromise error');
+                    console.log(error);
+                    reject(error);
+                }
+            });
+        },
+
+        resetCellScale(obj) {
+            obj.scale.set(1,1,1);
+        }
     }
 }
 </script>
