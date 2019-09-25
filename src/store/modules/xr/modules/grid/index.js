@@ -8,7 +8,9 @@ export const state = function () {
         bottom: -0.7,
         cellWidth: 0.6,
         arrowWidth: 0.2,
-        arrowHeight: 0.3
+        arrowHeight: 0.3,
+        animateInSeconds: 0.5,
+        animateOutSeconds: 0.2,
      };
 };
 

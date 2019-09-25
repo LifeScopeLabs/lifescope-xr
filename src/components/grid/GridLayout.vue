@@ -4,23 +4,29 @@
         <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
         <a-entity id="dirLight" light="type: directional; color: #FFF; intensity: 0.8;" position="-1 -1 0"></a-entity>
         <a-light type='point' color='#FFF' intensity='0.8' position="10 10 0" ></a-light>
-        <!-- <a-light type='hemisphere' color='#FFF' groundColor='#00F' intensity='0.8' ></a-light> -->
+        <a-light type='hemisphere' color='#FFF' groundColor='#00F' intensity='0.8' ></a-light>
     
+        
+        <a-entity class="grid-cylinder"
+            :rotation="'0 ' + cylinderRotation + ' 0'"
+            :position="'0 ' + '-0.3' + ' 0'">
 
-        <a-entity v-for="(item, n) in items"
-            :key="'grid-cell-' + n"
-            :rotation="dioramaRotation(n)"
-            :position="dioramaPosition(n)">
-            
-            <a-diorama-grid-cell
-                class="clickable gridcell"
-                :id="'grid-cell-' + n"
-                :type="item.type"
-                :src="imageSrc(item)"
-                :width="cellWidth"
-                @mousedown="activeListener"
-                @mouseup="activeEndListener"
-                />
+            <a-entity v-for="(item, n) in items"
+                :key="'grid-cell-' + n"
+                :position="dioramaPosition(n)"
+                :rotation="dioramaRotation(n)">
+                
+                <a-diorama-grid-cell
+                    class="clickable gridcell"
+                    :id="'grid-cell-' + n"
+                    :type="item.type"
+                    :src="imageSrc(item)"
+                    :width="cellWidth"
+                    @mousedown="activeListener"
+                    @mouseup="activeEndListener"
+                    />
+            </a-entity>
+
         </a-entity>
 
         <a-arrow class="grid-arrow-left clickable" direction="left" :position="leftArrowPosition"
@@ -98,6 +104,8 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
 
+import { Cylinder, CylindricalGrid } from '../../util/GridUtils';
+
 export default {
 
 
@@ -105,12 +113,18 @@ export default {
         return {
             focusedCell: '',
             dur: 0.5, //seconds
+            cylindricalGrid: null,
+            cellsPerRow: 28,
         }
     },
 
     props: ['offsetz'],
 
     computed: {
+        cylinderRotation() {
+            return (180-(360/this.cellsPerRow)*2);
+        },
+
         sortedLSObjs() {
             var sorted = this.LSObjs;
             sorted.sort(function (a, b) {
@@ -205,7 +219,12 @@ export default {
 
         rightArrowPosition() {
             return `0.5 ${this.bottom} ${-this.offsetz - 1.4}`;
-        }
+        },
+
+    },
+
+    created() {
+        this.cylindricalGrid = new CylindricalGrid(this.cellsPerRow, 0.425, this.radius, this.rows, this.columns);
     },
 
     mounted() {
@@ -214,6 +233,7 @@ export default {
     },
 
     beforeDestroy() {
+        var self = this;
         this.$el.removeEventListener("cellclicked", self.cellClickedHandler);
     },
 
@@ -233,48 +253,13 @@ export default {
         },
 
         dioramaRotation: function(itemNum) {
-            var column = itemNum % this.columns;
-            var columnOneTheta = Math.PI + Math.PI/8;
-            var percentOfFOV = 0.8;
-            var FOV = (80/360) * (2*Math.PI); // active camera component's object3D.fov
-            var offsetPerColumn = percentOfFOV*FOV/this.columns;
-            var centerImageOffset = Math.atan((this.cellWidth/2)/this.radius);// aprox
-            var theta = ( columnOneTheta) - (column *  offsetPerColumn) + centerImageOffset;
-
-            var roty = theta * (180/Math.PI);
-            var rotx = 0;
-
-            return `${rotx} ${roty} 0`;
+            var rot = this.cylindricalGrid.cellRotation(itemNum);
+            return `${rot.x} ${rot.y} ${rot.z}`;
         },
 
-        // itemNum 0-indexed
         dioramaPosition: function(itemNum) {
-            var column = itemNum % this.columns;
-            
-            var row = 0;
-            var n = itemNum;
-            while ( n >= this.columns) {
-                row += 1;
-                n -= this.columns;
-            }
-
-            var columnOneTheta = Math.PI + Math.PI/8;
-            var percentOfFOV = 0.8;
-            var FOV = (80/360) * (2*Math.PI); // active camera component's object3D.fov
-            var offsetPerColumn = percentOfFOV*FOV/this.columns;
-            var centerImageOffset = Math.atan((this.cellWidth/2)/this.radius);// aprox
-            var theta = ( columnOneTheta) - (column *  offsetPerColumn) + centerImageOffset;
-
-            var sinTheta = Math.sin( theta );
-            var cosTheta = Math.cos( theta );
-
-            var x = (this.radius) * sinTheta;
-            var z = (this.radius) * cosTheta;
-
-            var offsetPerRow = (this.top - this.bottom) / this.rows;
-            var y = this.top - row * (offsetPerRow);
-
-            return `${x} ${y} ${z}`;
+            var pos = this.cylindricalGrid.cellPosition(itemNum);
+            return `${pos.x} ${pos.y} ${pos.z}`;
         },
 
         hoverListener(evt) {
@@ -343,13 +328,18 @@ export default {
 
         focusCell(el) {
             var self = this;
-            if (CONFIG.DEBUG) {console.log('focusCell');}   
+            if (CONFIG.DEBUG) {console.log('focusCell');}
+
+            var cylinderEl = this.$el.querySelector(".grid-cylinder");
+            var position = new THREE.Vector3( -0.3, 0.1, - 0.5 );
+            position = cylinderEl.object3D.worldToLocal(position);
+
             AFRAME.ANIME({
                 targets: el.parentEl.object3D.position,
                 easing: 'linear',
-                x: -0.3,
-                y: 0.1,
-                z: (-self.offsetz - 0.5),
+                x: position.x,
+                y: position.y,
+                z: position.z,
                 duration: self.dur*1000,
                 begin: function(anim) {
                     self.focusedCell = el.id;
@@ -362,7 +352,7 @@ export default {
                 targets: el.parentEl.object3D.rotation,
                 easing: 'linear',
                 x: 0,
-                y: Math.PI,
+                y: THREE.Math.degToRad(180-self.cylinderRotation),
                 z: 0,
                 duration: self.dur*1000
             });

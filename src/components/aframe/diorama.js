@@ -311,14 +311,16 @@ function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0 }) {
         group.add(mesh);
         group.name = 'g' + Type;
         self.el.setObject3D(data.type, group);
-        AFRAME.ANIME({
-            targets: group.scale,
-            easing: 'linear',
-            x: [0, 1],
-            y: [0, 1],
-            z: [0, 1],
-            duration: 1000*(0.5)
-        });
+        if (data.animateLoad) {
+            AFRAME.ANIME({
+                targets: group.scale,
+                easing: 'linear',
+                x: [0, 1],
+                y: [0, 1],
+                z: [0, 1],
+                duration: 1000*(0.5)
+            });
+        }
     })
     .catch(function(error) {
         console.log('_createMedia error')
@@ -849,6 +851,8 @@ AFRAME.registerComponent('diorama-grid-cell', {
         active: { type: 'boolean', default: false },
         borderwidth: { type: 'number', default: 0.02 },
         aspectratio: { type: 'number', default: 0 },
+
+        animateLoad: { type: 'boolean', default: true },
     },
   
     multiple: true,
