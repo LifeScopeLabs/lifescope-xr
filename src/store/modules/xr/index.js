@@ -36,7 +36,7 @@ export const state = function () {
         sceneLoaded: false,
         isMobile: false,
         inVR: false,
-        sceneLayout: SceneLayoutEnum.GALLERY,
+        sceneLayout: SceneLayoutEnum.GRID,
     }
 };
 

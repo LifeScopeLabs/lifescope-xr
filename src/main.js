@@ -20,6 +20,7 @@ import 'aframe-super-keyboard';
 import 'aframe-sun-sky';
 import 'nipplejs';
 import './components/aframe/arrow.js';
+import './components/aframe/highlight.js';
 import './components/aframe/play-gaze.js';
 import './components/aframe/dynamic-autoplay.js';
 import './components/aframe/avatar-rig';
@@ -56,7 +57,7 @@ var router = new VueRouter({
 });
 
 // ignore elements for Firefox
-Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere',
+Vue.config.ignoredElements = ['a-scene', 'a-assets', 'a-gltf-model', 'a-entity', 'a-sphere', 'a-plane',
  'a-animation', 'a-sky', 'a-light', 'a-asset-item', 'a-image',
  'a-mapbox-terrain',
  'a-sun-sky',

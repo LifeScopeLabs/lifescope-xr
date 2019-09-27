@@ -872,6 +872,12 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
             }
         });
+        this.el.addEventListener("mousedown", evt => {
+            self.el.setAttribute('active', true);
+        });
+        this.el.addEventListener("mouseup", evt => {
+            self.el.setAttribute('active', false);
+        });
         this.el.addEventListener("raycaster-intersected", evt => {
             self.intersectingRaycaster = evt.detail.el.components.raycaster;
             // console.log("raycaster-intersected");

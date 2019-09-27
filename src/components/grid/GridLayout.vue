@@ -22,9 +22,25 @@
                     :type="item.type"
                     :src="imageSrc(item)"
                     :width="cellWidth"
-                    @mousedown="activeListener"
-                    @mouseup="activeEndListener"
                     />
+            </a-entity>
+
+             <a-entity  v-if="skybox==SkyboxEnum.STARS"
+                id="sun-selector"
+                class="clickable"
+                geometry="primitive: sphere; radius: 0.05;"
+                material="shader: sunSky"
+                highlight
+                :position="dioramaPosition(-3)">
+            </a-entity>
+            <a-entity  v-else-if="skybox==SkyboxEnum.SUN"
+                id="stars-selector"
+                class="clickable"
+                geometry="primitive: sphere; radius: 0.05;"
+                material="shader: standard; src: #sky"
+                highlight
+                rotation="90 0 90"
+                :position="dioramaPosition(-3)">
             </a-entity>
 
         </a-entity>
@@ -106,6 +122,8 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 
 import { Cylinder, CylindricalGrid } from '../../util/GridUtils';
 
+import { SkyboxEnum } from '../../store/modules/xr/modules/graphics';
+
 export default {
 
 
@@ -115,6 +133,7 @@ export default {
             dur: 0.5, //seconds
             cylindricalGrid: null,
             cellsPerRow: 28,
+            SkyboxEnum: SkyboxEnum,
         }
     },
 
@@ -160,6 +179,7 @@ export default {
                 'normal',
                 'quality',
                 'shading',
+                'skybox',
             ]
         ),
         
@@ -230,11 +250,13 @@ export default {
     mounted() {
         var self = this;
         this.$el.addEventListener("cellclicked", self.cellClickedHandler);
+        this.$el.addEventListener("objectclicked", self.objectClickedHandler);
     },
 
     beforeDestroy() {
         var self = this;
         this.$el.removeEventListener("cellclicked", self.cellClickedHandler);
+        this.$el.removeEventListener("objectclicked", self.objectClickedHandler);
     },
 
     methods: {
@@ -322,6 +344,23 @@ export default {
                     var focusedCellEl = document.querySelector('#' + self.focusedCell);
                     self.unFocusCell(focusedCellEl);
                     self.focusCell(el);
+                    break;
+            }
+        },
+
+        objectClickedHandler(evt) {
+            var self = this;
+            var el = evt.target;
+            var id = el.id;
+
+            switch (id) {
+                case 'stars-selector':
+                    this.$store.commit('xr/graphics/SET_SKYBOX', 'STARS');
+                    break;
+                case 'sun-selector':
+                    this.$store.commit('xr/graphics/SET_SKYBOX', 'SUN');
+                    break;
+                default:
                     break;
             }
         },
