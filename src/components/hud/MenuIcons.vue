@@ -4,9 +4,9 @@
         <div class="xr-menu-toggle">
             <div class="fas fa-cog" @click="toggleSettingsVisibility"></div>
             <div class="fas fa-question-circle" @click="toggleHelpVisibility"></div>
-            <div class="fas " v-bind:class="{ 'fa-th-large': sceneLayout == SceneLayoutEnum.GALLERY,
+            <!-- <div class="fas " v-bind:class="{ 'fa-th-large': sceneLayout == SceneLayoutEnum.GALLERY,
                     'fa-circle': sceneLayout == SceneLayoutEnum.GRID }"
-                    @click="toggleLayout"></div>
+                    @click="toggleLayout"></div> -->
         </div>
     </div> 
 

@@ -874,6 +874,9 @@ AFRAME.registerComponent('diorama-grid-cell', {
         });
         this.el.addEventListener("mousedown", evt => {
             self.el.setAttribute('active', true);
+            if(!self.data.selected) {
+                self._animateActive();
+            }
         });
         this.el.addEventListener("mouseup", evt => {
             self.el.setAttribute('active', false);
@@ -991,6 +994,9 @@ AFRAME.registerComponent('diorama-grid-cell', {
             }
             if (self.data.hover || self.data.active) {
                 self._createBorder();
+                if (!self.data.selected) {
+                    self._animateHover();
+                }
             }
         }
         if (
@@ -1205,6 +1211,110 @@ AFRAME.registerComponent('diorama-grid-cell', {
             console.log('error in _playPauseHandler');
             console.error(error);
         }
+    },
+
+    // TODO : fix anime.js keyframes
+    _animateHover(originalValues=null) {
+        if (this.animatingHover) {return;} 
+        this.animatingHover = true;
+        var self = this;
+        var scale = originalValues ? originalValues : Object.assign({}, self.el.object3D.scale); //JSON.parse(JSON.stringify(obj))
+        var x = scale.x;
+        var y = scale.x;
+        var xmax = x*1.1;
+        var xmin = x*0.9;
+        var ymax = y*1.1;
+        var ymin = y*0.9;
+        var dur = 500;
+
+
+        AFRAME.ANIME({
+            targets: self.el.object3D.scale,
+            easing: 'linear',
+            x: [x, xmax],
+            y: [y, ymax],
+            duration: dur/2,
+        }).finished.then(() => {
+            return AFRAME.ANIME({
+                targets: self.el.object3D.scale,
+                easing: 'linear',
+                x: [xmax, xmin],
+                y: [ymax, ymin],
+                duration: dur,
+            }).finished
+        }
+        ).then( () => {
+            return AFRAME.ANIME({
+                targets: self.el.object3D.scale,
+                easing: 'linear',
+                x: [xmin, x],
+                y: [ymin, y],
+                duration: dur/2,
+                complete: function(anim) {
+                    self.animatingHover = false;
+                    if(self.data.hover && !self.data.selected) {
+                        self._animateHover(scale);
+                    }
+                }
+            }).finished
+        }
+        )
+        .catch(error =>
+            console.log(error)
+        );
+    },
+
+    _animateActive(originalValues=null) {
+        if (this.animatingActive) { return;}
+        this.animatingActive = true;
+        var self = this;
+        var rot = originalValues ? originalValues : Object.assign({}, self.el.object3D.rotation);
+        var step = (2*Math.PI/ 100) * 2;
+        var x = rot._x;
+        var y = rot._y;
+        var z = rot._z;
+        var xmin = x-step;
+        var xmax = x+step;
+        var ymin = y-step;
+        var ymax = y+step;
+        var zmin = z-step;
+        var zmax = z+step;
+        var dur = 250;
+        AFRAME.ANIME({
+            targets: self.el.object3D.rotation,
+            easing: 'linear',
+            // x: xmin,
+            // y: ymin,
+            z: zmin,
+            duration: dur,
+            
+        }).finished
+        .then(() => {
+            return AFRAME.ANIME({
+                targets: self.el.object3D.rotation,
+                easing: 'linear',
+                // x: xmax,
+                // y: ymin,
+                z: zmax,
+                duration: dur,
+                complete: function(anim) {
+                    self.animatingActive = false;
+                    if(self.data.active && !self.data.selected) {
+                        self._animateActive(rot);//scale;
+                    }
+                    else {
+                        AFRAME.ANIME({
+                            targets: self.el.object3D.rotation,
+                            easing: 'linear',
+                            x: x,
+                            y: y,
+                            z: z,
+                            duration: dur/2,
+                        })
+                    }
+                }
+            }).finished
+        })
     }
 });
 
@@ -1228,6 +1338,7 @@ AFRAME.registerPrimitive( 'a-diorama-grid-cell', {
         'activeplaybutton': 'diorama-grid-cell__cell.activePlayButton',
         'isplaying': 'diorama-grid-cell__cell.isplaying',
         'type': 'diorama-grid-cell__cell.type',
-        'id': 'diorama-grid-cell__cell.id'
+        'id': 'diorama-grid-cell__cell.id',
+        'animate-load': 'diorama-grid-cell__cell.animateLoad'
     }
 });
