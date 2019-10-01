@@ -2,8 +2,8 @@
   <a-entity id="playerGridRig">
         <a-entity id="camera-rig" class="camera-rig"
             position="0 0 0">
-            <a-entity id="player-camera"
-                class="player-camera camera"
+            <a-entity id="grid-camera"
+                class="grid-camera camera"
                 camera>
             </a-entity>
             <grid-controller ref="gridcontroller" />
@@ -143,13 +143,13 @@ export default {
         setupMobile() {
             if (CONFIG.DEBUG) {console.log("setupMobile");};
             var playerGridRig = this.$el;
-            var camera = playerGridRig.querySelector('#player-camera');
+            var camera = playerGridRig.querySelector('#grid-camera');
             var sceneEl = document.getElementsByTagName('a-scene')[0];
             try {
                 if (playerGridRig) {
-                    // playerGridRig.setAttribute("character-controller", {'pivot': "#player-camera"});
+                    // playerGridRig.setAttribute("character-controller", {'pivot': "#grid-camera"});
                     // playerGridRig.setAttribute("virtual-gamepad-controls", {});
-                    // camera.setAttribute('pitch-yaw-rotator', {});
+                    camera.setAttribute('pitch-yaw-rotator', {});
                     sceneEl.setAttribute("look-on-mobile", "camera", camera);
                     // sceneEl.setAttribute("look-on-mobile", "verticalLookSpeedRatio", 3);
                 }
@@ -166,13 +166,13 @@ export default {
         tearDownMobile() {
             if (CONFIG.DEBUG) {console.log("tearDownMobile");};
             var playerGridRig = this.$el;
-            var camera = playerGridRig.querySelector('#player-camera');
+            var camera = playerGridRig.querySelector('#grid-camera');
             var sceneEl = document.getElementsByTagName('a-scene')[0];
             try {
                 if (playerGridRig) {
                     // playerGridRig.removeAttribute("character-controller");
                     // playerGridRig.removeAttribute("virtual-gamepad-controls");
-                    // camera.removeAttribute('pitch-yaw-rotator');
+                    camera.removeAttribute('pitch-yaw-rotator');
                     sceneEl.removeAttribute("look-on-mobile");
                 }
                 else {
@@ -217,7 +217,7 @@ export default {
 
             var playerRig = this.$el;
 
-            var playerCamera = document.getElementById('player-camera');
+            var playerCamera = document.getElementById('grid-camera');
             var cameraRig = document.getElementById('camera-rig');
 
             var position, quaternion;
@@ -232,7 +232,7 @@ export default {
 
             var playerRig = this.$el;
 
-            var playerCamera = document.getElementById('player-camera');
+            var playerCamera = document.getElementById('grid-camera');
             var cameraRig = document.getElementById('camera-rig');
 
             var position, quaternion;
