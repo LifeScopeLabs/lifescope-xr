@@ -86,8 +86,14 @@ export default {
 
     mounted() {
         var self = this;
-        if (self.sceneLoaded) {
+        if (this.$el.hasLoaded) {
             self.onSceneLoaded();
+        }
+        else {
+            this.$el.addEventListener('loaded', function () {
+                self.onSceneLoaded();
+                }, {once : true}
+            );
         }
     },
 
@@ -110,11 +116,11 @@ export default {
             var self = this;
             var playerRig = self.$el;
             if (playerRig.hasLoaded) {
-                playerRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop);
+                playerRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop, {once : true});
             }
             else {
                 playerRig.addEventListener('loaded', function () {
-                    playerRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop);
+                    playerRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop, {once : true});
                 })
             }
             try {
@@ -141,6 +147,7 @@ export default {
                 if (playerRig) {
                     playerRig.removeAttribute("wasd-controls");
                     playerRig.removeAttribute("look-controls");
+                    playerRig.sceneEl.canvas.classList.remove('a-grab-cursor');
                 }
                 else {
                     console.log("failed to teardown desktop controls on playerRig");
@@ -424,7 +431,7 @@ export default {
             var playerCamera = document.getElementById('player-camera');
             var cameraRig = document.getElementById('camera-rig');
 
-            var position, quaternion;
+            var position;
             position = playerRig.object3D.getWorldPosition();
             playerRig.object3D.worldToLocal(position);
             cameraRig.object3D.position.set(position.x, -this.playerHeight, position.z);
@@ -439,7 +446,7 @@ export default {
             var playerCamera = document.getElementById('player-camera');
             var cameraRig = document.getElementById('camera-rig');
 
-            var position, quaternion;
+            var position;
             position = playerRig.object3D.getWorldPosition();
             playerRig.object3D.worldToLocal(position);
             cameraRig.object3D.position.set(position.x, 0, position.z);

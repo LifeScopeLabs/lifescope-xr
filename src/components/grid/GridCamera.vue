@@ -75,7 +75,8 @@ export default {
         else {
             this.$el.addEventListener('loaded', function () {
                 self.onSceneLoaded();
-            });
+                }, {once : true}
+            );
         }
     },
 
@@ -98,12 +99,12 @@ export default {
             var self = this;
             var playerGridRig = self.$el;
             if (playerGridRig.hasLoaded) {
-                playerGridRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop);
+                playerGridRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop, {once : true});
             }
             else {
                 playerGridRig.addEventListener('loaded', function () {
-                    playerGridRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop);
-                })
+                    playerGridRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop, {once : true});
+                }, {once : true})
             }
             try {
                 if (playerGridRig) {
