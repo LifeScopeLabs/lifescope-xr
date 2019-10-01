@@ -19,6 +19,7 @@ import 'aframe-gui';
 import 'aframe-super-keyboard';
 import 'aframe-sun-sky';
 import 'nipplejs';
+import 'particles.js';
 import './components/aframe/arrow.js';
 import './components/aframe/highlight.js';
 import './components/aframe/play-gaze.js';

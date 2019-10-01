@@ -1,5 +1,6 @@
 <template>
-  <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; adapter: easyrtc; connectOnLoad: true;'">
+  <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; adapter: easyrtc; connectOnLoad: true;'"
+    loading-screen="enabled: false">
 
     <!-- Load assets -->
     <a-assets class="aframe-assets">
@@ -158,7 +159,7 @@ export default {
       }
           
       var queryRoom = this.$route.query.room || 'ls-room';
-
+      console.log(queryRoom);
       this.$store.dispatch('xr/setRoomName', queryRoom)
       .then(() => {
         return this.$store.dispatch('xr/getRoomConfig');
