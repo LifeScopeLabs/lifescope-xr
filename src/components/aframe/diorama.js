@@ -244,7 +244,15 @@ function _buildMediaMesh(url, type, imagewidth, imageheight, depth, offset, srcF
             var aspectRatio = (srcWidth || 1.0) / (srcHeight || 1.0);
 
             var geomWidth, geomHeight;
-            if (srcFit == 'width') {
+            if (srcFit == 'bothmax') {
+                geomWidth = imagewidth;
+                geomHeight = imagewidth / aspectRatio;
+                if (geomHeight > imageheight) {
+                    geomHeight = imageheight;
+                    geomWidth = imageheight * aspectRatio;
+                }
+            }
+            else if (srcFit == 'width') {
                 geomWidth = imagewidth;
                 geomHeight = imagewidth / aspectRatio;
             }
@@ -859,6 +867,8 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
     init: function() {
         var self = this;
+        self.originalHeight = self.data.imageheight;
+        self.originalWidth = self.data.imagewidth;
         this.el.addEventListener("click", evt => {
             if (self.intersectingRaycaster) {
                 const intersection = self.intersectingRaycaster.getIntersection(self.el);
@@ -965,6 +975,11 @@ AFRAME.registerComponent('diorama-grid-cell', {
         var self = this;
         var changedData = Object.keys(self.data).filter(x => self.data[x] != oldData[x]);
         // console.log(changedData);
+        if ( changedData.includes('imageURL') ) {
+            self.el.setAttribute('aspectratio', 0);
+            self.el.setAttribute('height', self.originalHeight);
+            self.el.setAttribute('width', self.originalWidth);
+        }
         if ( self.el.object3DMap.hasOwnProperty('image') &&
             ['imageURL', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio']
             .some(prop => changedData.includes(prop))) {
@@ -984,7 +999,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
             }
         }
         if (
-            [ 'hover', 'active', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio']
+            [ 'hover', 'active', 'imageURL', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio']
             .some(prop => changedData.includes(prop))
             ) {
                 // console.log('updating border');
@@ -1074,7 +1089,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
         var group = self.el.getObject3D('border') || new THREE.Group();
         group.add(mesh);
         group.name="gBorder";
-        self.el.setObject3D('border', group);   
+        self.el.setObject3D('border', group);
     },
 
     _createProgressBar() {

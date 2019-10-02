@@ -13,8 +13,8 @@
 
             <a-entity v-for="(item, n) in items"
                 :key="'grid-cell-' + n"
-                :position="dioramaPosition(n)"
-                :rotation="dioramaRotation(n)">
+                :position="gridCellPosition(n)"
+                :rotation="gridCellRotation(n)">
                 
                 <a-diorama-grid-cell
                     class="clickable gridcell"
@@ -22,25 +22,28 @@
                     :type="item.type"
                     :src="imageSrc(item)"
                     :width="cellWidth"
+                    height="0.3375"
+                    srcFit="bothmax"
                     />
             </a-entity>
 
-             <a-entity  v-if="skybox==SkyboxEnum.STARS"
-                id="sun-selector"
-                class="clickable"
-                geometry="primitive: sphere; radius: 0.05;"
-                material="shader: sunSky"
-                highlight
-                :position="dioramaPosition(-3)">
-            </a-entity>
-            <a-entity  v-else-if="skybox==SkyboxEnum.SUN"
-                id="stars-selector"
-                class="clickable"
-                geometry="primitive: sphere; radius: 0.05;"
-                material="shader: standard; src: #sky"
-                highlight
-                rotation="90 0 90"
-                :position="dioramaPosition(-3)">
+            <a-entity class="skybox-selector"
+                :position="gridCellPosition(-3)">
+                <a-entity  v-if="skybox==SkyboxEnum.STARS"
+                    id="sun-selector"
+                    class="clickable"
+                    geometry="primitive: sphere; radius: 0.05;"
+                    material="shader: sunSky"
+                    highlight>
+                </a-entity>
+                <a-entity  v-else-if="skybox==SkyboxEnum.SUN"
+                    id="stars-selector"
+                    class="clickable"
+                    geometry="primitive: sphere; radius: 0.05;"
+                    material="shader: standard; src: #sky"
+                    highlight
+                    rotation="90 0 90">
+                </a-entity>
             </a-entity>
 
         </a-entity>
@@ -67,7 +70,7 @@
 
         <a-entity v-if="focusedCell != ''"
             class="focused-cell-controls"
-            :position="-0.3 + ' ' + 0.1 + ' ' + (-offsetz - 0.5)">
+            :position="focusedCellPosititon.x + ' ' +focusedCellPosititon.y + ' ' + (focusedCellPosititon.z - offsetz)">
 
             <a-arrow
                 :disabled="focusedCellIndex==0 && !canPageLeft"
@@ -114,6 +117,30 @@
         :heightmap="worldMapHeightmap"
         :heightmapheight="worldMapHeight"></a-mapbox-terrain>
 
+    <!-- Carousel Selector -->
+
+    <!-- Earth -->
+        <a-sphere 
+                id="Earth" class="boundry clickable"
+                @click="toggleLayout"
+                :position="'0 0 0' " 
+                radius=".99" 
+                material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;"
+                animation="property: rotation; easing: linear; to: 0 360; dur: 150000; loop: true;">
+        </a-sphere>
+
+        <!-- Logo  -->
+        <a-entity 
+                id="Logo" :position="'0 1.1 0'"
+                rotation="0 0 0"
+                animation="property: rotation; easing: linear; to: 0 -360; dur: 42000; loop: true;">
+            <a-gltf-model 
+                class="clickable"
+                @click="toggleLayout"
+                src="#logo"
+                scale="0.075 0.075 0.075">
+            </a-gltf-model>
+        </a-entity>
   </a-entity>
 </template>
 
@@ -122,6 +149,7 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 
 import { Cylinder, CylindricalGrid } from '../../util/GridUtils';
 
+import { SceneLayoutEnum } from '../../store/modules/xr';
 import { SkyboxEnum } from '../../store/modules/xr/modules/graphics';
 
 export default {
@@ -134,6 +162,7 @@ export default {
             cylindricalGrid: null,
             cellsPerRow: 28,
             SkyboxEnum: SkyboxEnum,
+            focusedCellPosititon: { x:0, y:0.1, z:-0.5 },
         }
     },
 
@@ -169,7 +198,8 @@ export default {
         ...mapState('xr',
             [
                 'LSObjs',
-                'roomConfig'
+                'roomConfig',
+                'sceneLayout',
             ]
         ),
 
@@ -274,12 +304,12 @@ export default {
                 return this.roomConfig.bucket_route + '/' + this.roomConfig.BUCKET_NAME + '/' + image.route;
         },
 
-        dioramaRotation: function(itemNum) {
+        gridCellRotation: function(itemNum) {
             var rot = this.cylindricalGrid.cellRotation(itemNum);
             return `${rot.x} ${rot.y} ${rot.z}`;
         },
 
-        dioramaPosition: function(itemNum) {
+        gridCellPosition: function(itemNum) {
             var pos = this.cylindricalGrid.cellPosition(itemNum);
             return `${pos.x} ${pos.y} ${pos.z}`;
         },
@@ -331,6 +361,11 @@ export default {
             var el = evt.target;
             var id = el.id;
 
+            if (id == 'grid-cell-carousel') {
+                self.toggleLayout();
+                return;
+            }
+
             switch (self.focusedCell) {
                 case '':
                     self.focusedCell = id;
@@ -370,7 +405,8 @@ export default {
             if (CONFIG.DEBUG) {console.log('focusCell');}
 
             var cylinderEl = this.$el.querySelector(".grid-cylinder");
-            var position = new THREE.Vector3( -0.3, 0.1, - 0.5 );
+            var fcp = self.focusedCellPosititon;
+            var position = new THREE.Vector3( fcp.x, fcp.y, fcp.z );
             position = cylinderEl.object3D.worldToLocal(position);
 
             AFRAME.ANIME({
@@ -403,12 +439,12 @@ export default {
             var posx, posy, posz, rotx, roty, rotz;
             var id = el.id;
             var n = id.match(/\d+$/);
-            var position = self.dioramaPosition(+n);
+            var position = self.gridCellPosition(+n);
             var positionArray = position.split(' ');
             posx = +positionArray[0];
             posy = +positionArray[1];
             posz = +positionArray[2];
-            var rotation = self.dioramaRotation(+n);
+            var rotation = self.gridCellRotation(+n);
             var rotationArray = rotation.split(' ');
             rotx = +rotationArray[0] * (Math.PI/180) ;
             roty = +rotationArray[1] * (Math.PI/180);
@@ -493,7 +529,13 @@ export default {
 
         resetCellScale(obj) {
             obj.scale.set(1,1,1);
-        }
+        },
+
+        toggleLayout() {
+            if (CONFIG.DEBUG) {console.log("toggleLayout");}
+            var newVal = this.sceneLayout == SceneLayoutEnum.GRID ? 'GALLERY' : 'GRID';
+            this.$store.commit('xr/SET_LAYOUT', newVal);
+        },
     }
 }
 </script>

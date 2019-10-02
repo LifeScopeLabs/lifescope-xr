@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const state = function () {
     return {
-        cursorActive: false,
+        cursorActive: true,
         rightHandControllerActive: false,
         avatars: [],
         avatarURLs: {},

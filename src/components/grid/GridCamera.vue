@@ -109,7 +109,7 @@ export default {
             try {
                 if (playerGridRig) {
                     // playerGridRig.setAttribute("wasd-controls", {'enabled': true, 'acceleration': 100});
-                    // playerGridRig.setAttribute("look-controls", 'reverseMouseDrag', true);
+                    playerGridRig.setAttribute("look-controls", 'reverseMouseDrag', true);
                 }
                 else {
                     console.log("failed to set controls on playerGridRig");
@@ -129,7 +129,8 @@ export default {
             try {
                 if (playerGridRig) {
                     // playerGridRig.removeAttribute("wasd-controls");
-                    // playerGridRig.removeAttribute("look-controls");
+                    playerGridRig.removeAttribute("look-controls");
+                    playerGridRig.sceneEl.canvas.classList.remove('a-grab-cursor');
                 }
                 else {
                     console.log("failed to teardown desktop controls on playerGridRig");

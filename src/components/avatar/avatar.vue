@@ -13,11 +13,10 @@
             <rightHandController ref="righthand" />
         </a-entity>
 
-        <a-gui-cursor id="cursor" v-if="cursorActive"
-            raycaster="interval: 1000; objects: gui-interactable, .clickable"
-            fuse="true" fuse-timeout="2000"
-            design="dot">
-        </a-gui-cursor>
+        <a-entity v-if="cursorActive"
+            cursor="rayOrigin: mouse"
+            raycaster="interval: 1000; objects: .clickable;">
+        </a-entity>
 
     </a-entity>
 </template>

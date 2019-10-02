@@ -19,7 +19,8 @@ export default {
 
     data () {
         return {
-            intersected: null
+            intersected: null,
+            activeEl: null,
         }
     },
 
@@ -37,6 +38,7 @@ export default {
             var self = this;
             document.addEventListener('raycaster-intersected', self.intersectedListener);
             document.addEventListener('raycaster-intersected-cleared', self.intersectedClearListener);
+            document.addEventListener('triggerdown', self.triggerDownListener);
             document.addEventListener('triggerup', self.triggerUpListener);
 
         },
@@ -46,6 +48,7 @@ export default {
             var self = this;
             document.removeEventListener('raycaster-intersected', self.intersectedListener);
             document.removeEventListener('raycaster-intersected-cleared', self.intersectedClearListener);
+            document.removeEventListener('triggerdown', self.triggerDownListener);
             document.removeEventListener('triggerup', self.triggerUpListener);
         },
 
@@ -55,6 +58,14 @@ export default {
 
         intersectedClearListener(evt) {
             this.intersected = null;
+        },
+
+        triggerDownListener(evt) {
+            var self = this;
+            if (self.intersected) {
+                self.activeEl = self.intersected;
+                self.intersected.emit('mousedown');
+            }
         },
 
         triggerUpListener(evt) {
@@ -67,6 +78,10 @@ export default {
                 eventDetail.intersectedEl = intersectedEl;
                 eventDetail.intersection = intersection;
                 self.intersected.emit('click', eventDetail);
+            }
+            if (self.activeEl) {
+                self.intersected.emit('mouseup');
+                self.activeEl = null;
             }
         },
 

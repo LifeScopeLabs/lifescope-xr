@@ -18,12 +18,12 @@
       
         <!-- Earth -->
         <a-sphere v-if="globeActive"
-                id="Earth" class="boundry"
+                id="Earth" class="boundry clickable"
+                @click="toggleLayout"
                 :position="'0 1.5 0' " 
                 radius=".99" 
                 material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;"
                 animation="property: rotation; easing: linear; to: 0 360; dur: 150000; loop: true;">
-
         </a-sphere>
 
         <!-- Logo  -->
@@ -31,7 +31,11 @@
                 id="Logo" :position="'0 2.6 0'"
                 rotation="0 0 0"
                 animation="property: rotation; easing: linear; to: 0 -360; dur: 42000; loop: true;">
-            <a-gltf-model src="#logo" scale="0.075 0.075 0.075">
+            <a-gltf-model 
+                class="clickable"
+                @click="toggleLayout"
+                src="#logo"
+                scale="0.075 0.075 0.075">
             </a-gltf-model>
         </a-entity>
 
@@ -62,6 +66,7 @@ import { mapState } from 'vuex';
 
 import galleryCarousel from "./carousel/gallery-carousel.vue";
 
+import { SceneLayoutEnum } from '../store/modules/xr';
 import { ShadingEnum } from "../store/modules/xr/modules/graphics";
 
 export default {
@@ -81,6 +86,13 @@ export default {
                     return 'default';
             }
         },
+
+        ...mapState('xr',
+            [
+                'sceneLayout',
+            ]
+        ),
+
         ...mapState('xr/graphics',
             [
                 'bump',
@@ -123,6 +135,14 @@ export default {
                 'numberOfSegments'
             ]
         ),
+    },
+
+    methods: {
+        toggleLayout() {
+            if (CONFIG.DEBUG) {console.log("toggleLayout");}
+            var newVal = this.sceneLayout == SceneLayoutEnum.GRID ? 'GALLERY' : 'GRID';
+            this.$store.commit('xr/SET_LAYOUT', newVal);
+        },
     }
 }
 </script>
