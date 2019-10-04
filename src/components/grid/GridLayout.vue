@@ -8,7 +8,7 @@
     
         
         <a-entity class="grid-cylinder"
-            :rotation="'0 ' + cylinderRotation + ' 0'"
+            :rotation="'0 ' + gridRotation + ' 0'"
             :position="'0 ' + '-0.3' + ' 0'">
 
             <a-entity v-for="(item, n) in items"
@@ -71,11 +71,10 @@
         <a-entity v-if="focusedCell != ''"
             class="focused-cell-controls"
             :position="focusedCellPosititon.x + ' ' +focusedCellPosititon.y + ' ' + (focusedCellPosititon.z - offsetz)">
-
             <a-arrow
                 :disabled="focusedCellIndex==0 && !canPageLeft"
                 class="cell-arrow-left clickable" direction="left"
-                :position="-(cellWidth/2 + 0.05)+ ' 0 0'"
+                :position="-((cellWidth * focusedCellScale.x)/2 + 0.05)+ ' 0 0'"
                 :width="0.3"
                 :height="0.04"
                 @raycaster-intersected="hoverListener"
@@ -87,7 +86,7 @@
             <a-arrow 
                 :disabled="focusedCellIndex==(numberOfItemsToDisplay - 1) && !canPageRight"
                 class="cell-arrow-right clickable" direction="right"
-                :position="(cellWidth/2 + 0.05)+ ' 0 0'"
+                :position="((cellWidth * focusedCellScale.x)/2 + 0.05)+ ' 0 0'"
                 :width="0.3"
                 :height="0.04"
                 @raycaster-intersected="hoverListener"
@@ -116,6 +115,12 @@
         :highdpi="worldHighDPI"
         :heightmap="worldMapHeightmap"
         :heightmapheight="worldMapHeight"></a-mapbox-terrain>
+
+    <!-- Room Selector -->
+    <room-display 
+        :position="'0.1 0.03 ' + (-offsetz)"
+        rotation="0 -90 0"
+    />
 
     <!-- Carousel Selector -->
 
@@ -149,27 +154,34 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 
 import { Cylinder, CylindricalGrid } from '../../util/GridUtils';
 
+import RoomDisplay from '../hud/vr/vrRoomDisplay.vue';
+
 import { SceneLayoutEnum } from '../../store/modules/xr';
 import { SkyboxEnum } from '../../store/modules/xr/modules/graphics';
 
 export default {
 
+    components: {
+        RoomDisplay
+    },
 
     data () {
         return {
             focusedCell: '',
             dur: 0.5, //seconds
+            cylinder: null,
             cylindricalGrid: null,
             cellsPerRow: 28,
             SkyboxEnum: SkyboxEnum,
-            focusedCellPosititon: { x:0, y:0.1, z:-0.5 },
+            focusedCellPosititon: { x:0, y:0.1, z:-1 },
+            focusedCellScale: { x:1.5, y:1.5, z:1 },
         }
     },
 
     props: ['offsetz'],
 
     computed: {
-        cylinderRotation() {
+        gridRotation() {
             return (180-(360/this.cellsPerRow)*2);
         },
 
@@ -274,6 +286,7 @@ export default {
     },
 
     created() {
+        this.cylinder = new Cylinder(this.cellsPerRow, 0.425, this.radius);
         this.cylindricalGrid = new CylindricalGrid(this.cellsPerRow, 0.425, this.radius, this.rows, this.columns);
     },
 
@@ -311,6 +324,16 @@ export default {
 
         gridCellPosition: function(itemNum) {
             var pos = this.cylindricalGrid.cellPosition(itemNum);
+            return `${pos.x} ${pos.y} ${pos.z}`;
+        },
+
+        cylinderRotation: function(column, row) {
+            var rot = this.cylinder.cellRotation(column, row);
+            return `${rot.x} ${rot.y} ${rot.z}`;
+        },
+
+        cylinderPosition: function(column, row) {
+            var pos = this.cylinder.cellPosition(column, row);
             return `${pos.x} ${pos.y} ${pos.z}`;
         },
 
@@ -427,8 +450,16 @@ export default {
                 targets: el.parentEl.object3D.rotation,
                 easing: 'linear',
                 x: 0,
-                y: THREE.Math.degToRad(180-self.cylinderRotation),
+                y: THREE.Math.degToRad(180-self.gridRotation),
                 z: 0,
+                duration: self.dur*1000
+            });
+            AFRAME.ANIME({
+                targets: el.parentEl.object3D.scale,
+                easing: 'linear',
+                x: self.focusedCellScale.x,
+                y: self.focusedCellScale.y,
+                z: self.focusedCellScale.z,
                 duration: self.dur*1000
             });
         },
@@ -466,6 +497,14 @@ export default {
                 x: rotx,
                 y: roty,
                 z: rotz,
+                duration: self.dur*1000
+            });
+            AFRAME.ANIME({
+                targets: el.parentEl.object3D.scale,
+                easing: 'linear',
+                x: 1,
+                y: 1,
+                z: 1,
                 duration: self.dur*1000
             });
         },

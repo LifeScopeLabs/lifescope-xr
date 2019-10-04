@@ -26,6 +26,7 @@ import './components/aframe/play-gaze.js';
 import './components/aframe/dynamic-autoplay.js';
 import './components/aframe/avatar-rig';
 import './components/aframe/ionicon';
+import './components/aframe/text-link.js';
 import './components/aframe/mapbox-terrain.js';
 import './components/aframe/diorama.js';
 import './components/aframe/woodenfloor.js';
