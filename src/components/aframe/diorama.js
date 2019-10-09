@@ -306,6 +306,7 @@ function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0 }) {
         switch (data.type) {
             case 'video':
                 self.video = self.media;
+                self._setVideoProgressListener()
                 break;
             case 'image':
                 self.image = self.media;
@@ -842,7 +843,6 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
         hoverPlayButton: { type: 'boolean', default: false },
         activePlayButton: { type: 'boolean', default: false },
-        videoprogess: { type: 'number', default: 0 },
         isplaying: { type: 'boolean', default: false },
 
         color: { default: 0xe8f1ff}, //0xe8f1ff
@@ -867,6 +867,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
     init: function() {
         var self = this;
+
         self.originalHeight = self.data.imageheight;
         self.originalWidth = self.data.imagewidth;
         this.el.addEventListener("click", evt => {
@@ -936,6 +937,15 @@ AFRAME.registerComponent('diorama-grid-cell', {
         if (self.data.hover || self.data.active) {
             self._createBorder();
         }
+
+        if (self.data.selected) {
+            self.el.setAttribute('text__videoprogress', {transparent: false});
+            self.el.setAttribute('text__videoprogress', {opacity: 1});
+        }
+        else {
+            self.el.setAttribute('text__videoprogress', {transparent: true});
+            self.el.setAttribute('text__videoprogress', {opacity: 0});
+        }
     },
 
     tick: function() {
@@ -951,6 +961,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
         const intersection = this.intersectingRaycaster.getIntersection(this.el);
         self.intersection = intersection;
         if (intersection) {
+            // console.log(intersection.object.name);
             switch (intersection.object.name) {
                 case 'image':
                 case 'video':
@@ -964,8 +975,14 @@ AFRAME.registerComponent('diorama-grid-cell', {
                         self.el.setAttribute('hoverplaybutton', true);
                         self.el.setAttribute('hover', false);
                     }
+                case 'videolength':
+                case 'videoprogress':
+                    break;
                 default:
                     break;
+            }
+            if (intersection.object.name.startsWith('videobuffered')) {
+                
             }
         }
     },
@@ -973,6 +990,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
     update: function(oldData) {
         // console.log(`update ${this.data.id}`)
         var self = this;
+        var data = self.data;
         var changedData = Object.keys(self.data).filter(x => self.data[x] != oldData[x]);
         // console.log(changedData);
         if ( changedData.includes('imageURL') ) {
@@ -1015,20 +1033,51 @@ AFRAME.registerComponent('diorama-grid-cell', {
             }
         }
         if (
-            [ 'hoverPlayButton', 'activePlayButton', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio',
-            'selected', 'isplaying' ]
+            [ 'selected', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio',]
             .some(prop => changedData.includes(prop))) {
                 if (self.el.object3DMap.hasOwnProperty('videocontrols')) {
-                    // console.log('removing videocontrols');
                     this.el.removeObject3D('videocontrols');
                 }
                 if (this.el.object3DMap.hasOwnProperty('progressbar')) {
-                    // console.log('removing progressbar');
                     this.el.removeObject3D('progressbar');
                 }
             if (self.data.selected && self.data.type == 'video') {
                 self._createVideoControls();
             }
+        }
+        if (
+            [ 'hoverPlayButton', 'activePlayButton', 'selected', ] //'isplaying'
+            .some(prop => changedData.includes(prop))) {
+                // update button color
+                var colorPlayPauseButton = data.disabled ? 0xA9A9A9 : data.activePlayButton ? 0x04FF5F : data.hoverPlayButton ? 0x04FF5F : data.color;
+                var group = self.el.getObject3D('videocontrols');
+                if (group) {
+
+                    var playPauseButton = group.children.find(function(obj) {
+                        return obj.name == 'playPauseButton';
+                    });
+                    playPauseButton.material.color = new THREE.Color( colorPlayPauseButton );
+                }
+        }
+        if (
+            [ 'isplaying' ]
+            .some(prop => changedData.includes(prop))) {
+            if (self.data.selected && self.data.type == 'video') {
+                self._updatePausePlayButton();
+            }
+        }
+
+        if (
+            [ 'selected' ]
+            .some(prop => changedData.includes(prop))) {
+                if (self.data.selected) {
+                    self.el.setAttribute('text__videoprogress', {transparent: false});
+                    self.el.setAttribute('text__videoprogress', {opacity: 1});
+                }
+                else {
+                    self.el.setAttribute('text__videoprogress', {transparent: true});
+                    self.el.setAttribute('text__videoprogress', {opacity: 0});
+                }
         }
     },
 
@@ -1061,8 +1110,8 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
         data.offset = {
             x: 0 + data.x,
-            y: 0 + data.y,//data.railheight + 0.3,
-            z: 0.001 + data.z,//-.15
+            y: 0 + data.y,
+            z: 0.001 + data.z,
         }
     
         var geomWidth, geomHeight;
@@ -1096,41 +1145,73 @@ AFRAME.registerComponent('diorama-grid-cell', {
         var self = this;
         var data = self.data;
 
-        var geomVideoLength = new THREE.CylinderGeometry( 0.01, 0.01, self.data.imagewidth, 64 );
         var progressBarY = -self.data.imageheight/2 - 0.05;
-        geomVideoLength.rotateZ(Math.PI/2);
-        geomVideoLength.translate(0, progressBarY, 0);
-        var matVideoLength = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-        var meshVideoLength = new THREE.Mesh( geomVideoLength, matVideoLength );
-        meshVideoLength.name = 'videolength';
+
         var group = self.el.getObject3D('progressbar') || new THREE.Group();
         group.name = 'gProgressbar'
+
+        var geomVideoLength = new THREE.CylinderGeometry( 0.01, 0.01, self.data.imagewidth, 64 );
+
+        geomVideoLength.rotateZ(Math.PI/2);
+        geomVideoLength.translate(0, progressBarY, 0);
+        var matVideoLength = new THREE.MeshBasicMaterial( {color: 0xaeaeae} );
+        var meshVideoLength = new THREE.Mesh( geomVideoLength, matVideoLength );
+        meshVideoLength.name = 'videolength';
+        
         group.add(meshVideoLength);
-
-        var progressPercent = self.video.currentTime/self.video.duration;
-        var progressWidth = self.data.imagewidth * progressPercent + 0.001;//self.data.imagewidth/2;
-        var geomVideoProgress= new THREE.CylinderGeometry( 0.02, 0.02, progressWidth, 64 );
-        geomVideoProgress.rotateZ(Math.PI/2);
-
-        var progressX = (self.data.imagewidth - progressWidth)/2;
-        geomVideoProgress.translate(progressX, progressBarY, 0);
-
-        var matVideoProgress = new THREE.MeshBasicMaterial( {color: 0x27BEFF} );
-        var meshVideoProgress = new THREE.Mesh( geomVideoProgress, matVideoProgress );
-        meshVideoProgress.name ='videoprogress';
-        group.add(meshVideoProgress);
         self.el.setObject3D('progressbar', group);   
+        self._updateProgressBar();
     },
 
     _updateProgressBar() {
         var self = this;
         var group = self.el.getObject3D('progressbar') || new THREE.Group();
+
+        var progressText = `${Math.floor(self.video.currentTime)} / ${Math.floor(self.video.duration)}`;
+        self.el.setAttribute('text__videoprogress', {value: progressText});
+
+        var videoProgressObj = self.el.getObject3D('text__videoprogress');
+        var progressBarY = -self.data.imageheight/2 - 0.05;
+        videoProgressObj.rotation.set(0, Math.PI, 0);
+        videoProgressObj.position.set(self.data.imagewidth/2, progressBarY - 0.1, 0);
+        videoProgressObj.updateMatrix();
+
         if (this.el.object3DMap.hasOwnProperty('progressbar')) {
             var meshVideoProgress = group.children.find(function(obj) {
                 return obj.name == 'videoprogress';
               });
             group.remove(meshVideoProgress);
+            var bufferedMeshes = group.children.filter( obj => obj.name.startsWith('videobuffered'));
+            if (Array.isArray(bufferedMeshes) && bufferedMeshes.length != 0) {
+                bufferedMeshes.forEach( obj => group.remove(obj));
+            }
+            
         }
+
+        if (self.video.buffered && self.video.buffered.length != 0) {
+            var i = 0;
+            const bufferedLengths = self.video.buffered.length;
+            const timeRange = self.video.buffered;
+            const duration = self.video.duration;
+            const imagewidth = self.data.imagewidth;
+            while (i < bufferedLengths) {
+                var start = timeRange.start(i);
+                var end = timeRange.end(i);
+                var bufferedPercent = (end-start)/duration;
+                var bufferedStartX = (1/2 - start/duration - bufferedPercent/2) * imagewidth;//+  1/2 
+                var geomBuffered = new THREE.CylinderGeometry( 0.015, 0.015, imagewidth*bufferedPercent, 64 );
+
+                geomBuffered.rotateZ(Math.PI/2);
+                geomBuffered.translate(bufferedStartX, progressBarY, 0);
+
+                var matBuffered = new THREE.MeshBasicMaterial( { color: 0x29F1FF } );
+                var meshBuffered = new THREE.Mesh( geomBuffered, matBuffered );
+                meshBuffered.name = 'videobuffered-' + i;
+                group.add(meshBuffered);
+                i++;
+            }
+        }
+
         var progressPercent = self.video.currentTime/self.video.duration;
         var progressWidth = self.data.imagewidth * progressPercent + 0.001;//self.data.imagewidth/2;
         var geomVideoProgress= new THREE.CylinderGeometry( 0.02, 0.02, progressWidth, 64 );
@@ -1148,11 +1229,23 @@ AFRAME.registerComponent('diorama-grid-cell', {
     },
 
     _createVideoControls() {
+        this._createProgressBar();
+        this._updatePausePlayButton();
+    },
+
+    _updatePausePlayButton() {
         var self = this;
         var data = self.data;
-        self._createProgressBar();
 
         var group = self.el.getObject3D('videocontrols') || new THREE.Group();
+
+        if (this.el.object3DMap.hasOwnProperty('videocontrols')) {
+            var meshPlayPauseButton = group.children.find(function(obj) {
+                return obj.name == 'playPauseButton';
+              });
+            group.remove(meshPlayPauseButton);
+        }
+
 
         // play/pause button
         var playPauseButton = new THREE.Shape();
@@ -1191,7 +1284,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
         var progressBarY = -self.data.imageheight/2 - 0.05;
         var playPauseButtonOffsetX = self.data.imagewidth/2 - 0.1;
-        var playPauseButtonOffsetY = progressBarY - 0.1;
+        var playPauseButtonOffsetY = progressBarY - 0.2;
         geomPlayPauseButton.rotateZ(Math.PI / 2);
         geomPlayPauseButton.translate(playPauseButtonOffsetX, playPauseButtonOffsetY, 0);
 
@@ -1228,6 +1321,15 @@ AFRAME.registerComponent('diorama-grid-cell', {
         }
     },
 
+    _setVideoProgressListener() {
+        var self = this;
+        if (self.video) {
+            self.video.addEventListener("progress", evt => {
+                self._updateProgressBar();
+            });
+        }
+    },
+
     // TODO : fix anime.js keyframes
     _animateHover(originalValues=null) {
         if (this.animatingHover) {return;} 
@@ -1235,7 +1337,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
         var self = this;
         var scale = originalValues ? originalValues : Object.assign({}, self.el.object3D.scale); //JSON.parse(JSON.stringify(obj))
         var x = scale.x;
-        var y = scale.x;
+        var y = scale.y;
         var xmax = x*1.1;
         var xmin = x*0.9;
         var ymax = y*1.1;
@@ -1338,6 +1440,7 @@ AFRAME.registerPrimitive( 'a-diorama-grid-cell', {
     defaultComponents: {
         'diorama-grid-cell__cell': {
         },
+        'text__videoprogress': { value: 'initial value', align: 'center'},
     },
     mappings: {
         'src': 'diorama-grid-cell__cell.imageURL',

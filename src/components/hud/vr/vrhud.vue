@@ -131,7 +131,7 @@ export default {
                 duration: 0.5*1000,
             })
         }
-        posEntity.addEventListener('loaded', loadedHandler)
+        posEntity.addEventListener('loaded', loadedHandler, {once: true})
       }
     }
 }

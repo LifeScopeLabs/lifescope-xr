@@ -5,9 +5,9 @@ class Cylinder {
         this.radius = radius;
     }
 
-    cellPosition(cellIndex) {
-        var row = this.getCellRow(cellIndex);
-        var theta = this.getCellTheta(cellIndex);
+    cellPosition(cellIndexOrColumn, cellRow=undefined) {
+        var row = cellRow == undefined ? this.getCellRow(cellIndexOrColumn) : cellRow;
+        var theta = cellRow == undefined ? this.getCellTheta(cellIndexOrColumn) : this.getColumnTheta(cellIndexOrColumn);
 
         var x = this.radius * Math.sin(theta);
         var z = this.radius * Math.cos(theta);
