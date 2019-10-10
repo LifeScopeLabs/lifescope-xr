@@ -362,6 +362,14 @@ function _updateAspectRatio() {
     }
 }
 
+function getCenterPoint(mesh) {
+    var geometry = mesh.geometry;
+    geometry.computeBoundingBox();   
+    var center = geometry.boundingBox.getCenter();
+    mesh.localToWorld( center );
+    return center;
+}
+
 AFRAME.registerComponent('diorama-rail', {
     schema: {
         x: { type: 'number', default: 0},
@@ -845,6 +853,9 @@ AFRAME.registerComponent('diorama-grid-cell', {
         activePlayButton: { type: 'boolean', default: false },
         isplaying: { type: 'boolean', default: false },
 
+        hoverSeeking: { type: 'boolean', default: false },
+        activeSeeking: { type: 'boolean', default: false },
+
         color: { default: 0xe8f1ff}, //0xe8f1ff
         opacity: { type: 'number', default: 0.2 },
         metalness: { type: 'number', default: 0.0 },
@@ -861,6 +872,9 @@ AFRAME.registerComponent('diorama-grid-cell', {
         aspectratio: { type: 'number', default: 0 },
 
         animateLoad: { type: 'boolean', default: true },
+
+        disabled: { type: 'boolean', default: false },
+
     },
   
     multiple: true,
@@ -870,6 +884,9 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
         self.originalHeight = self.data.imageheight;
         self.originalWidth = self.data.imagewidth;
+
+        self.seekingPoint = null;
+
         this.el.addEventListener("click", evt => {
             if (self.intersectingRaycaster) {
                 const intersection = self.intersectingRaycaster.getIntersection(self.el);
@@ -880,17 +897,44 @@ AFRAME.registerComponent('diorama-grid-cell', {
                 else if (intersection && intersection.object.name == 'playPauseButton') {
                     self._playPauseHandler();
                 }
-
+                else if (intersection && ['videoseekingpoint', 'videoprogress', 'videolength', 'videolength'].includes(intersection.object.name) || intersection.object.name.startsWith('videobuffered')) {
+                    self._videoSeekingHandler();
+                }
             }
         });
         this.el.addEventListener("mousedown", evt => {
-            self.el.setAttribute('active', true);
             if(!self.data.selected) {
                 self._animateActive();
+            }
+            if (self.intersectingRaycaster != null) {
+                 const intersection = this.intersectingRaycaster.getIntersection(this.el);
+                 self.intersection = intersection;
+                 if (intersection) {
+                    switch (intersection.object.name) {
+                        case 'image':
+                        case 'video':
+                            self.el.setAttribute('active', true);
+                            break;
+                        case 'videolength':
+                        case 'videoprogress':
+                        case 'videoseekingpoint':
+                            self.el.setAttribute('activeseeking', true);
+                            break;
+                        case 'playPauseButton':
+                            self.el.setAttribute('activeplaybutton', true);
+                        default:
+                            break;
+                    }
+                    if (intersection.object.name.startsWith('videobuffered')) {
+                        self.el.setAttribute('activeseeking', true);
+                    }
+                }
             }
         });
         this.el.addEventListener("mouseup", evt => {
             self.el.setAttribute('active', false);
+            self.el.setAttribute('activeSeeking', false);
+            self.el.setAttribute('activePlayButton', false);
         });
         this.el.addEventListener("raycaster-intersected", evt => {
             self.intersectingRaycaster = evt.detail.el.components.raycaster;
@@ -917,6 +961,9 @@ AFRAME.registerComponent('diorama-grid-cell', {
             }
             if (self.data.hoverPlayButton) {
                 self.el.setAttribute('hoverplaybutton', false);
+            }
+            if (self.data.hoverSeeking) {
+                self.el.setAttribute('hoverseeking', false);
             }
         });
 
@@ -975,14 +1022,29 @@ AFRAME.registerComponent('diorama-grid-cell', {
                         self.el.setAttribute('hoverplaybutton', true);
                         self.el.setAttribute('hover', false);
                     }
+                    break;
                 case 'videolength':
                 case 'videoprogress':
+                    // debugger;
+                    if (self.seekingPoint != intersection.point) {
+                        self.seekingPoint = intersection.point;
+                        self._updateSeeking(self.seekingPoint);
+                    }
+                    if (!self.data.hoverSeeking) {
+                        self.el.setAttribute('hoverseeking', true);
+                    }
                     break;
                 default:
                     break;
             }
             if (intersection.object.name.startsWith('videobuffered')) {
-                
+                if (self.seekingPoint != intersection.point) {
+                    self.seekingPoint = intersection.point;
+                    self._updateSeeking(self.seekingPoint);
+                }
+                if (!self.data.hoverSeeking) {
+                    self.el.setAttribute('hoverseeking', true);
+                }
             }
         }
     },
@@ -1049,7 +1111,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
             [ 'hoverPlayButton', 'activePlayButton', 'selected', ] //'isplaying'
             .some(prop => changedData.includes(prop))) {
                 // update button color
-                var colorPlayPauseButton = data.disabled ? 0xA9A9A9 : data.activePlayButton ? 0x04FF5F : data.hoverPlayButton ? 0x04FF5F : data.color;
+                var colorPlayPauseButton = data.disabled ? 0xA9A9A9 : data.activePlayButton ? 0xFFD704 : data.hoverPlayButton ? 0x04FF5F : data.color;
                 var group = self.el.getObject3D('videocontrols');
                 if (group) {
 
@@ -1077,6 +1139,21 @@ AFRAME.registerComponent('diorama-grid-cell', {
                 else {
                     self.el.setAttribute('text__videoprogress', {transparent: true});
                     self.el.setAttribute('text__videoprogress', {opacity: 0});
+                }
+        }
+
+        if (
+            [ 'hoverSeeking', 'activeSeeking', ] //'isplaying'
+            .some(prop => changedData.includes(prop))) {
+                if (!data.hoverSeeking && !data.activeSeeking) {
+                    // console.log('removing ')
+                    var group = self.el.getObject3D('progressbar') || new THREE.Group();
+                    var mesh = group.children.find(function(obj) {
+                        return obj.name == 'videoseekingpoint';
+                    });
+                    if (mesh) {
+                        group.remove(mesh);
+                    }
                 }
         }
     },
@@ -1288,7 +1365,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
         geomPlayPauseButton.rotateZ(Math.PI / 2);
         geomPlayPauseButton.translate(playPauseButtonOffsetX, playPauseButtonOffsetY, 0);
 
-        var colorPlayPauseButton = data.disabled ? 0xA9A9A9 : data.activePlayButton ? 0x04FF5F : data.hoverPlayButton ? 0x04FF5F : data.color;
+        var colorPlayPauseButton = data.disabled ? 0xA9A9A9 : data.activePlayButton ? 0xFFD704 : data.hoverPlayButton ? 0x04FF5F : data.color;
         var opacity = data.disabled ? 0.2 : data.opacity;
         var transparent = data.disabled ? true : false;
         var matPlayPauseButton = new THREE.MeshBasicMaterial( {color: new THREE.Color( colorPlayPauseButton ),
@@ -1321,6 +1398,23 @@ AFRAME.registerComponent('diorama-grid-cell', {
         }
     },
 
+    _videoSeekingHandler() {
+        var self = this;
+        console.log('_videoSeekingHandler');
+        debugger;
+        try {
+            if (self.video && self.seekingPercantage) {
+                self.video.currentTime = self.video.duration * self.seekingPercantage;
+            }
+            else {
+            }
+        }
+        catch (error) {
+            console.log('error in _videoSeekingHandler');
+            console.error(error);
+        }
+    },
+
     _setVideoProgressListener() {
         var self = this;
         if (self.video) {
@@ -1328,6 +1422,49 @@ AFRAME.registerComponent('diorama-grid-cell', {
                 self._updateProgressBar();
             });
         }
+    },
+
+    _updateSeeking(point) {
+        var self = this;
+        var data = self.data;
+        
+        var group = self.el.getObject3D('progressbar') || new THREE.Group();
+        var meshVideoLength = group.children.find(function(obj) {
+            return obj.name == 'videolength';
+          });
+        var meshOldSeeking = group.children.find(function(obj) {
+            return obj.name == 'videoseekingpoint';
+          });
+        if (meshOldSeeking) {
+            group.remove(meshOldSeeking);
+        }
+        var center = getCenterPoint(meshVideoLength);
+        var rotation = new THREE.Euler();
+        rotation = rotation.copy(meshVideoLength.rotation);
+        
+        rotation.set(rotation.x, rotation.y + 180, rotation.z);
+
+        var b = new THREE.Vector3(1, 0, 0);
+
+        var seekingPoint = new THREE.Vector3();
+        seekingPoint.copy(point);
+        seekingPoint = seekingPoint.projectOnVector(b)
+        self.seekingPercantage = (seekingPoint.x + self.data.imagewidth*1.5/2)/(self.data.imagewidth*1.5);
+
+
+        seekingPoint.add(center);
+
+        var geometry = new THREE.CylinderGeometry( 0.025, 0.025, 0.01, 64 );
+        geometry.rotateZ(Math.PI/2);
+        var color = data.disabled ? 0xA9A9A9 : data.activeSeeking ? 0xFFD704 : data.hoverSeeking ? 0xFFFF00 : data.color;
+        var material = new THREE.MeshBasicMaterial( {color: new THREE.Color(color)} );
+        var mesh = new THREE.Mesh( geometry, material );
+        mesh.name = 'videoseekingpoint';
+        seekingPoint = group.worldToLocal(seekingPoint);
+
+        mesh.position.set(seekingPoint.x, seekingPoint.y, seekingPoint.z);
+        mesh.updateMatrix();
+        group.add( mesh );
     },
 
     // TODO : fix anime.js keyframes
@@ -1454,6 +1591,8 @@ AFRAME.registerPrimitive( 'a-diorama-grid-cell', {
         'selected': 'diorama-grid-cell__cell.selected',
         'hoverplaybutton': 'diorama-grid-cell__cell.hoverPlayButton',
         'activeplaybutton': 'diorama-grid-cell__cell.activePlayButton',
+        'hoverseeking': 'diorama-grid-cell__cell.hoverSeeking',
+        'activeseeking': 'diorama-grid-cell__cell.activeSeeking',
         'isplaying': 'diorama-grid-cell__cell.isplaying',
         'type': 'diorama-grid-cell__cell.type',
         'id': 'diorama-grid-cell__cell.id',
