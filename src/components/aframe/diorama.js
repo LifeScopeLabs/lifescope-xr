@@ -79,6 +79,7 @@ function _buildMaterial(shading, type, quality='l', withBump=false, withNormal=f
             // onError
             function (error) {
                 console.log('failed to load texture');
+                console.log(error);
                 var material = new CelShader(materialColors.get(type), props);
                 resolve(material);
             }
@@ -327,7 +328,7 @@ function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0 }) {
                 x: [0, 1],
                 y: [0, 1],
                 z: [0, 1],
-                duration: 1000*(0.5)
+                duration: 1000*(data.animateInSeconds)
             });
         }
     })
@@ -642,6 +643,10 @@ AFRAME.registerComponent('diorama-case', {
         withRail: { default: true },
 
         aspectratio: { type: 'number', default: 0 },
+
+        animateLoad: { type: 'boolean', default: false },
+        animateInSeconds: { type: 'number', default: 0.5 },
+        animateOutSeconds: { type: 'number', default: 0.2 },
     },
 
     multiple: true,
@@ -827,6 +832,9 @@ AFRAME.registerPrimitive( 'a-diorama', {
         'railheight': 'diorama-case__case.railheight',
         'shading': 'diorama-case__case.shading',
         'type': 'diorama-case__case.type',
+        'animate-load': 'diorama-grid-cell__cell.animateLoad',
+        'animatein': 'diorama-case__case.animateInSeconds',
+        'animateout': 'diorama-case__case.animateOutSeconds',
     }
 });
 
@@ -872,6 +880,8 @@ AFRAME.registerComponent('diorama-grid-cell', {
         aspectratio: { type: 'number', default: 0 },
 
         animateLoad: { type: 'boolean', default: true },
+        animateInSeconds: { type: 'number', default: 0.5 },
+        animateOutSeconds: { type: 'number', default: 0.2 },
 
         disabled: { type: 'boolean', default: false },
 
@@ -1596,6 +1606,8 @@ AFRAME.registerPrimitive( 'a-diorama-grid-cell', {
         'isplaying': 'diorama-grid-cell__cell.isplaying',
         'type': 'diorama-grid-cell__cell.type',
         'id': 'diorama-grid-cell__cell.id',
-        'animate-load': 'diorama-grid-cell__cell.animateLoad'
+        'animate-load': 'diorama-grid-cell__cell.animateLoad',
+        'animatein': 'diorama-grid-cell__cell.animateInSeconds',
+        'animateout': 'diorama-grid-cell__cell.animateOutSeconds',
     }
 });

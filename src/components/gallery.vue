@@ -10,7 +10,7 @@
         <a-wooden-floor v-if="floorActive"
             class="boundry"
             :radius='floorRadius' :radialsegments='numberOfSegments'
-            :bump="bump" :normal="normal" :quality="quality" :shading="textureShading"
+            :bump="bump" :normal="normal" :quality="quality" :shading="qualityString"
             rotation="0 135 0"></a-wooden-floor>
 
         <!-- Carousel -->
@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 
 import galleryCarousel from "./carousel/gallery-carousel.vue";
 
@@ -76,17 +76,6 @@ export default {
     },
 
     computed: {
-        textureShading() {
-            switch (this.shading) {
-                case ShadingEnum.DEFAULT:
-                    return 'default';
-                case ShadingEnum.CEL:
-                    return 'cel';
-                default:
-                    return 'default';
-            }
-        },
-
         ...mapState('xr',
             [
                 'sceneLayout',
@@ -99,6 +88,12 @@ export default {
                 'normal',
                 'quality',
                 'shading',
+            ]
+        ),
+
+        ...mapGetters('xr/graphics',
+            [
+                'qualityString',
             ]
         ),
         

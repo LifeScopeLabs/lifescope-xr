@@ -11,10 +11,22 @@ const GraphicsQualityEnum = Object.freeze({
     HIGH: 3
 });
 
+const GraphicsQualityString = new Map([
+    [GraphicsQualityEnum.LOW, 's'], // small
+    [GraphicsQualityEnum.MEDIUM, 'm'],
+    [GraphicsQualityEnum.HIGH, 'l'], // large
+]);
+
 const ShadingEnum = Object.freeze({
     DEFAULT: 1,
     CEL: 2,
 });
+
+const GraphicsShadingString = new Map([
+    [ShadingEnum.DEFAULT, 'default'],
+    [ShadingEnum.CEL, 'cel'],
+]);
+
 
 export const state = function () {
     return {
@@ -39,6 +51,12 @@ export const getters = {
     },
     timeMinutesString: (state, getters) => {
         return TimeUtils.getPaddedMinutesString(getters.timeMinutes);
+    },
+    qualityString: (state) => {
+        return GraphicsQualityString.get(state.quality);
+    },
+    shadingString: (state) => {
+        return GraphicsShadingString.get(state.shading);
     }
 }
 

@@ -27,6 +27,10 @@ AFRAME.registerComponent('mapbox-terrain', {
 			type: 'string',
 			default: 'satellite',
 		},
+		shape:  { 
+			oneOf: ['square', 'circle'],
+			default: 'square',
+		},
 		rows: {
 			type: 'number',
 			default: 3
@@ -77,7 +81,7 @@ AFRAME.registerComponent('mapbox-terrain', {
 
 		var scale = 1;
 
-		var tilesPerRow = this.data.rows;
+		var tilesPerRow = self.data.shape == 'circle' ? 1 : this.data.rows;
 		var innerRow = this.data.innerrow;
 		var highDpi = this.data.highdpi;
 
@@ -86,7 +90,7 @@ AFRAME.registerComponent('mapbox-terrain', {
 		var innerLeftX = (innerRow % 2) ? parseInt((innerRow-1)/2) : parseInt((innerRow)/2);
 		var innerRightX = (innerRow % 2) ? parseInt((innerRow-1)/2) : parseInt((innerRow)/2 - 1);
 
-		var geo = self._buildPlaneGeometry();
+		var geo = self.data.shape == 'circle' ? self._buildCircularGeometry() : self._buildPlaneGeometry();
 
 		for (var dx = -leftX; dx<=rightX; dx++) {
 			for (var dy = -leftX; dy<=rightX; dy++) {
@@ -155,6 +159,12 @@ AFRAME.registerComponent('mapbox-terrain', {
 		geometry.rotateX(2 * Math.PI * -90 / 360);
 		return geometry;
 	},
+	_buildCircularGeometry: function(tileX, tileY){
+		// console.log("_buildCircularGeometry");
+		var geometry	= new THREE.CircleBufferGeometry( 0.5, 100 );
+		geometry.rotateX(2 * Math.PI * -90 / 360);
+		return geometry;
+	},
 
 	_buildElevationPlane: function(tileX, tileY, highDpi, callback) {
 		// console.log(`_buildElevationPlaneGeometry(${tileX}, ${tileY})`);
@@ -182,10 +192,10 @@ AFRAME.registerComponent('mapbox-terrain', {
 				image.addEventListener('load', function(){			
 					// console.log(`${dataUrl} image loaded`);
 					onLoad(image)
-				})
-			})
+				}, {once: true})
+			}, {once: true})
 			fileReader.readAsDataURL(request.response);
-		})
+		}, {once: true})
 		request.open('GET', imageURL);
 		request.responseType = 'blob';
 		request.send();
@@ -256,6 +266,7 @@ AFRAME.registerPrimitive('a-mapbox-terrain', AFRAME.utils.extendDeep({}, AFRAME.
 		'heightmapscale': 'mapbox-terrain.heightmapscale',
 		'offsetx': 'mapbox-terrain.offsetx',
 		'offsety': 'mapbox-terrain.offsety',
-		'type': 'mapbox-terrain.type'
+		'type': 'mapbox-terrain.type',
+		'shape': 'mapbox-terrain.shape',
 	}
 }))

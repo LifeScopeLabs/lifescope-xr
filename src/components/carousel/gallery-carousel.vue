@@ -10,8 +10,8 @@
                 :radialsegments="numberOfSegments"
                 :bump="bump"
                 :normal="normal"
-                :quality="textureQuality"
-                :shading="textureShading"/>
+                :quality="qualityString"
+                :shading="shadingString"/>
         </a-entity>
         <a-entity v-for="(item, n) in items"
             :key="'carouselItem' + n">
@@ -24,15 +24,15 @@
                 :bump="bump"
                 :normal="normal"
                 :rail="floorActive"
-                :quality="textureQuality"
-                :shading="textureShading"
+                :quality="qualityString"
+                :shading="shadingString"
             />
         </a-entity>
     </a-entity>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import { GraphicsQualityEnum, ShadingEnum } from '../../store/modules/xr/modules/graphics';
 
 export default {
@@ -52,28 +52,6 @@ export default {
         },
         numberOfItemsToDisplay() {
             return Math.min(this.numberOfSegments, this.items.length);
-        },
-        textureQuality() {
-            switch (this.quality) {
-                case GraphicsQualityEnum.LOW:
-                    return 's';
-                case GraphicsQualityEnum.MEDIUM:
-                    return 'm';
-                case GraphicsQualityEnum.HIGH:
-                    return 'l';
-                default:
-                    return 'l';
-            }
-        },
-        textureShading() {
-            switch (this.shading) {
-                case ShadingEnum.DEFAULT:
-                    return 'default';
-                case ShadingEnum.CEL:
-                    return 'cel';
-                default:
-                    return 'default';
-            }
         },
         ...mapState('xr',
             [
@@ -96,6 +74,12 @@ export default {
                 'normal',
                 'quality',
                 'shading'
+            ]
+        ),
+        ...mapGetters('xr/graphics',
+            [
+                'qualityString',
+                'shadingString',
             ]
         ),
     },

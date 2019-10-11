@@ -22,8 +22,9 @@
                     :type="item.type"
                     :src="imageSrc(item)"
                     :width="cellWidth"
-                    height="0.3375"
+                    :height="cellHeight"
                     srcFit="bothmax"
+                    :animatein="animateInSeconds"
                     />
             </a-entity>
 
@@ -43,6 +44,17 @@
                     material="shader: standard; src: #sky"
                     highlight
                     rotation="90 0 90">
+                </a-entity>
+            </a-entity>
+
+            <a-entity class="floor-map-selector"
+                :position="gridCellPosition(-4)">
+                <a-entity
+                    id="floor-map-selector"
+                    class="clickable"
+                    geometry="primitive: sphere; radius: 0.05;"
+                    material="shader: standard; src: #earth"
+                    highlight>
                 </a-entity>
             </a-entity>
 
@@ -100,7 +112,8 @@
     <!-- Demo Map -->
     <!-- Floor -->
     <a-mapbox-terrain v-if="floorMapActive == true"
-        position="0 0.1 0" :scale="floorScale + ' 1 ' + floorScale"
+        :position="'0 -1.6 ' + -offsetz"
+        :scale="floorScale + ' 1 ' + floorScale"
         :latitude="mapLatitude" :longitude="mapLongitude"
         :zoom-level="floorZoom" :rows="floorRows"
         :highdpi="floorHighDPI"
@@ -260,6 +273,7 @@ export default {
                 'top',
                 'bottom',
                 'cellWidth',
+                'cellHeight',
                 'arrowWidth',
                 'arrowHeight',
                 'animateInSeconds',
@@ -417,6 +431,9 @@ export default {
                     break;
                 case 'sun-selector':
                     this.$store.commit('xr/graphics/SET_SKYBOX', 'SUN');
+                    break;
+                case 'floor-map-selector':
+                    this.$store.commit('xr/map/SET_FLOOR_MAP_ACTIVE', !this.floorMapActive);
                     break;
                 default:
                     break;
