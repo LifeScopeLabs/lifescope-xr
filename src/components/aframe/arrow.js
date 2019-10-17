@@ -1,4 +1,6 @@
 AFRAME.registerComponent('arrow', {
+    dependencies: ['highlight'],
+
     schema: {
         x: { type: 'number', default: 0},
         y: { type: 'number', default: 0},
@@ -11,15 +13,11 @@ AFRAME.registerComponent('arrow', {
         height: { type: 'number', default: 1 },
         depth: { type: 'number', default: 0.01 },
 
-        color: { default: 0xe8f1ff}, //0xe8f1ff
+        color: { default: 0xe8f1ff}, 
         opacity: { type: 'number', default: 1 },
 
-        hover: { type: 'boolean', default: false },
-        active: { type: 'boolean', default: false },
-        disabled: { type: 'boolean', default: false },
     },
   
-    multiple: true,
 
     init: function() {
         this._createArrow();
@@ -28,15 +26,15 @@ AFRAME.registerComponent('arrow', {
     update: function(oldData) {
         var self = this;
         var changedData = Object.keys(self.data).filter(x => self.data[x] != oldData[x]);
-        if ( self.el.object3DMap.hasOwnProperty('arrow') && changedData != null ){ 
-                self.el.removeObject3D('arrow');
+        if ( self.el.object3DMap.hasOwnProperty('mesh') && changedData != null ){ 
+                self.el.removeObject3D('mesh');
             self._createArrow();
         }
     },
 
     remove: function () {
-        if (this.el.object3DMap.hasOwnProperty('arrow')) {
-            this.el.removeObject3D('arrow');
+        if (this.el.object3DMap.hasOwnProperty('mesh')) {
+            this.el.removeObject3D('mesh');
         }
     },
 
@@ -62,16 +60,8 @@ AFRAME.registerComponent('arrow', {
         shape.lineTo( -width/2, -height/2 );
         shape.lineTo( 0, height/2 );
     
-        var extrudeSettings = {
-            steps: 2,
-            depth: data.depth,
-            //amount: self.data.depth, // aframe 8.2 / three.js r92
-            bevelEnabled: true,
-            bevelThickness: 0.01,
-            bevelSize: 0.01,
-            bevelSegments: 1
-        };
-        geom = new THREE.ExtrudeBufferGeometry( shape, extrudeSettings );
+        geom = new THREE.ShapeBufferGeometry( shape );
+
         var rotationZ = data.angle;
         switch (data.direction) {
             case 'up':
@@ -92,34 +82,38 @@ AFRAME.registerComponent('arrow', {
 
         geom.translate(data.offset.x, data.offset.y, data.offset.z);
     
-        var color = data.disabled ? 0xA9A9A9 : data.active ? 0xFFD704 : data.hover ? 0x04FF5F : data.color;
+        var color = data.color;
         var opacity = data.disabled ? 0.2 : data.opacity;
         var transparent = data.disabled ? true : false;
         mat = new THREE.MeshBasicMaterial( {color: new THREE.Color( color ),
             transparent: transparent,
-            opacity: opacity} );
+            opacity: opacity,
+            side: THREE.DoubleSide,
+        } );
     
         mesh = new THREE.Mesh(geom, mat);
-    
-        var group = self.el.getObject3D('arrow') || new THREE.Group();
-        group.add(mesh);
-        self.el.setObject3D('arrow', group);   
+        mesh.name = 'arrow';
+
+        self.el.setObject3D('mesh', mesh);  
     },
 });
 
 
 AFRAME.registerPrimitive( 'a-arrow', {
     defaultComponents: {
-        'arrow__arrow': {
+        'arrow': {
         },
+        'highlight': {
+            type: 'color'
+        }
     },
     mappings: {
-        'direction': 'arrow__arrow.direction',
-        'color': 'arrow__arrow.color',
-        'width': 'arrow__arrow.width',
-        'height': 'arrow__arrow.height',
-        'hover': 'arrow__arrow.hover',
-        'active': 'arrow__arrow.active',
-        'disabled': 'arrow__arrow.disabled',
+        'direction': 'arrow.direction',
+        'color': 'arrow.color',
+        'width': 'arrow.width',
+        'height': 'arrow.height',
+        'hover': 'highlight.hover',
+        'active': 'highlight.active',
+        'disabled': 'highlight.disabled',
     }
 });

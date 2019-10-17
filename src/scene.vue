@@ -52,8 +52,6 @@
 <script>
 import { mapState } from 'vuex';
 
-import axios from 'axios';
-
 import socketIO from 'socket.io-client';
 import easyrtc from '../static/easyrtc/easyrtc.js';
 
@@ -75,11 +73,8 @@ export default {
     },
     data() {
       return {
-        avatar: {},
         SkyboxEnum: SkyboxEnum,
         SceneLayoutEnum: SceneLayoutEnum,
-        hudhelpactive: false,
-        hudsettingsactive: false,
       }
     },
 
@@ -159,7 +154,6 @@ export default {
       }
           
       var queryRoom = this.$route.query.room || 'ls-room';
-      console.log(queryRoom);
       this.$store.dispatch('xr/setRoomName', queryRoom)
       .then(() => {
         return this.$store.dispatch('xr/getRoomConfig');

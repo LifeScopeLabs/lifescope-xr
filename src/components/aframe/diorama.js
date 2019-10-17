@@ -1336,7 +1336,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
         // play/pause button
         var playPauseButton = new THREE.Shape();
-        // var hole = new THREE.Shape();
+        var hole = new THREE.Path();
         var playWidth = 0.1;
         var playHeight = 0.1;
         var playDepth = 0.01;
@@ -1347,32 +1347,26 @@ AFRAME.registerComponent('diorama-grid-cell', {
             playPauseButton.lineTo( -playWidth/2, playHeight/2 );
             playPauseButton.moveTo( playWidth/2, playHeight/2 );
             playPauseButton.lineTo( playWidth/2, -playHeight/2 );
-            // hole.moveTo( 0, -playHeight/2 );
-            // hole.lineTo( 0, playHeight/2 );
-            // playPauseButton.holes = [hole];
+            
+            hole.moveTo( playWidth/4, playHeight/2 );
+            hole.lineTo( playWidth/4, -playHeight/2 );
+            hole.lineTo( -playWidth/4, -playHeight/2 );
+            hole.lineTo( -playWidth/4, playHeight/2 );
+
+            playPauseButton.holes = [hole];
         }
         else { // play button
-            playPauseButton.moveTo( 0, playHeight/2 );
-            playPauseButton.lineTo( playWidth/2, -playHeight/2 );
-            playPauseButton.lineTo( -playWidth/2, -playHeight/2 );
-            playPauseButton.lineTo( 0, playHeight/2 );
+            playPauseButton.moveTo( -playHeight/2, 0 );
+            playPauseButton.lineTo( playHeight/2, playWidth/2 );
+            playPauseButton.lineTo( playHeight/2, -playWidth/2, );
+            playPauseButton.lineTo( -playHeight/2, 0 );
         }
     
-        var extrudeSettings = {
-            steps: 2,
-            depth: playDepth,
-            //amount: self.data.depth, // aframe 8.2 / three.js r92
-            bevelEnabled: true,
-            bevelThickness: 0.01,
-            bevelSize: 0.01,
-            bevelSegments: 1
-        };
-        var geomPlayPauseButton = new THREE.ExtrudeBufferGeometry( playPauseButton, extrudeSettings );
+        var geomPlayPauseButton = new THREE.ShapeBufferGeometry( playPauseButton );
 
         var progressBarY = -self.data.imageheight/2 - 0.05;
         var playPauseButtonOffsetX = self.data.imagewidth/2 - 0.1;
         var playPauseButtonOffsetY = progressBarY - 0.2;
-        geomPlayPauseButton.rotateZ(Math.PI / 2);
         geomPlayPauseButton.translate(playPauseButtonOffsetX, playPauseButtonOffsetY, 0);
 
         var colorPlayPauseButton = data.disabled ? 0xA9A9A9 : data.activePlayButton ? 0xFFD704 : data.hoverPlayButton ? 0x04FF5F : data.color;
@@ -1380,7 +1374,9 @@ AFRAME.registerComponent('diorama-grid-cell', {
         var transparent = data.disabled ? true : false;
         var matPlayPauseButton = new THREE.MeshBasicMaterial( {color: new THREE.Color( colorPlayPauseButton ),
             transparent: transparent,
-            opacity: opacity} );
+            opacity: opacity,
+            side: THREE.DoubleSide,},
+        );
     
         var meshPlayPauseButton = new THREE.Mesh(geomPlayPauseButton, matPlayPauseButton);
         meshPlayPauseButton.name = 'playPauseButton';

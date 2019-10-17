@@ -9,7 +9,7 @@
         
         <a-entity class="grid-cylinder"
             :rotation="'0 ' + gridRotation + ' 0'"
-            :position="'0 ' + '-0.3' + ' 0'">
+            :position="'0 ' + gridOffsetY + ' 0'">
 
             <a-entity v-for="(item, n) in items"
                 :key="'grid-cell-' + n"
@@ -22,7 +22,7 @@
                     :type="item.type"
                     :src="imageSrc(item)"
                     :width="cellWidth"
-                    :height="cellHeight"
+                    :height="cellContentHeight"
                     srcFit="bothmax"
                     :animatein="animateInSeconds"
                     />
@@ -35,14 +35,14 @@
                     class="clickable"
                     geometry="primitive: sphere; radius: 0.05;"
                     material="shader: sunSky"
-                    highlight>
+                    highlight="type: border;">
                 </a-entity>
                 <a-entity  v-else-if="skybox==SkyboxEnum.SUN"
                     id="stars-selector"
                     class="clickable"
                     geometry="primitive: sphere; radius: 0.05;"
                     material="shader: standard; src: #sky"
-                    highlight
+                    highlight="type: border;"
                     rotation="90 0 90">
                 </a-entity>
             </a-entity>
@@ -54,7 +54,7 @@
                     class="clickable"
                     geometry="primitive: sphere; radius: 0.05;"
                     material="shader: standard; src: #earth"
-                    highlight>
+                    highlight="type: border;">
                 </a-entity>
             </a-entity>
 
@@ -63,20 +63,12 @@
         <a-arrow class="grid-arrow-left clickable" direction="left" :position="leftArrowPosition"
             :width="arrowWidth" :height="arrowHeight"
             :disabled="!canPageLeft"
-            @raycaster-intersected="hoverListener"
-            @raycaster-intersected-cleared="hoverEndListener"
-            @mousedown="activeListener"
-            @mouseup="activeEndListener"
             @click="handlePageLeft"
             />
 
         <a-arrow class="grid-arrow-right clickable" direction="right" :position="rightArrowPosition"
             :width="arrowWidth" :height="arrowHeight"
             :disabled="!canPageRight"
-            @raycaster-intersected="hoverListener"
-            @raycaster-intersected-cleared="hoverEndListener"
-            @mousedown="activeListener"
-            @mouseup="activeEndListener"
             @click="handlePageRight"
             />
 
@@ -85,26 +77,20 @@
             :position="focusedCellPosititon.x + ' ' +focusedCellPosititon.y + ' ' + (focusedCellPosititon.z - offsetz)">
             <a-arrow
                 :disabled="focusedCellIndex==0 && !canPageLeft"
-                class="cell-arrow-left clickable" direction="left"
+                class="cell-arrow-left clickable"
+                direction="left"
                 :position="-((cellWidth * focusedCellScale.x)/2 + 0.05)+ ' 0 0'"
                 :width="0.3"
                 :height="0.04"
-                @raycaster-intersected="hoverListener"
-                @raycaster-intersected-cleared="hoverEndListener"
-                @mousedown="activeListener"
-                @mouseup="activeEndListener"
                 @click="previousCell"
             />
             <a-arrow 
                 :disabled="focusedCellIndex==(numberOfItemsToDisplay - 1) && !canPageRight"
-                class="cell-arrow-right clickable" direction="right"
+                class="cell-arrow-right clickable"
+                direction="right"
                 :position="((cellWidth * focusedCellScale.x)/2 + 0.05)+ ' 0 0'"
                 :width="0.3"
                 :height="0.04"
-                @raycaster-intersected="hoverListener"
-                @raycaster-intersected-cleared="hoverEndListener"
-                @mousedown="activeListener"
-                @mouseup="activeEndListener"
                 @click="nextCell"
                 />
         </a-entity>
@@ -188,6 +174,8 @@ export default {
             SkyboxEnum: SkyboxEnum,
             focusedCellPosititon: { x:0, y:0.1, z:-1 },
             focusedCellScale: { x:1.5, y:1.5, z:1 },
+            gridOffsetY: -0.3,
+            paginatorOffsetZ: 1.4,
         }
     },
 
@@ -274,6 +262,7 @@ export default {
                 'bottom',
                 'cellWidth',
                 'cellHeight',
+                'cellContentHeight',
                 'arrowWidth',
                 'arrowHeight',
                 'animateInSeconds',
@@ -290,18 +279,19 @@ export default {
         ),
 
         leftArrowPosition() {
-            return `-0.5 ${this.bottom} ${-this.offsetz - 1.4}`;
+            return `${-this.cellWidth} ${this.gridOffsetY-this.cellHeight} ${-this.offsetz - this.paginatorOffsetZ}`;
         },
 
         rightArrowPosition() {
-            return `0.5 ${this.bottom} ${-this.offsetz - 1.4}`;
+            return `${this.cellWidth} ${this.gridOffsetY-this.cellHeight} ${-this.offsetz - this.paginatorOffsetZ}`;
         },
 
     },
 
     created() {
-        this.cylinder = new Cylinder(this.cellsPerRow, 0.425, this.radius);
-        this.cylindricalGrid = new CylindricalGrid(this.cellsPerRow, 0.425, this.radius, this.rows, this.columns);
+        this.cylinder = new Cylinder(this.cellsPerRow, this.cellHeight, this.radius);
+        this.cylindricalGrid = new CylindricalGrid(this.cellsPerRow, this.cellHeight,
+            this.radius, this.rows, this.columns);
     },
 
     mounted() {
@@ -349,20 +339,6 @@ export default {
         cylinderPosition: function(column, row) {
             var pos = this.cylinder.cellPosition(column, row);
             return `${pos.x} ${pos.y} ${pos.z}`;
-        },
-
-        hoverListener(evt) {
-            evt.target.setAttribute('hover', true);
-        },
-        hoverEndListener(evt) {
-            evt.target.setAttribute('hover', false);
-        },
-
-        activeListener(evt) {
-            evt.target.setAttribute('active', true);
-        },
-        activeEndListener(evt) {
-            evt.target.setAttribute('active', false);
         },
 
         nextCell(evt) {

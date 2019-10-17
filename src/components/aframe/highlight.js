@@ -2,9 +2,12 @@ AFRAME.registerComponent('highlight', {
   schema: {
     hover: { type: 'boolean', default: false },
     active: { type: 'boolean', default: false },
+    disabled: { type: 'boolean', default: false },
     color: { default: 0xe8f1ff},
-    hoverColor: { default: 0x04FF5F},
-    activeColor: { default: 0xFFD704},
+    hoverColor: { default: 0x04FF5F },
+    activeColor: { default: 0xFFD704 },
+    disabledColor: { default: 0xA9A9A9 },
+    type: { default: 'color', oneOf: ['color', 'border'] }
   },
 
   init() {
@@ -61,14 +64,20 @@ AFRAME.registerComponent('highlight', {
     var data = self.data;
     // debugger;
     var changedData = Object.keys(self.data).filter(x => self.data[x] != oldData[x]);
-    if (['hover', 'active'].some(prop => changedData.includes(prop))) {
+    if (['hover', 'active', 'disabled'].some(prop => changedData.includes(prop))) {
 
-        if (data.hover || data.active) {
+
+        if (data.type == 'color') {
+          self._updateColor();
+        }
+        else if (data.hover || data.active) {
           if (self.el.object3DMap.hasOwnProperty('border') ) {
               // console.log('removing border');
               self.el.removeObject3D('border');
           }
-          self._createBorder();
+          if (data.type == 'border') {
+            self._createBorder();
+          }
         }
         else if (self.el.object3DMap.hasOwnProperty('border')) {
           self.el.removeObject3D('border');
@@ -99,7 +108,6 @@ AFRAME.registerComponent('highlight', {
     var self = this;
     var data = self.data;
 
-    // console.log('_createBorder');
     var geomAttribute = self.el.getAttribute('geometry');
     if (geomAttribute && (data.hover || data.active)) {
       var borderGeomAttribute = Object.assign({}, geomAttribute);
@@ -117,6 +125,23 @@ AFRAME.registerComponent('highlight', {
       group.add(newMesh);
       group.name="gBorder";
       self.el.setObject3D('border', group);  
+    }
+  },
+
+  _updateColor() {
+    var self = this;
+    var data = self.data;
+
+    var newColor = data.disabled ? data.disabledColor : data.active ? data.activeColor : data.hover ? data.hoverColor : data.color;
+
+    var opacity = data.disabled ? 0.2 : data.opacity;
+    var transparent = data.disabled ? true : false;
+
+    var mesh = self.el.getObject3D('mesh');
+    if (mesh) {
+        mesh.material.color = new THREE.Color( newColor );
+        mesh.material.opacity = opacity;
+        mesh.material.transparent = transparent;
     }
   }
 })
