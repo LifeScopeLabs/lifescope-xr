@@ -925,7 +925,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
             }
         });
         this.el.addEventListener("mouseup", evt => {
-            self.el.setAttribute('activeSeeking', false);
+            self.el.setAttribute('activeseeking', false);
             self.el.setAttribute('activePlayButton', false);
         });
         this.el.addEventListener("raycaster-intersected", evt => {
@@ -1002,13 +1002,14 @@ AFRAME.registerComponent('diorama-grid-cell', {
                     break;
                 case 'videolength':
                 case 'videoprogress':
+                case 'videoseekingpoint':
                     // debugger;
+                    if (!self.data.hoverSeeking) {
+                        self.el.setAttribute('hoverseeking', true);
+                    }
                     if (self.seekingPoint != intersection.point) {
                         self.seekingPoint = intersection.point;
                         self._updateSeeking(self.seekingPoint);
-                    }
-                    if (!self.data.hoverSeeking) {
-                        self.el.setAttribute('hoverseeking', true);
                     }
                     break;
                 default:
@@ -1168,14 +1169,14 @@ AFRAME.registerComponent('diorama-grid-cell', {
         var self = this;
         var group = self.el.getObject3D('progressbar') || new THREE.Group();
 
-        var progressText = `${Math.floor(self.video.currentTime)} / ${Math.floor(self.video.duration)}`;
-        self.el.setAttribute('text__videoprogress', {value: progressText});
 
         var videoProgressObj = self.el.getObject3D('text__videoprogress');
         var progressBarY = -self.data.imageheight/2 - 0.05;
-        videoProgressObj.rotation.set(0, Math.PI, 0);
-        videoProgressObj.position.set(self.data.imagewidth/2, progressBarY - 0.1, 0);
+        videoProgressObj.position.set(-self.data.imagewidth/2, progressBarY - 0.1, 0);
         videoProgressObj.updateMatrix();
+
+        var progressText = `${Math.floor(self.video.currentTime)} / ${Math.floor(self.video.duration)}`;
+        self.el.setAttribute('text__videoprogress', {value: progressText});
 
         if (this.el.object3DMap.hasOwnProperty('progressbar')) {
             var meshVideoProgress = group.children.find(function(obj) {
@@ -1203,7 +1204,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
                 var geomBuffered = new THREE.CylinderGeometry( 0.015, 0.015, imagewidth*bufferedPercent, 64 );
 
                 geomBuffered.rotateZ(Math.PI/2);
-                geomBuffered.translate(bufferedStartX, progressBarY, 0);
+                geomBuffered.translate(-bufferedStartX, progressBarY, 0);
 
                 var matBuffered = new THREE.MeshBasicMaterial( { color: 0x29F1FF } );
                 var meshBuffered = new THREE.Mesh( geomBuffered, matBuffered );
@@ -1220,7 +1221,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
         var progressX = (self.data.imagewidth - progressWidth)/2;
         var progressY = -self.data.imageheight/2 - 0.05;
-        geomVideoProgress.translate(progressX, progressY, 0);
+        geomVideoProgress.translate(-progressX, progressY, 0);
 
         var matVideoProgress = new THREE.MeshBasicMaterial( {color: 0x27BEFF} );
         var meshVideoProgress = new THREE.Mesh( geomVideoProgress, matVideoProgress );
@@ -1270,10 +1271,10 @@ AFRAME.registerComponent('diorama-grid-cell', {
             playPauseButton.holes = [hole];
         }
         else { // play button
-            playPauseButton.moveTo( -playHeight/2, 0 );
-            playPauseButton.lineTo( playHeight/2, playWidth/2 );
-            playPauseButton.lineTo( playHeight/2, -playWidth/2, );
-            playPauseButton.lineTo( -playHeight/2, 0 );
+            playPauseButton.moveTo( playHeight/2, 0 );
+            playPauseButton.lineTo( -playHeight/2, playWidth/2 );
+            playPauseButton.lineTo( -playHeight/2, -playWidth/2, );
+            playPauseButton.lineTo( playHeight/2, 0 );
         }
     
         var geomPlayPauseButton = new THREE.ShapeBufferGeometry( playPauseButton );
@@ -1281,7 +1282,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
         var progressBarY = -self.data.imageheight/2 - 0.05;
         var playPauseButtonOffsetX = self.data.imagewidth/2 - 0.1;
         var playPauseButtonOffsetY = progressBarY - 0.2;
-        geomPlayPauseButton.translate(playPauseButtonOffsetX, playPauseButtonOffsetY, 0);
+        geomPlayPauseButton.translate(-playPauseButtonOffsetX, playPauseButtonOffsetY, 0);
 
         var colorPlayPauseButton = data.disabled ? 0xA9A9A9 : data.activePlayButton ? 0xFFD704 : data.hoverPlayButton ? 0x04FF5F : data.color;
         var opacity = data.disabled ? 0.2 : data.opacity;
@@ -1343,25 +1344,16 @@ AFRAME.registerComponent('diorama-grid-cell', {
         }
     },
 
-    _updateSeeking(point) {
+    _createSeeking(point) {
         var self = this;
         var data = self.data;
-        
+
         var group = self.el.getObject3D('progressbar') || new THREE.Group();
         var meshVideoLength = group.children.find(function(obj) {
             return obj.name == 'videolength';
           });
-        var meshOldSeeking = group.children.find(function(obj) {
-            return obj.name == 'videoseekingpoint';
-          });
-        if (meshOldSeeking) {
-            group.remove(meshOldSeeking);
-        }
+
         var center = getCenterPoint(meshVideoLength);
-        var rotation = new THREE.Euler();
-        rotation = rotation.copy(meshVideoLength.rotation);
-        
-        rotation.set(rotation.x, rotation.y + 180, rotation.z);
 
         var b = new THREE.Vector3(1, 0, 0);
 
@@ -1375,7 +1367,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
         var geometry = new THREE.CylinderGeometry( 0.025, 0.025, 0.01, 64 );
         geometry.rotateZ(Math.PI/2);
-        var color = data.disabled ? 0xA9A9A9 : data.activeSeeking ? 0xFFD704 : data.hoverSeeking ? 0xFFFF00 : data.color;
+        var color = data.disabled ? 0xA9A9A9 : data.activeSeeking ? 0xFFD704 : 0xFFFF00;
         var material = new THREE.MeshBasicMaterial( {color: new THREE.Color(color)} );
         var mesh = new THREE.Mesh( geometry, material );
         mesh.name = 'videoseekingpoint';
@@ -1384,6 +1376,41 @@ AFRAME.registerComponent('diorama-grid-cell', {
         mesh.position.set(seekingPoint.x, seekingPoint.y, seekingPoint.z);
         mesh.updateMatrix();
         group.add( mesh );
+    },
+
+    _updateSeeking(point) {
+        var self = this;
+        var data = self.data;
+        
+        var group = self.el.getObject3D('progressbar') || new THREE.Group();
+        var meshVideoLength = group.children.find(function(obj) {
+            return obj.name == 'videolength';
+          });
+        var meshOldSeeking = group.children.find(function(obj) {
+            return obj.name == 'videoseekingpoint';
+          });
+
+        if (!meshOldSeeking) {
+            self._createSeeking(point);
+            return
+        }
+
+        var center = getCenterPoint(meshVideoLength);
+
+        var b = new THREE.Vector3(1, 0, 0);
+
+        var seekingPoint = new THREE.Vector3();
+        seekingPoint.copy(point);
+        seekingPoint = seekingPoint.projectOnVector(b)
+        self.seekingPercantage = (seekingPoint.x + self.data.imagewidth*1.5/2)/(self.data.imagewidth*1.5);
+
+        seekingPoint.add(center);
+
+        var color = data.disabled ? 0xA9A9A9 : data.activeSeeking ? 0xFFD704 : data.hoverSeeking ? 0xFFFF00 : data.color;
+        meshOldSeeking.material.color = new THREE.Color( color );
+
+        seekingPoint = group.worldToLocal(seekingPoint);
+        meshOldSeeking.position.set(seekingPoint.x, seekingPoint.y, seekingPoint.z);
     },
 
     // TODO : fix anime.js keyframes

@@ -25,7 +25,7 @@
                     :height="cellContentHeight"
                     srcFit="bothmax"
                     :animatein="animateInSeconds"
-                    highlight="type: border; target: image;"
+                    :highlight="'type: border; target: ' + item.type + ';'"
                     />
             </a-entity>
 
