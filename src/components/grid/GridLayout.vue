@@ -25,6 +25,7 @@
                     :height="cellContentHeight"
                     srcFit="bothmax"
                     :animatein="animateInSeconds"
+                    highlight="type: border; target: image;"
                     />
             </a-entity>
 
@@ -323,7 +324,7 @@ export default {
 
         gridCellRotation: function(itemNum) {
             var rot = this.cylindricalGrid.cellRotation(itemNum);
-            return `${rot.x} ${rot.y} ${rot.z}`;
+            return `${rot.x} ${rot.y + 180} ${rot.z}`;
         },
 
         gridCellPosition: function(itemNum) {
@@ -443,7 +444,7 @@ export default {
                 targets: el.parentEl.object3D.rotation,
                 easing: 'linear',
                 x: 0,
-                y: THREE.Math.degToRad(180-self.gridRotation),
+                y: THREE.Math.degToRad(360-self.gridRotation),
                 z: 0,
                 duration: self.dur*1000
             });

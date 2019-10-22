@@ -6,9 +6,11 @@
                 class="grid-camera camera"
                 camera>
             </a-entity>
-            <grid-controller ref="gridcontroller" />
+            <grid-controller v-if="inVR"
+                ref="gridcontroller" />
         </a-entity>
-        <a-entity cursor="rayOrigin: mouse"
+        <a-entity v-if="!inVR"
+            cursor="rayOrigin: mouse"
             raycaster="interval: 1000; objects: .clickable;">
         </a-entity>
 

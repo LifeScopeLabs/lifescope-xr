@@ -262,24 +262,13 @@ function _buildMediaMesh(url, type, imagewidth, imageheight, depth, offset, srcF
                 geomHeight = imageheight;
             }
             
-            geom = new THREE.BoxBufferGeometry(geomWidth, geomHeight, depth );
-            geom.rotateX(2 * Math.PI * offset.rotx / 360);
+            geom = new THREE.PlaneBufferGeometry( geomWidth, geomHeight );
             geom.translate(offset.x, offset.y, offset.z);
 
             mediaMaterial = new THREE.MeshBasicMaterial( { map: texture } );
             mediaMaterial.name = type == 'video' ? 'mVideo' : "mImage";
-            colorMaterial = new THREE.MeshBasicMaterial( {color: new THREE.Color( 0xffffff )} );
-            colorMaterial.name = "mColor";
 
-            var materials = [
-                colorMaterial,        // Left side
-                colorMaterial,       // Right side
-                colorMaterial,         // Top side
-                colorMaterial,      // Bottom side
-                colorMaterial,       // Front side
-                mediaMaterial         // Back side
-            ];
-            mesh = new THREE.Mesh(geom, materials);
+            mesh = new THREE.Mesh(geom, mediaMaterial);
             mesh.name = type == 'video' ? 'video' : "image";
             resolveMesh(mesh);
         })
@@ -300,10 +289,9 @@ function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0 }) {
     _buildMediaMesh(data.imageURL, data.type, data.imagewidth, data.imageheight, data.depth, offset, data.srcFit,
         data.aspectratio)
     .then( (mesh) => {
-        self.media = mesh.material.find(function(mat) {
-            return mat.name == 'm' + Type;
-        }).map.image;
-        
+
+        self.media = mesh.material.map.image;
+
         switch (data.type) {
             case 'video':
                 self.video = self.media;
@@ -317,13 +305,10 @@ function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0 }) {
         }
 
         self._updateAspectRatio();
-        var group = self.el.getObject3D(data.type) || new THREE.Group();
-        group.add(mesh);
-        group.name = 'g' + Type;
-        self.el.setObject3D(data.type, group);
+        self.el.setObject3D(data.type, mesh);
         if (data.animateLoad) {
             AFRAME.ANIME({
-                targets: group.scale,
+                targets: mesh.scale,
                 easing: 'linear',
                 x: [0, 1],
                 y: [0, 1],
@@ -874,8 +859,6 @@ AFRAME.registerComponent('diorama-grid-cell', {
         repeatV: { type: 'number', default: 1},
 
         selected: { type: 'boolean', default: false },
-        hover: { type: 'boolean', default: false },
-        active: { type: 'boolean', default: false },
         borderwidth: { type: 'number', default: 0.02 },
         aspectratio: { type: 'number', default: 0 },
 
@@ -921,10 +904,10 @@ AFRAME.registerComponent('diorama-grid-cell', {
                  self.intersection = intersection;
                  if (intersection) {
                     switch (intersection.object.name) {
-                        case 'image':
-                        case 'video':
-                            self.el.setAttribute('active', true);
-                            break;
+                        // case 'image':
+                        // case 'video':
+                        //     self.el.setAttribute('active', true);
+                        //     break;
                         case 'videolength':
                         case 'videoprogress':
                         case 'videoseekingpoint':
@@ -942,7 +925,6 @@ AFRAME.registerComponent('diorama-grid-cell', {
             }
         });
         this.el.addEventListener("mouseup", evt => {
-            self.el.setAttribute('active', false);
             self.el.setAttribute('activeSeeking', false);
             self.el.setAttribute('activePlayButton', false);
         });
@@ -966,9 +948,6 @@ AFRAME.registerComponent('diorama-grid-cell', {
                 // console.log('self.intersectingRaycaster is null')
             }
             
-            if(self.data.hover) {
-                self.el.setAttribute('hover', false);
-            }
             if (self.data.hoverPlayButton) {
                 self.el.setAttribute('hoverplaybutton', false);
             }
@@ -991,9 +970,6 @@ AFRAME.registerComponent('diorama-grid-cell', {
             }
         }
 
-        if (self.data.hover || self.data.active) {
-            self._createBorder();
-        }
 
         if (self.data.selected) {
             self.el.setAttribute('text__videoprogress', {transparent: false});
@@ -1018,19 +994,10 @@ AFRAME.registerComponent('diorama-grid-cell', {
         const intersection = this.intersectingRaycaster.getIntersection(this.el);
         self.intersection = intersection;
         if (intersection) {
-            // console.log(intersection.object.name);
             switch (intersection.object.name) {
-                case 'image':
-                case 'video':
-                    if(!self.data.hover) {
-                        self.el.setAttribute('hover', true);
-                        self.el.setAttribute('hoverplaybutton', false);
-                    }
-                    break;
                 case 'playPauseButton':
                     if(!self.data.hoverPlayButton) {
                         self.el.setAttribute('hoverplaybutton', true);
-                        self.el.setAttribute('hover', false);
                     }
                     break;
                 case 'videolength':
@@ -1086,22 +1053,6 @@ AFRAME.registerComponent('diorama-grid-cell', {
             self.el.removeObject3D('video');
             if (self.data.imageURL != '' && self.data.type=="video") {
                 self._createMedia();
-            }
-        }
-        if (
-            [ 'hover', 'active', 'imageURL', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio']
-            .some(prop => changedData.includes(prop))
-            ) {
-                // console.log('updating border');
-            if (this.el.object3DMap.hasOwnProperty('border') ) {
-                // console.log('removing border');
-                this.el.removeObject3D('border');
-            }
-            if (self.data.hover || self.data.active) {
-                self._createBorder();
-                if (!self.data.selected) {
-                    self._animateHover();
-                }
             }
         }
         if (
@@ -1189,44 +1140,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
         }
     },
 
-    _createBorder() {
-        var self = this;
-        var data = Object.assign({}, self.data);
 
-        var geom, mat, mesh;
-
-        data.offset = {
-            x: 0 + data.x,
-            y: 0 + data.y,
-            z: 0.001 + data.z,
-        }
-    
-        var geomWidth, geomHeight;
-        geomWidth = data.imagewidth;
-        geomHeight = data.imageheight;
-
-        if (data.aspectratio) {
-            if (data.srcFit == 'width') {
-                geomHeight = data.imagewidth / data.aspectratio;
-            }
-            else {
-                geomWidth = data.imageheight * data.aspectratio;
-            }
-        }
-        
-        geom = new THREE.PlaneBufferGeometry( geomWidth + data.borderwidth, geomHeight + data.borderwidth);
-        geom.translate(data.offset.x, data.offset.y, data.offset.z);
-
-        var color = data.active ? 0xFFD704 : data.hover ? 0x04FF5F : 0xe8f1ff;
-        mat = new THREE.MeshBasicMaterial( {color: new THREE.Color( color ), side: THREE.DoubleSide} );
-        mesh = new THREE.Mesh(geom, mat);
-        mesh.name = 'border';
-
-        var group = self.el.getObject3D('border') || new THREE.Group();
-        group.add(mesh);
-        group.name="gBorder";
-        self.el.setObject3D('border', group);
-    },
 
     _createProgressBar() {
         var self = this;
@@ -1406,8 +1320,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
     _videoSeekingHandler() {
         var self = this;
-        console.log('_videoSeekingHandler');
-        debugger;
+        // console.log('_videoSeekingHandler');
         try {
             if (self.video && self.seekingPercantage) {
                 self.video.currentTime = self.video.duration * self.seekingPercantage;
@@ -1512,9 +1425,9 @@ AFRAME.registerComponent('diorama-grid-cell', {
                 duration: dur/2,
                 complete: function(anim) {
                     self.animatingHover = false;
-                    if(self.data.hover && !self.data.selected) {
-                        self._animateHover(scale);
-                    }
+                    // if(self.data.hover && !self.data.selected) {
+                    //     self._animateHover(scale);
+                    // }
                 }
             }).finished
         }
@@ -1559,10 +1472,10 @@ AFRAME.registerComponent('diorama-grid-cell', {
                 duration: dur,
                 complete: function(anim) {
                     self.animatingActive = false;
-                    if(self.data.active && !self.data.selected) {
-                        self._animateActive(rot);//scale;
-                    }
-                    else {
+                    // if(self.data.active && !self.data.selected) {
+                    //     self._animateActive(rot);//scale;
+                    // }
+                    // else {
                         AFRAME.ANIME({
                             targets: self.el.object3D.rotation,
                             easing: 'linear',
@@ -1571,7 +1484,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
                             z: z,
                             duration: dur/2,
                         })
-                    }
+                    // }
                 }
             }).finished
         })
@@ -1583,7 +1496,7 @@ AFRAME.registerPrimitive( 'a-diorama-grid-cell', {
     defaultComponents: {
         'diorama-grid-cell__cell': {
         },
-        'text__videoprogress': { value: 'initial value', align: 'center'},
+        'text__videoprogress': { value: '', align: 'center'},
     },
     mappings: {
         'src': 'diorama-grid-cell__cell.imageURL',
@@ -1592,8 +1505,6 @@ AFRAME.registerPrimitive( 'a-diorama-grid-cell', {
         'height': 'diorama-grid-cell__cell.imageheight',
         'scale': 'diorama-grid-cell__cell.scale',
         'aspectratio': 'diorama-grid-cell__cell.aspectratio',
-        'hover': 'diorama-grid-cell__cell.hover',
-        'active': 'diorama-grid-cell__cell.active',
         'selected': 'diorama-grid-cell__cell.selected',
         'hoverplaybutton': 'diorama-grid-cell__cell.hoverPlayButton',
         'activeplaybutton': 'diorama-grid-cell__cell.activePlayButton',
