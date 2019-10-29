@@ -1145,14 +1145,17 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
     _createProgressBar() {
         var self = this;
-        var data = self.data;
 
         var progressBarY = -self.data.imageheight/2 - 0.05;
 
         var group = self.el.getObject3D('progressbar') || new THREE.Group();
         group.name = 'gProgressbar'
 
-        var geomVideoLength = new THREE.CylinderGeometry( 0.01, 0.01, self.data.imagewidth, 64 );
+
+        //
+        // Video base
+        //
+        var geomVideoLength = new THREE.CylinderBufferGeometry( 0.01, 0.01, self.data.imagewidth, 8, 1 );
 
         geomVideoLength.rotateZ(Math.PI/2);
         geomVideoLength.translate(0, progressBarY, 0);
@@ -1161,34 +1164,91 @@ AFRAME.registerComponent('diorama-grid-cell', {
         meshVideoLength.name = 'videolength';
         
         group.add(meshVideoLength);
+
+
+        //
+        // Progress
+        //
+        var minWidthPercent = 0.001;
+        var minWidth = self.data.imagewidth*minWidthPercent;
+        var geo = new THREE.CylinderBufferGeometry( 0.02, 0.02, minWidth, 8, 1 );
+        geo.rotateZ(Math.PI/2);
+        geo.translate(minWidth/2, progressBarY, 0);
+
+        geo.morphAttributes.position = [];
+
+        var positions = geo.attributes.position.array;
+        var morphPositions = [];
+
+        for ( var i = 0; i < positions.length; i += 3 ) {
+
+            var x = positions[ i ];
+            var y = positions[ i + 1 ];
+            var z = positions[ i + 2 ];
+
+            morphPositions.push(
+
+                x / minWidthPercent,
+                y ,
+                z
+
+            );
+
+        }
+
+        geo.morphAttributes.position[ 0 ] = new THREE.Float32BufferAttribute( morphPositions, 3 );
+        
+        var mat = new THREE.MeshBasicMaterial( 
+            {
+                color: 0x27BEFF, 
+                morphTargets: true
+            }
+        );
+        var meshVideoProgress = new THREE.Mesh( geo, mat );
+        meshVideoProgress.translateX(-self.data.imagewidth/2);
+        meshVideoProgress.name ='videoprogress';
+        group.add(meshVideoProgress);
+
+        //
+        // Buffered
+        //
+        var bufferedMeshes = self._createBuffers();
+        if (bufferedMeshes.length != 0) {
+            bufferedMeshes.forEach( mesh => group.add(mesh));
+        }
+
         self.el.setObject3D('progressbar', group);   
-        self._updateProgressBar();
     },
 
     _updateProgressBar() {
         var self = this;
+
         var group = self.el.getObject3D('progressbar') || new THREE.Group();
-
-
-        var videoProgressObj = self.el.getObject3D('text__videoprogress');
-        var progressBarY = -self.data.imageheight/2 - 0.05;
-        videoProgressObj.position.set(-self.data.imagewidth/2, progressBarY - 0.1, 0);
-        videoProgressObj.updateMatrix();
-
-        var progressText = `${Math.floor(self.video.currentTime)} / ${Math.floor(self.video.duration)}`;
-        self.el.setAttribute('text__videoprogress', {value: progressText});
-
-        if (this.el.object3DMap.hasOwnProperty('progressbar')) {
-            var meshVideoProgress = group.children.find(function(obj) {
+        var meshVideoProgress;
+        if (self.el.object3DMap.hasOwnProperty('progressbar')) {
+            meshVideoProgress = group.children.find(function(obj) {
                 return obj.name == 'videoprogress';
               });
-            group.remove(meshVideoProgress);
-            var bufferedMeshes = group.children.filter( obj => obj.name.startsWith('videobuffered'));
-            if (Array.isArray(bufferedMeshes) && bufferedMeshes.length != 0) {
-                bufferedMeshes.forEach( obj => group.remove(obj));
-            }
-            
         }
+        else {
+            return;
+        }
+
+        var progressPercent = self.video.currentTime/self.video.duration;
+        meshVideoProgress.morphTargetInfluences[ 0 ] = progressPercent;
+
+        if (self.video.buffered && self.video.buffered.length != 0) {
+            self._updateBuffered();
+        }
+    },
+
+    _createBuffers() {
+        var self = this;
+        var meshes = [];
+
+        var minWidthPercent = 0.001;
+        var minWidth = self.data.imagewidth*minWidthPercent;
+        var progressBarY = -self.data.imageheight/2 - 0.05;
 
         if (self.video.buffered && self.video.buffered.length != 0) {
             var i = 0;
@@ -1199,35 +1259,95 @@ AFRAME.registerComponent('diorama-grid-cell', {
             while (i < bufferedLengths) {
                 var start = timeRange.start(i);
                 var end = timeRange.end(i);
-                var bufferedPercent = (end-start)/duration;
-                var bufferedStartX = (1/2 - start/duration - bufferedPercent/2) * imagewidth;//+  1/2 
-                var geomBuffered = new THREE.CylinderGeometry( 0.015, 0.015, imagewidth*bufferedPercent, 64 );
-
-                geomBuffered.rotateZ(Math.PI/2);
-                geomBuffered.translate(-bufferedStartX, progressBarY, 0);
-
-                var matBuffered = new THREE.MeshBasicMaterial( { color: 0x29F1FF } );
-                var meshBuffered = new THREE.Mesh( geomBuffered, matBuffered );
+                var meshBuffered = self._createBufferMesh(start, end, duration, imagewidth, minWidth, minWidthPercent);
+                meshBuffered.translateY(progressBarY);
                 meshBuffered.name = 'videobuffered-' + i;
-                group.add(meshBuffered);
+                meshes.push(meshBuffered);
                 i++;
             }
         }
+        return meshes;
+    },
 
-        var progressPercent = self.video.currentTime/self.video.duration;
-        var progressWidth = self.data.imagewidth * progressPercent + 0.001;//self.data.imagewidth/2;
-        var geomVideoProgress= new THREE.CylinderGeometry( 0.02, 0.02, progressWidth, 64 );
-        geomVideoProgress.rotateZ(Math.PI/2);
+    _createBufferMesh(start, end, duration, imagewidth, minWidth, minWidthPercent) {
+        var bufferedPercent = (end-start)/duration;
+        var bufferedStartX = (1/2 - start/duration ) * imagewidth;// + minWidth;//+  1/2 - bufferedPercent/2
+        var geomBuffered = new THREE.CylinderBufferGeometry( 0.015, 0.015, minWidth, 8, 1 );
 
-        var progressX = (self.data.imagewidth - progressWidth)/2;
-        var progressY = -self.data.imageheight/2 - 0.05;
-        geomVideoProgress.translate(-progressX, progressY, 0);
+        geomBuffered.rotateZ(Math.PI/2);
+        geomBuffered.translate(minWidth/2, 0, 0);
 
-        var matVideoProgress = new THREE.MeshBasicMaterial( {color: 0x27BEFF} );
-        var meshVideoProgress = new THREE.Mesh( geomVideoProgress, matVideoProgress );
-        meshVideoProgress.name ='videoprogress';
-        group.add(meshVideoProgress);
-        
+        geomBuffered.morphAttributes.position = [];
+
+        var bufferedPositions = geomBuffered.attributes.position.array;
+        var bufferedMorphPositions = [];
+
+        for ( var j = 0; j < bufferedPositions.length; j += 3 ) {
+            var x = bufferedPositions[ j ];
+            var y = bufferedPositions[ j + 1 ];
+            var z = bufferedPositions[ j + 2 ];
+            bufferedMorphPositions.push(
+                x / minWidthPercent,
+                y ,
+                z
+            );
+        }
+
+        geomBuffered.morphAttributes.position[ 0 ] = new THREE.Float32BufferAttribute( bufferedMorphPositions, 3 );
+
+        var matBuffered = new THREE.MeshBasicMaterial( 
+            {
+                color: 0x29F1FF, 
+                morphTargets: true
+            }
+        );
+        var meshBuffered = new THREE.Mesh( geomBuffered, matBuffered );
+        meshBuffered.translateX(-bufferedStartX);
+        return meshBuffered;
+    },
+
+    _updateBuffered() {
+        var self = this;
+        var i = 0;
+        const bufferedLengths = self.video.buffered.length;
+        const timeRange = self.video.buffered;
+        const duration = self.video.duration;
+        const imagewidth = self.data.imagewidth;
+        var progressBarY = -self.data.imageheight/2 - 0.05;
+
+        var minWidthPercent = 0.001;
+        var minWidth = self.data.imagewidth*minWidthPercent;
+
+        var group = self.el.getObject3D('progressbar');
+
+        var currentBufferedIndices = [];
+        var bufferedMeshes;
+        if (this.el.object3DMap.hasOwnProperty('progressbar')) {
+            bufferedMeshes = group.children.filter( obj => obj.name.startsWith('videobuffered'));
+            if (Array.isArray(bufferedMeshes) && bufferedMeshes.length != 0) {
+                bufferedMeshes.forEach( obj => currentBufferedIndices.push(+obj.name.match(/\d+$/)));
+            }
+            
+        }
+
+        while (i < bufferedLengths) {
+            var start = timeRange.start(i);
+            var end = timeRange.end(i);
+            if (currentBufferedIndices.includes(i)) {
+                var meshBuffered = bufferedMeshes.find(function(obj) {
+                    return obj.name == 'videobuffered-' + i;
+                  });
+                var bufferedPercent = (end-start)/duration;
+                meshBuffered.morphTargetInfluences[ 0 ] = bufferedPercent;
+            }
+            else {
+                var meshBuffered = self._createBufferMesh(start, end, duration, imagewidth, minWidth, minWidthPercent);
+                meshBuffered.translateY(progressBarY);
+                meshBuffered.name = 'videobuffered-' + i;
+                group.add(meshBuffered);
+            }
+            i++;
+        }
     },
 
     _createVideoControls() {
@@ -1365,7 +1485,7 @@ AFRAME.registerComponent('diorama-grid-cell', {
 
         seekingPoint.add(center);
 
-        var geometry = new THREE.CylinderGeometry( 0.025, 0.025, 0.01, 64 );
+        var geometry = new THREE.CylinderBufferGeometry( 0.025, 0.025, 0.01, 8, 1 );
         geometry.rotateZ(Math.PI/2);
         var color = data.disabled ? 0xA9A9A9 : data.activeSeeking ? 0xFFD704 : 0xFFFF00;
         var material = new THREE.MeshBasicMaterial( {color: new THREE.Color(color)} );
