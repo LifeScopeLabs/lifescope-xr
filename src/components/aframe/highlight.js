@@ -43,17 +43,16 @@ AFRAME.registerComponent('highlight', {
       
       if(self.data.hover) {
         self.el.setAttribute('highlight', {'hover': false});
-          // self.el.setAttribute('hover', false);
       }
     });
 
       this.el.addEventListener("mousedown", evt => {
-        // self.el.setAttribute('active', true);
-        self.el.setAttribute('highlight', {'active': true});
+        self._handleIntersection('active');
       });
       this.el.addEventListener("mouseup", evt => {
-          // self.el.setAttribute('active', false);
-          self.el.setAttribute('highlight', {'active': false});
+          if (self.el.getAttribute('highlight').active) {
+            self.el.setAttribute('highlight', {'active': false});
+          }
       });
   },
 
@@ -67,15 +66,18 @@ AFRAME.registerComponent('highlight', {
         if (data.type == 'color') {
           self._updateColor();
         }
+        // if hover or active are true, update or create border
         else if (data.hover || data.active) {
+          // if border exist, update its color
           if (self.el.object3DMap.hasOwnProperty('border') ) {
-              // console.log('removing border');
-              self.el.removeObject3D('border');
+              self._updateColor('border');
           }
-          if (data.type == 'border') {
+          // otherwise, create border
+          else if (data.type == 'border') {
             self._createBorder();
           }
         }
+        // if hover and active are false and border still exists, remove it
         else if (self.el.object3DMap.hasOwnProperty('border')) {
           self.el.removeObject3D('border');
         }
@@ -83,22 +85,7 @@ AFRAME.registerComponent('highlight', {
   },
 
   tick: function() {
-    var self = this;
-    if (!this.intersectingRaycaster) {
-        return;
-    }
-
-    const intersection = this.intersectingRaycaster.getIntersection(this.el);
-    self.intersection = intersection;
-    if (intersection) {
-        switch (intersection.object.name) {
-            default:
-                if(!self.data.hover) {
-                  self.el.setAttribute('highlight', {'hover': true});
-                }
-                break;
-        }
-    }
+    this._handleIntersection();
   },
 
   _createBorder() {
@@ -150,10 +137,7 @@ AFRAME.registerComponent('highlight', {
     newMesh.name = 'border';
     newMesh.updateMatrix();
 
-    var group = self.el.getObject3D('border') || new THREE.Group();
-    group.add(newMesh);
-    group.name="gBorder";
-    self.el.setObject3D('border', group);  
+    self.el.setObject3D('border', newMesh);  
   },
 
   _createBorderPlane(geomAttribute) {
@@ -181,7 +165,7 @@ AFRAME.registerComponent('highlight', {
     self.el.setObject3D('border', mesh);
   },
 
-  _updateColor() {
+  _updateColor(meshName='mesh') {
     var self = this;
     var data = self.data;
 
@@ -190,11 +174,38 @@ AFRAME.registerComponent('highlight', {
     var opacity = data.disabled ? 0.2 : data.opacity;
     var transparent = data.disabled ? true : false;
 
-    var mesh = self.el.getObject3D('mesh');
+    var mesh = self.el.getObject3D(meshName);
     if (mesh) {
         mesh.material.color = new THREE.Color( newColor );
         mesh.material.opacity = opacity;
         mesh.material.transparent = transparent;
+    }
+  },
+
+  _handleIntersection(attribute='hover') {
+    var self = this;
+    if (!this.intersectingRaycaster) {
+        return;
+    }
+
+    var value = {};
+    value[attribute] = true;
+    const intersection = this.intersectingRaycaster.getIntersection(this.el);
+    self.intersection = intersection;
+    if (intersection && !self.data[attribute]) {
+        if (self.data.target != '') {
+          switch (intersection.object.name) {
+            case self.data.target:
+            case 'border':
+                self.el.setAttribute('highlight', value);
+                break;
+            default:
+              break;
+          }
+        }
+        else {
+          self.el.setAttribute('highlight', value);
+        }
     }
   }
 })

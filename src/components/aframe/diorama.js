@@ -305,10 +305,9 @@ function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0 }) {
         }
 
         self._updateAspectRatio();
-        self.el.setObject3D(data.type, mesh);
         if (data.animateLoad) {
             AFRAME.ANIME({
-                targets: mesh.scale,
+                targets: self.el.object3D.scale,
                 easing: 'linear',
                 x: [0, 1],
                 y: [0, 1],
@@ -316,6 +315,7 @@ function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0 }) {
                 duration: 1000*(data.animateInSeconds)
             });
         }
+        self.el.setObject3D(data.type, mesh);
     })
     .catch(function(error) {
         console.log('_createMedia error')
