@@ -8,6 +8,7 @@
             gearvr-controls="hand: right;"
             >
             <a-entity id="gridCursor"
+                cursor
                 raycaster="objects: .clickable; showLine: true; "></a-entity>
         </a-entity>
 </template>
@@ -24,12 +25,21 @@ export default {
         }
     },
 
+    computed: {
+        ...mapState('xr',
+            [
+                'inVR',
+            ]
+        )
+    },
+
     mounted () {
-        document.addEventListener('controllerconnected', this.controllerConnectedListener) 
+        document.addEventListener('controllerconnected', this.controllerConnectedListener);
+        this.setupControls();
     },
 
     beforeDestroy() {
-        document.body.removeEventListener('controllerconnected', this.controllerConnectedListener)
+        document.body.removeEventListener('controllerconnected', this.controllerConnectedListener);
     },
 
     methods: {
@@ -86,7 +96,6 @@ export default {
         },
 
         controllerConnectedListener(evt) {
-            console.log(`controller connected: ${evt.detail.name}`);
             this.fixCursorPosition(evt.detail.name);
         },
 

@@ -117,7 +117,8 @@
         :heightmapheight="worldMapHeight"></a-mapbox-terrain>
 
     <!-- Room Selector -->
-    <room-display 
+    <room-display v-if="!inVR"
+        id="room-display"
         :position="'0.1 0.03 ' + (-offsetz)"
         rotation="0 -90 0"
     />
@@ -211,6 +212,7 @@ export default {
 
         ...mapState('xr',
             [
+                'inVR',
                 'LSObjs',
                 'roomConfig',
                 'sceneLayout',

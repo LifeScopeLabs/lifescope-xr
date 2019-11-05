@@ -193,7 +193,6 @@ export default {
             if (CONFIG.DEBUG) {console.log("setupVR");};
             var playerGridRig = document.getElementById('playerGridRig');
             playerGridRig.object3D.matrixAutoUpdate = true;
-            this.$refs.gridcontroller.setupControls();
             this.fixVRCameraPosition();
         },
 
@@ -216,7 +215,7 @@ export default {
             }
         },
 
-         fixVRCameraPosition() {
+        fixVRCameraPosition() {
             if(CONFIG.DEBUG){console.log('fixVRCameraPosition');}
 
             var playerRig = this.$el;
