@@ -263,6 +263,9 @@ function _buildMediaMesh(url, type, imagewidth, imageheight, depth, offset, srcF
             }
             
             geom = new THREE.PlaneBufferGeometry( geomWidth, geomHeight );
+            if(offset.roty) geom.rotateY(THREE.Math.degToRad(offset.roty));
+            if(offset.rotx) geom.rotateX(THREE.Math.degToRad(offset.rotx));
+            if(offset.rotz) geom.rotateZ(THREE.Math.degToRad(offset.rotz));
             geom.translate(offset.x, offset.y, offset.z);
 
             mediaMaterial = new THREE.MeshBasicMaterial( { map: texture } );
@@ -280,7 +283,7 @@ function _buildMediaMesh(url, type, imagewidth, imageheight, depth, offset, srcF
 }
 
 
-function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0 }) {
+function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0, roty: 0, rotz: 0 }) {
     var self = this;
     var data = self.data;
 
@@ -647,7 +650,7 @@ AFRAME.registerComponent('diorama-case', {
 
         if (self.data.imageURL != '' && 
             (self.data.type=="image" || self.data.type=="video")) {
-            self._createMedia({ x: 0, y: data.railheight + 0.3, z: -.15, rotx: data.rotationx });
+            self._createMedia({ x: 0, y: data.railheight + 0.3, z: -.15, rotx: data.rotationx, roty: 180 });
         }
 
         // if (self.data.imageURL != '' && self.data.type=="video") {
@@ -680,7 +683,7 @@ AFRAME.registerComponent('diorama-case', {
                     self.el.removeObject3D('image');
                 }
             if (self.data.imageURL != '' && self.data.type=="image") {
-                self._createMedia({ x: 0, y: self.data.railheight + 0.3, z: -.15, rotx: self.data.rotationx });
+                self._createMedia({ x: 0, y: self.data.railheight + 0.3, z: -.15, rotx: self.data.rotationx, roty: 180 });
             }
         }
 
@@ -690,7 +693,7 @@ AFRAME.registerComponent('diorama-case', {
                 // console.log('removing video');
             self.el.removeObject3D('video');
             if (self.data.imageURL != '' && self.data.type=="video") {
-                self._createMedia({ x: 0, y: self.data.railheight + 0.3, z: -.15, rotx: self.data.rotationx });
+                self._createMedia({ x: 0, y: self.data.railheight + 0.3, z: -.15, rotx: self.data.rotationx, roty: 180 });
             }
         }
 

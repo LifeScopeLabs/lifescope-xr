@@ -75,7 +75,9 @@ s3.listObjects(bucketParams, function(err, data) {
                     ext: content.Key.match(re)[2],
                     type: contentTypes[content.Key.match(re)[2]]
                 };
-                gallery_content[room_name].push(result);
+                if (!['video360', '3d'].includes(room_name)) {
+                    gallery_content[room_name].push(result);
+                }
             }
             // avatars
             else if (content.Key.startsWith(BUCKET_PATH_AVATAR) && content.Key.endsWith('.gltf')) {
