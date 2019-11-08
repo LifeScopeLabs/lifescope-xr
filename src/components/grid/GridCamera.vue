@@ -1,7 +1,6 @@
 <template>
   <a-entity id="playerGridRig">
-        <a-entity id="camera-rig" class="camera-rig"
-            position="0 0 0">
+        <a-entity id="camera-rig" class="camera-rig">
             <a-entity id="grid-camera"
                 class="grid-camera camera"
                 camera>
@@ -193,12 +192,10 @@ export default {
             if (CONFIG.DEBUG) {console.log("setupVR");};
             var playerGridRig = document.getElementById('playerGridRig');
             playerGridRig.object3D.matrixAutoUpdate = true;
-            this.fixVRCameraPosition();
         },
 
         tearDownVR() {
             if (CONFIG.DEBUG) {console.log("tearDownVR");};
-            this.unFixVRCameraPosition();
             this.$refs.gridcontroller.tearDownControls();
         },
 
@@ -215,37 +212,6 @@ export default {
             }
         },
 
-        fixVRCameraPosition() {
-            if(CONFIG.DEBUG){console.log('fixVRCameraPosition');}
-
-            var playerRig = this.$el;
-
-            var playerCamera = document.getElementById('grid-camera');
-            var cameraRig = document.getElementById('camera-rig');
-
-            var position, quaternion;
-            position = playerRig.object3D.getWorldPosition();
-            playerRig.object3D.worldToLocal(position);
-            cameraRig.object3D.position.set(position.x, -this.playerHeight, position.z);
-            cameraRig.object3D.updateMatrix();
-        },
-
-        unFixVRCameraPosition() {
-            if(CONFIG.DEBUG){console.log('unFixVRCameraPosition');}
-
-            var playerRig = this.$el;
-
-            var playerCamera = document.getElementById('grid-camera');
-            var cameraRig = document.getElementById('camera-rig');
-
-            var position, quaternion;
-            position = playerRig.object3D.getWorldPosition();
-            playerRig.object3D.worldToLocal(position);
-            cameraRig.object3D.position.set(position.x, 0, position.z);
-            cameraRig.object3D.updateMatrix();
-            playerCamera.object3D.position.set(0, 0, 0);
-            playerCamera.object3D.updateMatrix();
-        },
     }
 }
 </script>

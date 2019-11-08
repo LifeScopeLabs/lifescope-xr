@@ -1041,6 +1041,11 @@ AFRAME.registerComponent('diorama-grid-cell', {
             self.el.setAttribute('height', self.originalHeight);
             self.el.setAttribute('width', self.originalWidth);
         }
+        if ( !!self.media && ['srcFit', 'imagewidth', 'imageheight', ]
+            .some(prop => changedData.includes(prop))) {
+            self._updateAspectRatio();
+        }
+
         if ( self.el.object3DMap.hasOwnProperty('image') &&
             ['imageURL', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio']
             .some(prop => changedData.includes(prop))) {

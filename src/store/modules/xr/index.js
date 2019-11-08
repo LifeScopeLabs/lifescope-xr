@@ -8,6 +8,7 @@ import graphicsModule from './modules/graphics';
 import mapModule from './modules/map';
 import nafModule from './modules/naf';
 import gridModule from './modules/grid';
+import styleModule from './modules/style';
 
 const SceneLayoutEnum = Object.freeze({
     GALLERY: 1,
@@ -23,7 +24,8 @@ export const modules = {
         hud: hudModule,
         map: mapModule,
         naf: nafModule,
-        grid: gridModule
+        grid: gridModule,
+        style: styleModule,
 };
 
 export const state = function () {

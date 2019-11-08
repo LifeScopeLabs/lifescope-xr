@@ -4,8 +4,8 @@ AFRAME.registerComponent('highlight', {
     active: { type: 'boolean', default: false },
     disabled: { type: 'boolean', default: false },
     color: { default: 0xe8f1ff},
-    hoverColor: { default: 0x04FF5F },
-    activeColor: { default: 0xFFD704 },
+    hoverColor: { type: 'color', default: 0x04FF5F },
+    activeColor: { type: 'color', default: 0xFFD704 },
     disabledColor: { default: 0xA9A9A9 },
     type: { default: 'color', oneOf: ['color', 'border'] },
     target: { default: '', type: 'string' },
@@ -131,7 +131,7 @@ AFRAME.registerComponent('highlight', {
     borderGeomAttribute.radius = borderGeomAttribute.radius*(1 + data.bordersize);
     var geom = self.el.sceneEl.systems.geometry.getOrCreateGeometry(borderGeomAttribute);
 
-    var color = data.active ? 0xFFD704 : data.hover ? 0x04FF5F : 0xe8f1ff;
+    var color = data.active ? data.activeColor : data.hover ? data.hoverColor : data.color;
     var mat = new THREE.MeshBasicMaterial( {color: new THREE.Color( color ), side: THREE.BackSide} );
     var newMesh = new THREE.Mesh(geom, mat);
     newMesh.name = 'border';
@@ -157,7 +157,7 @@ AFRAME.registerComponent('highlight', {
       geom.translate(0, 0, -0.001);
     }
 
-    var color = data.active ? 0xFFD704 : data.hover ? 0x04FF5F : 0xe8f1ff;
+    var color = data.active ? data.activeColor : data.hover ? data.hoverColor : data.color;
     mat = new THREE.MeshBasicMaterial( {color: new THREE.Color( color ), side: THREE.FrontSide} );
     mesh = new THREE.Mesh(geom, mat);
     mesh.name = 'border';

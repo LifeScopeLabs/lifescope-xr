@@ -32,7 +32,7 @@
     <!-- gallery -->
     <gallery v-if="sceneLayout == SceneLayoutEnum.GALLERY"/>
     <grid-layout v-else-if="sceneLayout == SceneLayoutEnum.GRID"
-      offsetz="2"/>
+      offsetz="1.5"/>
 
     <avatar v-if="sceneLayout == SceneLayoutEnum.GALLERY" ref="avatar"
       :position="'0 ' + playerHeight + ' 0'"/>

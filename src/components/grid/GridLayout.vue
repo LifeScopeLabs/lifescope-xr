@@ -25,7 +25,8 @@
                     :height="cellContentHeight"
                     srcFit="bothmax"
                     :animatein="animateInSeconds"
-                    :highlight="'type: border; target: ' + item.type + ';'"
+                    :highlight="'type: border; target: ' + item.type + '; hoverColor: ' + hoverColor +
+                        '; activeColor: ' + activeColor + ';'" 
                     />
             </a-entity>
 
@@ -80,18 +81,18 @@
                 :disabled="focusedCellIndex==0 && !canPageLeft"
                 class="cell-arrow-left clickable"
                 direction="left"
-                :position="-((cellWidth * focusedCellScale.x)/2 + 0.05)+ ' 0 0'"
-                :width="0.3"
-                :height="0.04"
+                :position="-((cellWidth * focusedCellScale.x)/2 + focusArrowMargin)+ ' 0 0'"
+                :width="focusArrowWidth"
+                :height="focusArrowHeight"
                 @click="previousCell"
             />
             <a-arrow 
                 :disabled="focusedCellIndex==(numberOfItemsToDisplay - 1) && !canPageRight"
                 class="cell-arrow-right clickable"
                 direction="right"
-                :position="((cellWidth * focusedCellScale.x)/2 + 0.05)+ ' 0 0'"
-                :width="0.3"
-                :height="0.04"
+                :position="((cellWidth * focusedCellScale.x)/2 + focusArrowMargin)+ ' 0 0'"
+                :width="focusArrowWidth"
+                :height="focusArrowHeight"
                 @click="nextCell"
                 />
         </a-entity>
@@ -172,11 +173,7 @@ export default {
             dur: 0.5, //seconds
             cylinder: null,
             cylindricalGrid: null,
-            cellsPerRow: 28,
             SkyboxEnum: SkyboxEnum,
-            focusedCellPosititon: { x:0, y:0.1, z:-1 },
-            focusedCellScale: { x:1.5, y:1.5, z:1 },
-            gridOffsetY: -0.3,
             paginatorOffsetZ: 1.4,
         }
     },
@@ -185,7 +182,11 @@ export default {
 
     computed: {
         gridRotation() {
-            return (180-(360/this.cellsPerRow)*2);
+            return (180-(360/this.gridCellsPerRow)*2);
+        },
+
+        gridOffsetY() {
+            return (1-this.rows/2)*this.cellHeight;
         },
 
         sortedLSObjs() {
@@ -228,6 +229,13 @@ export default {
                 'skybox',
             ]
         ),
+
+         ...mapState('xr/style',
+            [
+                'hoverColor',
+                'activeColor',
+            ]
+        ),
         
         ...mapState('xr/map',
             [
@@ -266,8 +274,14 @@ export default {
                 'cellWidth',
                 'cellHeight',
                 'cellContentHeight',
+                'gridCellsPerRow',
+                'focusedCellPosititon',
+                'focusedCellScale',
                 'arrowWidth',
                 'arrowHeight',
+                'focusArrowHeight',
+                'focusArrowWidth',
+                'focusArrowMargin',
                 'animateInSeconds',
                 'animateOutSeconds',
             ]
@@ -291,9 +305,24 @@ export default {
 
     },
 
+    watch: {
+        gridCellsPerRow: function (newVal, oldVal) {
+            this.cylinder.cellsPerRow = newVal;
+            this.cylindricalGrid.cellsPerRow = newVal;
+        },
+        cellHeight: function (newVal, oldVal) {
+            this.cylinder.cellHeight = newVal;
+            this.cylindricalGrid.cellHeight = newVal;
+        },
+        radius: function (newVal, oldVal) {
+            this.cylinder.radius = newVal;
+            this.cylindricalGrid.radius = newVal;
+        },
+    },
+    
     created() {
-        this.cylinder = new Cylinder(this.cellsPerRow, this.cellHeight, this.radius);
-        this.cylindricalGrid = new CylindricalGrid(this.cellsPerRow, this.cellHeight,
+        this.cylinder = new Cylinder(this.gridCellsPerRow, this.cellHeight, this.radius);
+        this.cylindricalGrid = new CylindricalGrid(this.gridCellsPerRow, this.cellHeight,
             this.radius, this.rows, this.columns);
     },
 
@@ -354,7 +383,9 @@ export default {
             var focusedCellEl = document.querySelector('#' + this.focusedCell);
             var nextCellEl =  document.querySelector('#' + nextCellId);
             this.unFocusCell(focusedCellEl);
+            this.animateHideCellPromise(focusedCellEl);
             this.focusCell(nextCellEl);
+            this.animateRevealCellPromise(nextCellEl);
         },
 
         previousCell(evt) {
@@ -369,7 +400,9 @@ export default {
             var focusedCellEl = document.querySelector('#' + this.focusedCell);
             var previousCellEl =  document.querySelector('#' + previousCellId);
             this.unFocusCell(focusedCellEl);
+            this.animateHideCellPromise(focusedCellEl);
             this.focusCell(previousCellEl);
+            this.animateRevealCellPromise(previousCellEl);
         },
 
         cellClickedHandler(evt) {
@@ -386,10 +419,12 @@ export default {
                 case '':
                     self.focusedCell = id;
                     self.focusCell(el);
+                    self.hideNonFocusedCells();
                     break;
                 case id:
                     self.unFocusCell(el);
                     self.focusedCell = '';
+                    self.revealNonFocusedCells();
                     break;
                 default:
                     var focusedCellEl = document.querySelector('#' + self.focusedCell);
@@ -512,6 +547,42 @@ export default {
             }
         },
 
+        hideNonFocusedCells() {
+            var self = this;
+            var animationPromises = [];
+            for (var i=0; i<this.numberOfItemsToDisplay; i++) {
+                if (i==this.focusedCellIndex) continue;
+
+                var el = document.querySelector(`#grid-cell-${i}`);
+                animationPromises.push(self.animateHideCellPromise(el));
+            }
+            Promise.all(animationPromises);
+            var leftArrow = document.querySelector('.grid-arrow-left');
+            var rightArrow = document.querySelector('.grid-arrow-right');
+            var skyboxSelector = document.querySelector('.skybox-selector');
+            var floorMapSelector = document.querySelector('.floor-map-selector');
+            leftArrow.setAttribute('visible', false);
+            rightArrow.setAttribute('visible', false);
+            skyboxSelector.setAttribute('visible', false);
+            floorMapSelector.setAttribute('visible', false);
+        },
+        revealNonFocusedCells() {
+            var self = this;
+            var animationPromises = [];
+            for (var i=0; i<this.numberOfItemsToDisplay; i++) {
+                var el = document.querySelector(`#grid-cell-${i}`);
+                animationPromises.push(self.animateRevealCellPromise(el));
+            }
+            Promise.all(animationPromises);
+            var leftArrow = document.querySelector('.grid-arrow-left');
+            var rightArrow = document.querySelector('.grid-arrow-right');
+            var skyboxSelector = document.querySelector('.skybox-selector');
+            var floorMapSelector = document.querySelector('.floor-map-selector');
+            leftArrow.setAttribute('visible', true);
+            rightArrow.setAttribute('visible', true);
+            skyboxSelector.setAttribute('visible', true);
+            floorMapSelector.setAttribute('visible', true);
+        },
         handlePageLeft() {
             this.unFocusFoscusedCell();
             this.pageAnimation(this.pageLeft);
@@ -556,6 +627,62 @@ export default {
                 }
                 catch (error) {
                     console.error('animateCellRemovalPromise error');
+                    console.log(error);
+                    reject(error);
+                }
+            });
+        },
+
+        animateHideCellPromise(el) {
+            var self = this;
+            var mesh = el.object3D.children.find( function(obj) {
+                    return obj.name=='image'|| obj.name=='video'
+                });
+            return new Promise((resolve, reject) => {
+                try {
+                    AFRAME.ANIME({
+                        targets: mesh.material,
+                        easing: 'linear',
+                        opacity: 0,
+                        duration: self.dur*1000,
+                        begin: function(anim) {
+                            mesh.material.transparent = true;
+                            el.classList.remove('clickable');
+                        },
+                        complete: function(anim) {
+                            resolve();
+                        }
+                    });
+                }
+                catch (error) {
+                    console.error('animateHideCellPromise error');
+                    console.log(error);
+                    reject(error);
+                }
+            });
+        },
+
+        animateRevealCellPromise(el) {
+            var self = this;
+            var mesh = el.object3D.children.find( function(obj) {
+                    return obj.name=='image'|| obj.name=='video'
+                });
+            return new Promise((resolve, reject) => {
+                try {
+                    AFRAME.ANIME({
+                        targets: mesh.material,
+                        easing: 'linear',
+                        opacity: 1,
+                        duration: self.dur*1000,
+                        complete: function(anim) {
+                            mesh.material.transparent = false;
+                            el.classList.add('clickable');
+                            resolve();
+                        }
+                    });
+                }
+                catch (error) {
+                    console.error('animateHideCellPromise error');
                     console.log(error);
                     reject(error);
                 }
