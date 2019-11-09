@@ -319,6 +319,7 @@ function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0, roty: 0, rotz: 0 }) 
             });
         }
         self.el.setObject3D(data.type, mesh);
+        self.el.emit('media-mesh-set', {id: self.el.getAttribute('id')});
     })
     .catch(function(error) {
         console.log('_createMedia error')
@@ -1049,7 +1050,6 @@ AFRAME.registerComponent('diorama-grid-cell', {
         if ( self.el.object3DMap.hasOwnProperty('image') &&
             ['imageURL', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio']
             .some(prop => changedData.includes(prop))) {
-                // console.log('removing image');
             self.el.removeObject3D('image');
             if (self.data.imageURL != '' && self.data.type=="image") {
                 self._createMedia();

@@ -330,12 +330,14 @@ export default {
         var self = this;
         this.$el.addEventListener("cellclicked", self.cellClickedHandler);
         this.$el.addEventListener("objectclicked", self.objectClickedHandler);
+        this.$el.addEventListener('media-mesh-set', self.mediaMeshLoadedHandler);
     },
 
     beforeDestroy() {
         var self = this;
         this.$el.removeEventListener("cellclicked", self.cellClickedHandler);
         this.$el.removeEventListener("objectclicked", self.objectClickedHandler);
+        this.$el.removeEventListener('media-mesh-set', self.mediaMeshLoadedHandler);
     },
 
     methods: {
@@ -375,13 +377,15 @@ export default {
 
         nextCell(evt) {
             var n = this.focusedCellIndex;
-            if (n == this.numberOfItemsToDisplay - 1 && this.canPageRight) {
-                this.pageRight();
-            }
             var m = (n + 1) % this.numberOfItemsToDisplay;
             var nextCellId = this.focusedCell.replace(/\d+$/, m);
             var focusedCellEl = document.querySelector('#' + this.focusedCell);
             var nextCellEl =  document.querySelector('#' + nextCellId);
+            this.focusedCell = nextCellId;
+
+            if (n == this.numberOfItemsToDisplay - 1 && this.canPageRight) {
+                this.pageRight();
+            }
             this.unFocusCell(focusedCellEl);
             this.animateHideCellPromise(focusedCellEl);
             this.focusCell(nextCellEl);
@@ -389,20 +393,32 @@ export default {
         },
 
         previousCell(evt) {
+            var self = this;
             var n = this.focusedCellIndex;
+            var m = n == 0 ? this.itemsPerPage - 1 : n - 1;
+            var previousCellId = this.focusedCell.replace(/\d+$/, m);
+            var focusedCellEl = document.querySelector('#' + this.focusedCell);
+            var previousCellEl = document.querySelector('#' + previousCellId);
+            this.focusedCell = previousCellId;
 
             if (n == 0 && this.canPageLeft) {
                 this.pageLeft();
             }
-            var m = n == 0 ? this.numberOfItemsToDisplay - 1 : n - 1;
-
-            var previousCellId = this.focusedCell.replace(/\d+$/, m);
-            var focusedCellEl = document.querySelector('#' + this.focusedCell);
-            var previousCellEl =  document.querySelector('#' + previousCellId);
             this.unFocusCell(focusedCellEl);
             this.animateHideCellPromise(focusedCellEl);
-            this.focusCell(previousCellEl);
-            this.animateRevealCellPromise(previousCellEl);
+            if (!!previousCellEl) {
+                this.focusCell(previousCellEl);
+                this.animateRevealCellPromise(previousCellEl);
+            }
+            else {
+                var mediaSetCallback =  function(evt) {
+                    if (evt.target.id == previousCellId) {
+                        self.focusCell(evt.target);
+                        self.$el.removeEventListener('media-mesh-set', mediaSetCallback);
+                    }
+                }
+                self.$el.addEventListener('media-mesh-set', mediaSetCallback);
+            }
         },
 
         cellClickedHandler(evt) {
@@ -451,6 +467,15 @@ export default {
                     break;
                 default:
                     break;
+            }
+        },
+
+        mediaMeshLoadedHandler(evt) {
+            var self = this;
+            if (self.focusedCell != '') {
+                if (evt.detail.id != self.focusedCell) {
+                    self.animateHideCellPromise(evt.target);
+                }
             }
         },
 
@@ -682,7 +707,7 @@ export default {
                     });
                 }
                 catch (error) {
-                    console.error('animateHideCellPromise error');
+                    console.error('animateRevealCellPromise error');
                     console.log(error);
                     reject(error);
                 }
