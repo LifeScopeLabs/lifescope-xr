@@ -45,5 +45,6 @@
 
   "DEBUG": false,
 
-  "mapboxAcessToken": ""
+  "mapboxAcessToken": "",
+  "FontAwesomeVersion": "\"Font Awesome 5 Pro\""
 }

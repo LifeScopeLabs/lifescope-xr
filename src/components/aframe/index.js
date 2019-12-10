@@ -2,6 +2,7 @@ import './arrow.js';
 import './avatar-rig';
 import './diorama.js';
 import './dynamic-autoplay.js';
+import './flex.js';
 import './highlight.js';
 import './ionicon.js';
 import './ls-cell.js';

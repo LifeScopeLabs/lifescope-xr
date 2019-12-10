@@ -13,6 +13,7 @@ THREE.BufferGeometryUtils = BufferGeometryUtils;
 import 'aframe';
 import 'networked-aframe';
 import 'aframe-extras';
+import 'aframe-font-awesome';
 import 'aframe-gui';
 import 'aframe-input-mapping-component';
 import 'aframe-super-keyboard';
@@ -24,6 +25,8 @@ import 'particles.js';
 
 import './components/aframe';
 import './directives';
+
+import './util/setupFontAwesome.js';
 
 import {mappings, inputActions} from './controls/input-mappings';
 

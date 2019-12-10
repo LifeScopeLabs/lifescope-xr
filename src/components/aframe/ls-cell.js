@@ -61,7 +61,7 @@ function _createText(opts={})  {
     var width = opts.width || self.data.width;
     var wrapCount = opts.wrapcount || self.data.wrapcount;
     if (self.data.wrapfit) {
-        wrapCount =  (width / fontSize) * (20/0.3);
+        wrapCount =  (width / fontSize) * (20/0.3); 
     }
     var wrapSize = (wrapCount) / 20;
     var widthScale = 0.3 / (width);
@@ -73,6 +73,7 @@ function _createText(opts={})  {
     var color = opts.color || self.data.color;
 
     self.el.setAttribute(textName, {
+        // id: id,
         value: text,
         width: textWidth,
         height: height,
@@ -92,11 +93,10 @@ function _setUpTextHandler(id='', offset={}) {
     var lineHeight = textObj.geometry.layout._lineHeight;
     var linesTotal = textObj.geometry.layout._linesTotal;
     var textScale = textObj.scale.x;
-    var halfLines = linesTotal % 2 == 0 ? linesTotal/2 : (linesTotal)/2 - 1;//linesTotal/2 - 1 : linesTotal/2;
+    var halfLines = linesTotal % 2 == 0 ? linesTotal/2 : (linesTotal)/2 - 1;
     var offsetY = self.data.height/2;
     if (linesTotal>1) { offsetY -= halfLines*(lineHeight * textScale); }
     else { offsetY -= (lineHeight * textScale)/2 }
-
 
     textObj.translateY(offsetY);
     if (offset.x) textObj.translateX(offset.x);
@@ -104,6 +104,16 @@ function _setUpTextHandler(id='', offset={}) {
     if (offset.z) textObj.translateZ(offset.z);
 
     self._setUpClipping(id);
+}
+
+function _setUpFAHandler(id='', offset={}) {
+    var obj = this.el.getObject3D('fa-' + id);
+    var width = obj.geometry.parameters.width;
+    obj.translateX(width/2);
+    obj.translateY(-width/2);
+    if (offset.x) obj.translateX(offset.x);
+    if (offset.y) obj.translateY(offset.y);
+    if (offset.z) obj.translateZ(offset.z);
 }
 
 function _setUpClipping(id='') {
@@ -117,23 +127,18 @@ function _setUpClipping(id='') {
     var textScale = textObj.scale.x;
 
     var offsetY = 0;
-    if (self.offsetMap.has(id)) {
-        var offset = self.offsetMap.get(id);
-        offsetY = offset.y != undefined ? offset.y : 0;
-    }
 
     var renderer = el.sceneEl.renderer;
     renderer.localClippingEnabled = true;
 
     el.sceneEl.object3D.updateMatrixWorld();
-    var posy = el.object3D.getWorldPosition().y;
+    var posy = el.object3D.getWorldPosition().y; 
     var height = textObj.geometry.layout._opt.height;
 
     var normalBot = new THREE.Vector3( 0, 1, 0 );
     var constantBot = -(posy + self.data.height/2 + offsetY - height);
 
     if (self.data.nobr) {
-
         var lineRemainder = (height) % (lineHeight * textScale);
         constantBot -= lineRemainder;
     }
@@ -161,11 +166,11 @@ function _setUpClipping(id='') {
     mat.needsUpdate = true;
 }
 
-AFRAME.registerSystem('ls-cell', {
+
+AFRAME.registerSystem('text-cell', {
     schema: {}, 
 
     init: function () {
-        // add textlayoutchanged event to text component's updateLayout
         var oldUpdateLayout = AFRAME.components["text"].Component.prototype.updateLayout;
         AFRAME.components["text"].Component.prototype.updateLayout = function()
             {
@@ -175,6 +180,87 @@ AFRAME.registerSystem('ls-cell', {
     },
   
   });
+
+AFRAME.registerComponent('text-cell', {
+
+    schema: {
+        id: { type: 'string', default: '' },
+
+        width: { type: 'number', default: 0.6 },
+        height: { type: 'number', default: 0.6 },
+
+        text: { type: 'string', default: 'text' },
+
+        color:  { default: '#FFF' },
+
+        fontsize: { type: 'number', default: 1 },
+        wrapcount: { type: 'number', default: 20 },
+        wrappixels: { type: 'number', default: 0 },
+
+        nobr: { type: 'boolean', default: false },
+
+        wrapfit: { type: 'boolean', default: false },
+    },
+
+    init() {
+        var self = this;
+        var data = self.data;
+        this._createText = _createText.bind(this);
+        this._setUpTextHandler = _setUpTextHandler.bind(this);
+        this._setUpFAHandler = _setUpFAHandler.bind(this);
+        this._setUpClipping = _setUpClipping.bind(this);
+
+        var font = self.data.font || DEFAULT_FONT;
+
+        var fontPromise = loadFont(FONTS[font]).then(
+            (result) => {
+                self.lineHeight = result.common.lineHeight;
+                self.widthFactor = computeFontWidthFactor(result);
+                self.textRenderWidth = computeWidth(self.data.wrappixels, self.data.wrapcount,
+                    self.widthFactor);
+
+                self.textScale = self.data.width / self.textRenderWidth;
+                self.textHeight = self.lineHeight * self.textScale * self.data.fontsize;
+                
+                self.el.addEventListener('textlayoutchanged', self._textLayoutChangedHandler.bind(self));
+                self.el.addEventListener('font-awesome.drawn', self._fontAwesomeDrawnHandler.bind(self))
+            
+                self._createText({ id: data.id, text: data.text, width: data.width, 
+                    height: data.height, color: data.color });
+            },
+        );
+    },
+
+    _textLayoutChangedHandler(evt) {
+        this._setUpTextHandler(evt.detail.id || '', {});
+    },
+
+    _fontAwesomeDrawnHandler(evt) {
+        if (!!evt.detail) {
+            this._setUpFAHandler(evt.detail.id, {});
+        }
+    }
+});
+
+AFRAME.registerPrimitive('a-text-cell', {
+	defaultComponents: {
+		'text-cell': {},
+	},
+	mappings: {
+        'id': 'text-cell.id',
+        'value': 'text-cell.text',
+        'width': 'text-cell.width',
+        'height': 'text-cell.height',
+        'fontsize': 'text-cell.fontsize',
+        'wrapcount': 'text-cell.wrapcount',
+        'nobr': 'text-cell.nobr',
+        'color': 'text-cell.color',
+        'font': 'text-cell.font',
+        'wrapfit': 'text-cell.wrapfit',
+        'lines': 'text-cell.lines',
+	}
+});
+
 
 AFRAME.registerComponent('ls-cell', {
 
@@ -206,44 +292,31 @@ AFRAME.registerComponent('ls-cell', {
         borderColor: { default: '#484848' },
 
         wrapfit: { type: 'boolean', default: false },
-
     },
 
     init: function() {
         var self = this;
-        this._createText = _createText.bind(this);
-        this._setUpTextHandler = _setUpTextHandler.bind(this);
-        this._setUpClipping = _setUpClipping.bind(this);
 
         self.headerScale = 2;
         self.headerFontSize = self.data.fontsize * self.headerScale;
 
         var font = self.data.font || DEFAULT_FONT;
+
         loadFont(FONTS[font]).then(
             (result) => {
                 self.lineHeight = result.common.lineHeight;
                 self.widthFactor = computeFontWidthFactor(result);
+
                 self.textRenderWidth = computeWidth(self.data.wrappixels, self.data.wrapcount,
                     self.widthFactor);
                 self.textScale = self.data.width / self.textRenderWidth;
                 self.textHeight = self.lineHeight * self.textScale * self.data.fontsize;
-
                 var headerWrapCount = self.data.wrapcount/self.headerScale;
                 if (self.data.wrapfit) {
-                    headerWrapCount =  (self.data.width / (self.headerFontSize)) * (20/0.3); // 44/0.675
+                    headerWrapCount =  (self.data.width / (self.headerFontSize)) * (20/0.3); 
                 }
                 self.headerHeight = self.lineHeight * self.data.width / computeWidth(self.data.wrappixels, headerWrapCount,
                     self.widthFactor);
-
-                var offsetMap = new Map();
-                self.offsetMap = offsetMap;
-                offsetMap.set('type', { x: -self.data.width/4 });
-                offsetMap.set('provider', { x: self.data.width/4 });
-                offsetMap.set('title', { y: -(self.headerHeight) });
-                offsetMap.set('content', { y: -(self.headerHeight) * 2 });
-                offsetMap.set('tags', { y: -self.data.height + self.textHeight});
-
-                self.el.addEventListener('textlayoutchanged', self._textLayoutChangedHandler.bind(self));
                 this._createCell();
             },
         );
@@ -258,17 +331,88 @@ AFRAME.registerComponent('ls-cell', {
             self._createBackground();
         }
         
-        self._createText({ id: 'type', text: data.type, width: self.data.width/2, height: self.headerHeight,
-            fontsize: self.headerFontSize, wrapcount: self.data.wrapcount/2 });
-        self._createText({ id: 'provider', text: data.provider, width: self.data.width/2, height: self.headerHeight,
-            fontsize: self.headerFontSize, wrapcount: self.data.wrapcount/2  });
-        self._createText({ id: 'title', text: data.title, width: self.data.width,  height: self.headerHeight,
-            color: '#2ac1de', fontsize: self.headerFontSize, wrapcount: self.data.wrapcount/2  });
-        self._createText({ id: 'content', text: data.text, width: self.data.width, 
-            height: self.data.height - (self.headerHeight * 2 + self.textHeight), color: '#aeaeae' });
-        self._createText({ id: 'tags', text: '#TAGS', width: self.data.width,  height: self.textHeight,
-            color: '#2ac1de', });
+        var flexEl = document.createElement('a-entity');
+        flexEl.setAttribute('flex-container', { width: data.width, height: data.height, flexDirection: 'column',
+            justifyContent: 'flexStart', alignItems: 'center' });
 
+        var headerFlexEl = document.createElement('a-entity');
+        headerFlexEl.setAttribute('flex-container', { width: data.width, height: self.headerHeight, flexDirection: 'row',
+            justifyContent: 'space-evenly', alignItems: 'center' });
+        headerFlexEl.setAttribute('flex-item', { dimtype: 'flex-container' });
+
+        var typeFAEl = document.createElement('a-entity');
+        typeFAEl.setAttribute('width', self.headerHeight);
+        typeFAEl.setAttribute('height', self.headerHeight);
+        typeFAEl.setAttribute('font-awesome__type', { id: 'type', charcode: 'f121', fontSize: self.headerFontSize,
+            size: 256, color: self.data.color, mesh: true,
+            visibleWhenDrawn: false });
+        typeFAEl.setAttribute('flex-item', { dimtype: 'el' });
+        
+        var typeEl = document.createElement('a-entity');
+        typeEl.setAttribute('text-cell', { id: 'type', text: data.type, width: data.width/2 - self.headerHeight,
+            height: self.headerHeight,
+            fontsize: self.headerFontSize,
+            wrapcount: data.wrapcount/2, wrapfit: data.wrapfit,
+            nobr: data.nobr } );
+        typeEl.setAttribute('flex-item', { dimtype: 'attr', dimattr: 'text-cell'});
+
+        var providerEl = document.createElement('a-entity');
+        providerEl.setAttribute('text-cell', { id: 'provider', text: data.provider,
+            width: data.width/2 - self.headerHeight,
+            height: self.headerHeight,
+            fontsize: self.headerFontSize,
+            wrapcount: data.wrapcount/2, wrapfit: data.wrapfit,
+            nobr: data.nobr } );
+        providerEl.setAttribute('flex-item', { dimtype: 'attr', dimattr: 'text-cell'});
+
+        var providerFAEl = document.createElement('a-entity');
+        providerFAEl.setAttribute('width', self.headerHeight);
+        providerFAEl.setAttribute('height', self.headerHeight);
+        providerFAEl.setAttribute('font-awesome__provider', { id: 'provider', charcode: 'f09b',
+            fontSize: self.headerFontSize,
+            size: 256, color: self.data.color,
+            mesh: true,
+            version: '"Font Awesome 5 Brands"' });
+        providerFAEl.setAttribute('flex-item', { dimtype: 'el' });
+
+        var titleEl = document.createElement('a-entity');
+        titleEl.setAttribute('text-cell', { id: 'title', text: data.title, width: self.data.width,
+            height: self.headerHeight,
+            fontsize: self.headerFontSize,
+            wrapcount: data.wrapcount/2, wrapfit: data.wrapfit,
+            color: '#2ac1de',
+            nobr: data.nobr } );
+        titleEl.setAttribute('flex-item', { dimtype: 'attr', dimattr: 'text-cell'});
+
+        var contentEl = document.createElement('a-entity');
+        var contentHeight = self.data.height - (self.headerHeight * 3 );
+        contentEl.setAttribute('text-cell', { id: 'content', text: data.text, width: data.width,
+            height: contentHeight,
+            fontsize: self.fontSize,
+            wrapcount: data.wrapcount, wrapfit: data.wrapfit,
+            nobr: data.nobr } );
+        contentEl.setAttribute('flex-item', { dimtype: 'attr', dimattr: 'text-cell'});
+
+        var tagsEl = document.createElement('a-entity');
+        tagsEl.setAttribute('text-cell', { id: 'tags', text: '#TAGS', width: data.width,
+            height: self.headerHeight,
+            fontsize: self.headerFontSize,
+            wrapcount: data.wrapcount/2, wrapfit: data.wrapfit,
+            color: '#2ac1de',
+            nobr: data.nobr } );
+        tagsEl.setAttribute('flex-item', { dimtype: 'attr', dimattr: 'text-cell'});
+
+        headerFlexEl.appendChild(typeFAEl);
+        headerFlexEl.appendChild(typeEl);
+        headerFlexEl.appendChild(providerEl);
+        headerFlexEl.appendChild(providerFAEl);
+        flexEl.appendChild(headerFlexEl);
+        flexEl.appendChild(titleEl);
+        flexEl.appendChild(contentEl);
+        flexEl.appendChild(tagsEl);
+        self.el.appendChild(flexEl);
+        headerFlexEl.setAttribute('needsUpdate', true);
+        flexEl.setAttribute('needsUpdate', true);
     },
 
     _createBackground() {
@@ -306,17 +450,9 @@ AFRAME.registerComponent('ls-cell', {
         self.el.setObject3D('border', mesh);
     },
 
-    _textLayoutChangedHandler(evt) {
-        var self = this;
-        if (self.offsetMap.has(evt.detail.id)) {
-            self._setUpTextHandler(evt.detail.id, self.offsetMap.get(evt.detail.id));
-        }
-
-    },
-
 });
 
-AFRAME.registerPrimitive('a-ls-cell', {// AFRAME.utils.extendDeep({}, AFRAME.primitives.getMeshMixin(), {
+AFRAME.registerPrimitive('a-ls-cell', {
 	defaultComponents: {
 		'ls-cell': {},
 	},
