@@ -13,8 +13,9 @@ AFRAME.registerComponent('arrow', {
         height: { type: 'number', default: 1 },
         depth: { type: 'number', default: 0.01 },
 
-        color: { default: 0xe8f1ff}, 
+        color: { default: 0xe8f1ff }, 
         opacity: { type: 'number', default: 1 },
+        disabledopacity: { type: 'number', default: 0.2 },
 
     },
   
@@ -26,9 +27,10 @@ AFRAME.registerComponent('arrow', {
     update: function(oldData) {
         var self = this;
         var changedData = Object.keys(self.data).filter(x => self.data[x] != oldData[x]);
-        if ( self.el.object3DMap.hasOwnProperty('mesh') && changedData != null ){ 
-                self.el.removeObject3D('mesh');
-            self._createArrow();
+        if (changedData.includes('disabled') && !!self.el.getAttribute('highlight')) {
+            self.el.setAttribute('highlight', { 
+                disabled: this.data.disabled
+            } );
         }
     },
 
@@ -83,9 +85,10 @@ AFRAME.registerComponent('arrow', {
         geom.translate(data.offset.x, data.offset.y, data.offset.z);
     
         var color = data.color;
-        var opacity = data.disabled ? 0.2 : data.opacity;
+        var opacity = data.disabled ? data.disabledopacity : data.opacity;
         var transparent = data.disabled ? true : false;
-        mat = new THREE.MeshBasicMaterial( {color: new THREE.Color( color ),
+        mat = new THREE.MeshBasicMaterial( {
+            color: new THREE.Color( color ),
             transparent: transparent,
             opacity: opacity,
             side: THREE.DoubleSide,
@@ -104,7 +107,10 @@ AFRAME.registerPrimitive( 'a-arrow', {
         'arrow': {
         },
         'highlight': {
-            type: 'color'
+            type: 'color',
+            borderbaseopacity: 0.7,
+            disabledopacity: 0.2,
+            color: 0xe8f1ff,
         }
     },
     mappings: {
@@ -115,5 +121,7 @@ AFRAME.registerPrimitive( 'a-arrow', {
         'hover': 'highlight.hover',
         'active': 'highlight.active',
         'disabled': 'highlight.disabled',
+        'hovercolor': 'highlight.hoverColor',
+        'activecolor': 'highlight.activeColor',
     }
 });

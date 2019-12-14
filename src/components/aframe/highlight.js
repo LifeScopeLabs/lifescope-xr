@@ -1,91 +1,135 @@
+function _raycasterIntersectedHandler(evt) {
+  this.intersectingRaycaster = evt.detail.el.components.raycaster;
+}
+
+function _raycasterIntersectedClearedHandler(evt) {
+  if (this.intersectingRaycaster != null) {
+      const intersection = this.intersectingRaycaster.getIntersection(this.el);
+      if (intersection == undefined) {
+          this.intersectingRaycaster = null;
+      }
+      else {
+      }
+  }
+  else {
+      // console.log('self.intersectingRaycaster is null')
+  }
+
+  if(this.data.hover) {
+    this.el.setAttribute('highlight', {'hover': false});
+  }
+}
+
+function _mousedownHandler(evt) {
+  this._handleIntersection('active');
+}
+
+function _mouseupHandler(evt) {
+  if (this.el.getAttribute('highlight').active) {
+    this.el.setAttribute('highlight', {'active': false});
+  }
+}
+
 AFRAME.registerComponent('highlight', {
   schema: {
     hover: { type: 'boolean', default: false },
     active: { type: 'boolean', default: false },
     disabled: { type: 'boolean', default: false },
-    color: { default: 0xe8f1ff},
+    color: { default: 0x484848 },
     hoverColor: { type: 'color', default: 0x04FF5F },
     activeColor: { type: 'color', default: 0xFFD704 },
     disabledColor: { default: 0xA9A9A9 },
     type: { default: 'color', oneOf: ['color', 'border'] },
     target: { default: '', type: 'string' },
+
     bordersize: { type: 'number', default: 0.05 },
+    borderbaseopacity: { type: 'number', default: 0 },
+
+    disabledopacity:  { type: 'number', default: 0.2 },
+
+    createborder: { type: 'boolean', default: false },
+    bordername: { type: 'string', default: 'border' },
   },
 
   init() {
-    var self = this;
-    this.el.addEventListener("click", evt => {
-      if (self.intersectingRaycaster) {
-              var clickEvent = new Event('objectclicked', {bubbles: true});
-              self.el.dispatchEvent(clickEvent);
-      }
-  });
-    this.el.addEventListener("raycaster-intersected", evt => {
-        self.intersectingRaycaster = evt.detail.el.components.raycaster;
-        // console.log("raycaster-intersected");
-    });
-    this.el.addEventListener("raycaster-intersected-cleared", evt => {
-        // console.log('raycaster-intersected-cleared');
-        if (self.intersectingRaycaster != null) {
-            const intersection = self.intersectingRaycaster.getIntersection(self.el);
-            if (intersection == undefined) {
-                // console.log('intersection == undefined');
-                self.intersectingRaycaster = null;
-            }
-            else {
-                // console.log('intersecting:')
-                // console.log(intersection.object.name);
-            }
-        }
-        else {
-            // console.log('self.intersectingRaycaster is null')
-        }
-      
-      if(self.data.hover) {
-        self.el.setAttribute('highlight', {'hover': false});
-      }
-    });
+    this.firstUpdate = true;
 
-      this.el.addEventListener("mousedown", evt => {
-        self._handleIntersection('active');
-      });
-      this.el.addEventListener("mouseup", evt => {
-          if (self.el.getAttribute('highlight').active) {
-            self.el.setAttribute('highlight', {'active': false});
-          }
-      });
+    this.raycasterIntersectedHandler = _raycasterIntersectedHandler.bind(this);
+    this.raycasterIntersectedClearedHandler = _raycasterIntersectedClearedHandler.bind(this);
+    this.mousedownHandler = _mousedownHandler.bind(this);
+    this.mouseupHandler = _mouseupHandler.bind(this);
+    
+    if ( this.data.createborder ) {
+      this._createBorder();
+    }
   },
 
   update: function(oldData) {
     var self = this;
     var data = self.data;
     var changedData = Object.keys(self.data).filter(x => self.data[x] != oldData[x]);
+
+    if ( changedData.includes('disabled') ) {
+      this.el.setAttribute('highlight', { 'hover': false, 'active': false });
+    }
+
     if (['hover', 'active', 'disabled'].some(prop => changedData.includes(prop))) {
-
-
         if (data.type == 'color') {
           self._updateColor();
         }
-        // if hover or active are true, update or create border
-        else if (data.hover || data.active) {
-          // if border exist, update its color
-          if (self.el.object3DMap.hasOwnProperty('border') ) {
-              self._updateColor('border');
-          }
-          // otherwise, create border
-          else if (data.type == 'border') {
-            self._createBorder();
-          }
+        else if (data.type == 'border' && self.el.object3DMap.hasOwnProperty(this.data.bordername) ) {
+          self._updateColor(this.data.bordername);
         }
-        // if hover and active are false and border still exists, remove it
-        else if (self.el.object3DMap.hasOwnProperty('border')) {
-          self.el.removeObject3D('border');
+    }
+
+    if (this.firstUpdate) {
+        this.firstUpdate = false;
+        return;
+    }
+    if (changedData.includes('disabled')) {
+        if (!data.disabled) {
+            this.addHandlers();
+        }
+        else {
+            this.removeHandlers();
         }
     }
   },
 
   tick: function() {
     this._handleIntersection();
+  },
+
+
+  remove() {
+    this.removeHandlers();
+  },
+
+  play() {
+      if (!this.data.disabled) { //this.data.enabled && 
+          this.addHandlers();
+      }
+  },
+
+  pause() {
+      if (!this.data.disabled) {
+          this.removeHandlers();
+      }
+  },
+
+  addHandlers: function() {
+      this.el.addEventListener("raycaster-intersected", this.raycasterIntersectedHandler );
+      this.el.addEventListener("raycaster-intersected-cleared", this.raycasterIntersectedClearedHandler );
+      this.el.addEventListener("mousedown", this.mousedownHandler );
+      this.el.addEventListener("mouseup", this.mouseupHandler );
+
+  },
+
+  removeHandlers: function() {
+      this.el.removeEventListener("raycaster-intersected", this.raycasterIntersectedHandler );
+      this.el.removeEventListener("raycaster-intersected-cleared", this.raycasterIntersectedClearedHandler );
+      this.el.removeEventListener("mousedown", this.mousedownHandler );
+      this.el.removeEventListener("mouseup", this.mouseupHandler );
   },
 
   _createBorder() {
@@ -98,17 +142,25 @@ AFRAME.registerComponent('highlight', {
       geomAttribute = self.el.getAttribute('geometry');
     }
     else {
-      var geo = self.el.getObject3D(data.target).geometry;
-      geomAttribute = geo.parameters;
-      if (geo.type == "PlaneBufferGeometry") {
-        geomAttribute.primitive = "plane";
-        geomAttribute.buffer = true;
-        geomAttribute.skipCache = false;
-        geomAttribute.segmentsHeight = geomAttribute.heightSegments || 1;
-        geomAttribute.segmentsWidth = geomAttribute.widthSegments || 1;
+      if (self.el.object3DMap.hasOwnProperty(data.target)) {
+        var geo = self.el.getObject3D(data.target).geometry;
+        geomAttribute = geo.parameters;
+        if (geo.type == "PlaneBufferGeometry") {
+          geomAttribute.primitive = "plane";
+          geomAttribute.buffer = true;
+          geomAttribute.skipCache = false;
+          geomAttribute.segmentsHeight = geomAttribute.heightSegments || 1;
+          geomAttribute.segmentsWidth = geomAttribute.widthSegments || 1;
+        }
+      }
+      else {
+        self.el.addEventListener('media-mesh-set', (evt) => {
+          self._createBorder();
+        });
+        return;
       }
     }
-    if (geomAttribute && (data.hover || data.active)) {
+    if (geomAttribute) {
       switch (geomAttribute.primitive){
         case 'sphere':
           self._createBorderSphere(geomAttribute);
@@ -132,12 +184,21 @@ AFRAME.registerComponent('highlight', {
     var geom = self.el.sceneEl.systems.geometry.getOrCreateGeometry(borderGeomAttribute);
 
     var color = data.active ? data.activeColor : data.hover ? data.hoverColor : data.color;
-    var mat = new THREE.MeshBasicMaterial( {color: new THREE.Color( color ), side: THREE.BackSide} );
+
+    var opacity = data.active || data.hover ? 1 : data.borderbaseopacity;
+    var transparent = data.active || data.hover ? false : true;
+
+    var mat = new THREE.MeshBasicMaterial( {
+        color: new THREE.Color( color ),
+        side: THREE.BackSide,
+        opacity: opacity,
+        transparent: transparent,
+    } );
     var newMesh = new THREE.Mesh(geom, mat);
-    newMesh.name = 'border';
+    newMesh.name = this.data.bordername;
     newMesh.updateMatrix();
 
-    self.el.setObject3D('border', newMesh);  
+    self.el.setObject3D(this.data.bordername, newMesh);  
   },
 
   _createBorderPlane(geomAttribute) {
@@ -158,11 +219,20 @@ AFRAME.registerComponent('highlight', {
     }
 
     var color = data.active ? data.activeColor : data.hover ? data.hoverColor : data.color;
-    mat = new THREE.MeshBasicMaterial( {color: new THREE.Color( color ), side: THREE.FrontSide} );
-    mesh = new THREE.Mesh(geom, mat);
-    mesh.name = 'border';
 
-    self.el.setObject3D('border', mesh);
+    var opacity = data.active || data.hover ? 1 : data.borderbaseopacity;
+    var transparent = data.active || data.hover ? false : true;
+
+    mat = new THREE.MeshBasicMaterial( {
+      color: new THREE.Color( color ),
+      side: THREE.FrontSide,
+      opacity: opacity,
+      transparent: transparent,
+    } );
+    mesh = new THREE.Mesh(geom, mat);
+    mesh.name = this.data.bordername;
+
+    self.el.setObject3D(this.data.bordername, mesh);
   },
 
   _updateColor(meshName='mesh') {
@@ -171,8 +241,8 @@ AFRAME.registerComponent('highlight', {
 
     var newColor = data.disabled ? data.disabledColor : data.active ? data.activeColor : data.hover ? data.hoverColor : data.color;
 
-    var opacity = data.disabled ? 0.2 : data.opacity;
-    var transparent = data.disabled ? true : false;
+    var opacity = data.disabled ? data.disabledopacity : data.active || data.hover ? 1 : data.borderbaseopacity;
+    var transparent = data.disabled ? true : data.active || data.hover ? false : true;
 
     var mesh = self.el.getObject3D(meshName);
     if (mesh) {
@@ -196,7 +266,7 @@ AFRAME.registerComponent('highlight', {
         if (self.data.target != '') {
           switch (intersection.object.name) {
             case self.data.target:
-            case 'border':
+            case this.data.bordername:
                 self.el.setAttribute('highlight', value);
                 break;
             default:

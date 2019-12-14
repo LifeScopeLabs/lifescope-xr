@@ -16,8 +16,9 @@
                 :position="gridCellPosition(n)"
                 :rotation="gridCellRotation(n)">
                 
-                <a-diorama-grid-cell
+                <a-media-cell
                     class="clickable gridcell"
+                    clickable="clickevent: cellclicked;"
                     :id="'grid-cell-' + n"
                     :type="item.type"
                     :src="imageSrc(item)"
@@ -26,52 +27,67 @@
                     srcFit="bothmax"
                     :animatein="animateInSeconds"
                     :highlight="'type: border; target: ' + item.type + '; hoverColor: ' + hoverColor +
-                        '; activeColor: ' + activeColor + ';'" 
-                    />
+                        '; activeColor: ' + activeColor + '; createborder: true;'" 
+                    fade
+                />
             </a-entity>
 
             <a-entity class="skybox-selector"
-                :position="gridCellPosition(-3)">
+                :position="gridCellPosition(-3)"
+                fade>
                 <a-entity  v-if="skybox==SkyboxEnum.STARS"
                     id="sun-selector"
                     class="clickable"
+                    clickable="clickevent: objectclicked;"
                     geometry="primitive: sphere; radius: 0.05;"
                     material="shader: sunSky"
-                    highlight="type: border;">
+                    highlight="type: border; createborder: true;">
                 </a-entity>
                 <a-entity  v-else-if="skybox==SkyboxEnum.SUN"
                     id="stars-selector"
                     class="clickable"
+                    clickable="clickevent: objectclicked;"
                     geometry="primitive: sphere; radius: 0.05;"
                     material="shader: standard; src: #sky"
-                    highlight="type: border;"
+                    highlight="type: border; createborder: true;"
                     rotation="90 0 90">
                 </a-entity>
             </a-entity>
 
             <a-entity class="floor-map-selector"
-                :position="gridCellPosition(-4)">
+                :position="gridCellPosition(-4)"
+                fade>
                 <a-entity
                     id="floor-map-selector"
                     class="clickable"
+                    clickable="clickevent: objectclicked;"
                     geometry="primitive: sphere; radius: 0.05;"
                     material="shader: standard; src: #earth"
-                    highlight="type: border;">
+                    highlight="type: border; createborder: true;">
                 </a-entity>
             </a-entity>
 
         </a-entity>
 
-        <a-arrow class="grid-arrow-left clickable" direction="left" :position="leftArrowPosition"
+        <a-arrow
+            class="grid-arrow-left clickable"
+            direction="left"
+            clickable="clickevent: pageleft;"
+            :position="leftArrowPosition"
             :width="arrowWidth" :height="arrowHeight"
             :disabled="!canPageLeft"
-            @click="handlePageLeft"
+            :hoverColor="hoverColor"
+            :activeColor="activeColor"
             />
 
-        <a-arrow class="grid-arrow-right clickable" direction="right" :position="rightArrowPosition"
+        <a-arrow class="grid-arrow-right clickable"
+            direction="right"
+            clickable="clickevent: pageright;"
+            :position="rightArrowPosition"
             :width="arrowWidth" :height="arrowHeight"
             :disabled="!canPageRight"
-            @click="handlePageRight"
+            :hoverColor="hoverColor"
+            :activeColor="activeColor"
             />
 
         <a-entity v-if="focusedCell != ''"
@@ -80,20 +96,24 @@
             <a-arrow
                 :disabled="focusedCellIndex==0 && !canPageLeft"
                 class="cell-arrow-left clickable"
+                :clickable="'clickevent: previouscell; enabled: ' + (focusedCellIndex!=0 || canPageLeft)"
                 direction="left"
                 :position="-((cellWidth * focusedCellScale.x)/2 + focusArrowMargin)+ ' 0 0'"
                 :width="focusArrowWidth"
                 :height="focusArrowHeight"
-                @click="previousCell"
+                :hoverColor="hoverColor"
+                :activeColor="activeColor"
             />
             <a-arrow 
                 :disabled="focusedCellIndex==(numberOfItemsToDisplay - 1) && !canPageRight"
                 class="cell-arrow-right clickable"
                 direction="right"
+                :clickable="'clickevent: nextcell; enabled: ' + (focusedCellIndex!=(numberOfItemsToDisplay - 1) || canPageRight)"
                 :position="((cellWidth * focusedCellScale.x)/2 + focusArrowMargin)+ ' 0 0'"
                 :width="focusArrowWidth"
                 :height="focusArrowHeight"
-                @click="nextCell"
+                :hovercolor="hoverColor"
+                :activecolor="activeColor"
                 />
         </a-entity>
 
@@ -328,16 +348,24 @@ export default {
 
     mounted() {
         var self = this;
-        this.$el.addEventListener("cellclicked", self.cellClickedHandler);
-        this.$el.addEventListener("objectclicked", self.objectClickedHandler);
+        this.$el.addEventListener('cellclicked', self.cellClickedHandler);
+        this.$el.addEventListener('objectclicked', self.objectClickedHandler);
         this.$el.addEventListener('media-mesh-set', self.mediaMeshLoadedHandler);
+        this.$el.addEventListener('pageleft', self.handlePageLeft);
+        this.$el.addEventListener('pageright', self.handlePageRight);
+        this.$el.addEventListener('previouscell', self.previousCell);
+        this.$el.addEventListener('nextcell', self.nextCell);
     },
 
     beforeDestroy() {
         var self = this;
-        this.$el.removeEventListener("cellclicked", self.cellClickedHandler);
-        this.$el.removeEventListener("objectclicked", self.objectClickedHandler);
+        this.$el.removeEventListener('cellclicked', self.cellClickedHandler);
+        this.$el.removeEventListener('objectclicked', self.objectClickedHandler);
         this.$el.removeEventListener('media-mesh-set', self.mediaMeshLoadedHandler);
+        this.$el.removeEventListener('pageleft', self.handlePageLeft);
+        this.$el.removeEventListener('pageright', self.handlePageRight);
+        this.$el.removeEventListener('previouscell', self.previousCell);
+        this.$el.removeEventListener('nextcell', self.nextCell);
     },
 
     methods: {
@@ -387,9 +415,9 @@ export default {
                 this.pageRight();
             }
             this.unFocusCell(focusedCellEl);
-            this.animateHideCellPromise(focusedCellEl);
+            focusedCellEl.components['fade'].animateHideCellPromise();
             this.focusCell(nextCellEl);
-            this.animateRevealCellPromise(nextCellEl);
+            nextCellEl.components['fade'].animateRevealCellPromise();
         },
 
         previousCell(evt) {
@@ -405,10 +433,10 @@ export default {
                 this.pageLeft();
             }
             this.unFocusCell(focusedCellEl);
-            this.animateHideCellPromise(focusedCellEl);
+            focusedCellEl.components['fade'].animateHideCellPromise();
             if (!!previousCellEl) {
                 this.focusCell(previousCellEl);
-                this.animateRevealCellPromise(previousCellEl);
+                previousCellEl.components['fade'].animateRevealCellPromise();
             }
             else {
                 var mediaSetCallback =  function(evt) {
@@ -438,9 +466,10 @@ export default {
                     self.hideNonFocusedCells();
                     break;
                 case id:
+                    const unFocusingCellIndex = self.focusedCellIndex;
                     self.unFocusCell(el);
                     self.focusedCell = '';
-                    self.revealNonFocusedCells();
+                    self.revealNonFocusedCells(unFocusingCellIndex);
                     break;
                 default:
                     var focusedCellEl = document.querySelector('#' + self.focusedCell);
@@ -474,7 +503,7 @@ export default {
             var self = this;
             if (self.focusedCell != '') {
                 if (evt.detail.id != self.focusedCell) {
-                    self.animateHideCellPromise(evt.target);
+                    evt.target.components['fade'].animateHideCellPromise();
                 }
             }
         },
@@ -579,41 +608,47 @@ export default {
                 if (i==this.focusedCellIndex) continue;
 
                 var el = document.querySelector(`#grid-cell-${i}`);
-                animationPromises.push(self.animateHideCellPromise(el));
+                var anim = el.components['fade'].animateHideCellPromise();
+                animationPromises.push(anim);
             }
-            Promise.all(animationPromises);
+            animationPromises.push()
             var leftArrow = document.querySelector('.grid-arrow-left');
             var rightArrow = document.querySelector('.grid-arrow-right');
             var skyboxSelector = document.querySelector('.skybox-selector');
             var floorMapSelector = document.querySelector('.floor-map-selector');
             leftArrow.setAttribute('visible', false);
             rightArrow.setAttribute('visible', false);
-            skyboxSelector.setAttribute('visible', false);
-            floorMapSelector.setAttribute('visible', false);
+            animationPromises.push(skyboxSelector.components['fade'].animateHideCellPromise());
+            animationPromises.push(floorMapSelector.components['fade'].animateHideCellPromise());
+            Promise.all(animationPromises);
         },
-        revealNonFocusedCells() {
+        revealNonFocusedCells(skipCellIndex=-1) {
             var self = this;
             var animationPromises = [];
             for (var i=0; i<this.numberOfItemsToDisplay; i++) {
+                if (i==skipCellIndex) continue;
                 var el = document.querySelector(`#grid-cell-${i}`);
-                animationPromises.push(self.animateRevealCellPromise(el));
+                var anim = el.components['fade'].animateRevealCellPromise();
+                animationPromises.push(anim);
             }
-            Promise.all(animationPromises);
             var leftArrow = document.querySelector('.grid-arrow-left');
             var rightArrow = document.querySelector('.grid-arrow-right');
             var skyboxSelector = document.querySelector('.skybox-selector');
             var floorMapSelector = document.querySelector('.floor-map-selector');
+            animationPromises.push(skyboxSelector.components['fade'].animateRevealCellPromise());
+            animationPromises.push(floorMapSelector.components['fade'].animateRevealCellPromise());
             leftArrow.setAttribute('visible', true);
             rightArrow.setAttribute('visible', true);
-            skyboxSelector.setAttribute('visible', true);
-            floorMapSelector.setAttribute('visible', true);
+            Promise.all(animationPromises);
         },
         handlePageLeft() {
+            if(!this.canPageLeft) return;
             this.unFocusFoscusedCell();
             this.pageAnimation(this.pageLeft);
         },
 
         handlePageRight() {
+            if(!this.canPageRight) return;
             this.unFocusFoscusedCell();
             this.pageAnimation(this.pageRight);
         },
@@ -630,7 +665,7 @@ export default {
             Promise.all(animationPromises)
             .then((results) => {
                 pageCallback();
-                cellObjs.forEach((obj) => self.resetCellScale(obj))
+                cellObjs.forEach((obj) => self.resetCellScale(obj));
             });
         },
 
@@ -652,62 +687,6 @@ export default {
                 }
                 catch (error) {
                     console.error('animateCellRemovalPromise error');
-                    console.log(error);
-                    reject(error);
-                }
-            });
-        },
-
-        animateHideCellPromise(el) {
-            var self = this;
-            var mesh = el.object3D.children.find( function(obj) {
-                    return obj.name=='image'|| obj.name=='video'
-                });
-            return new Promise((resolve, reject) => {
-                try {
-                    AFRAME.ANIME({
-                        targets: mesh.material,
-                        easing: 'linear',
-                        opacity: 0,
-                        duration: self.dur*1000,
-                        begin: function(anim) {
-                            mesh.material.transparent = true;
-                            el.classList.remove('clickable');
-                        },
-                        complete: function(anim) {
-                            resolve();
-                        }
-                    });
-                }
-                catch (error) {
-                    console.error('animateHideCellPromise error');
-                    console.log(error);
-                    reject(error);
-                }
-            });
-        },
-
-        animateRevealCellPromise(el) {
-            var self = this;
-            var mesh = el.object3D.children.find( function(obj) {
-                    return obj.name=='image'|| obj.name=='video'
-                });
-            return new Promise((resolve, reject) => {
-                try {
-                    AFRAME.ANIME({
-                        targets: mesh.material,
-                        easing: 'linear',
-                        opacity: 1,
-                        duration: self.dur*1000,
-                        complete: function(anim) {
-                            mesh.material.transparent = false;
-                            el.classList.add('clickable');
-                            resolve();
-                        }
-                    });
-                }
-                catch (error) {
-                    console.error('animateRevealCellPromise error');
                     console.log(error);
                     reject(error);
                 }
