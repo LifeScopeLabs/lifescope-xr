@@ -53,14 +53,14 @@ function computeWidth (wrapPixels, wrapCount, widthFactor) {
 
 function _createText(opts={})  {
     var self = this;
-
+    var data = self.data;
     var id = opts.id || '';
     var textName = id != '' ? `text__${id}` : 'text';
 
-    var fontSize = opts.fontsize || self.data.fontsize;
-    var width = opts.width || self.data.width;
-    var wrapCount = opts.wrapcount || self.data.wrapcount;
-    if (self.data.wrapfit) {
+    var fontSize = opts.fontsize || data.fontsize;
+    var width = opts.width || data.width;
+    var wrapCount = opts.wrapcount || data.wrapcount;
+    if (data.wrapfit) {
         wrapCount =  (width / fontSize) * (20/0.3); 
     }
     var wrapSize = (wrapCount) / 20;
@@ -68,9 +68,9 @@ function _createText(opts={})  {
     var textWidth = width * fontSize * widthScale * wrapSize;
     var xOffset = (textWidth - width) / 2;
 
-    var text = opts.text || self.data.text;
-    var height = opts.height || self.data.height;
-    var color = opts.color || self.data.color;
+    var text = opts.text || data.text;
+    var height = opts.height || data.height;
+    var color = opts.color || data.color;
 
     self.el.setAttribute(textName, {
         // id: id,
@@ -80,6 +80,7 @@ function _createText(opts={})  {
         wrapCount: wrapCount,
         xOffset: xOffset,
         color: color,
+        anchor: data.anchor,
     });
 
     var textObj = self.el.getObject3D(textName);
@@ -246,6 +247,9 @@ AFRAME.registerComponent('text-cell', {
         borderColor: { default: '#484848' },
 
         wrapfit: { type: 'boolean', default: false },
+
+        // justifycontent: { type: 'string', default: 'flexStart' },
+        anchor: { type: 'string', default: 'center' },
     },
 
     init() {
@@ -320,6 +324,7 @@ AFRAME.registerPrimitive('a-text-cell', {
         'font': 'text-cell.font',
         'wrapfit': 'text-cell.wrapfit',
         'lines': 'text-cell.lines',
+        'anchor': 'text-cell.anchor',
 	}
 });
 

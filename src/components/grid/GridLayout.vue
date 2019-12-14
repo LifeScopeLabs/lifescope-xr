@@ -539,14 +539,14 @@ export default {
                 z: 0,
                 duration: self.dur*1000
             });
-            AFRAME.ANIME({
-                targets: el.parentEl.object3D.scale,
-                easing: 'linear',
-                x: self.focusedCellScale.x,
-                y: self.focusedCellScale.y,
-                z: self.focusedCellScale.z,
-                duration: self.dur*1000
-            });
+            // AFRAME.ANIME({
+            //     targets: el.parentEl.object3D.scale,
+            //     easing: 'linear',
+            //     x: self.focusedCellScale.x,
+            //     y: self.focusedCellScale.y,
+            //     z: self.focusedCellScale.z,
+            //     duration: self.dur*1000
+            // });
         },
 
         unFocusCell(el) {
@@ -584,14 +584,14 @@ export default {
                 z: rotz,
                 duration: self.dur*1000
             });
-            AFRAME.ANIME({
-                targets: el.parentEl.object3D.scale,
-                easing: 'linear',
-                x: 1,
-                y: 1,
-                z: 1,
-                duration: self.dur*1000
-            });
+            // AFRAME.ANIME({
+            //     targets: el.parentEl.object3D.scale,
+            //     easing: 'linear',
+            //     x: 1,
+            //     y: 1,
+            //     z: 1,
+            //     duration: self.dur*1000
+            // });
         },
         unFocusFoscusedCell() {
             if (this.focusedCell) {

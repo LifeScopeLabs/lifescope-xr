@@ -70,6 +70,7 @@
         "fs": "0.0.1-security",
         "jquery": "^3.4.1",
         "load-bmfont": "^1.4.0",
+        "moment": "^2.24.0",
         "networked-aframe": "git+https://github.com/MozillaReality/networked-aframe",
         "nipplejs": "^0.7.1",
         "node-sass": "^4.12.0",
