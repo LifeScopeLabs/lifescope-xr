@@ -68,6 +68,38 @@ export default {
                 'floorActive'
             ]
         ),
+
+        ...mapState('xr/grid',
+            [
+                'page',
+                'columns',
+                'rows',
+                'radius',
+                'top',
+                'bottom',
+                'cellWidth',
+                'cellHeight',
+                'cellContentHeight',
+                'gridCellsPerRow',
+                'focusedCellPosititon',
+                'focusedCellScale',
+                'arrowWidth',
+                'arrowHeight',
+                'focusArrowHeight',
+                'focusArrowWidth',
+                'focusArrowMargin',
+                'animateInSeconds',
+                'animateOutSeconds',
+            ]
+        ),
+
+        ...mapState('xr/style',
+            [
+                'hoverColor',
+                'activeColor',
+            ]
+        ),
+
         ...mapState('xr/graphics',
             [
                 'bump',
@@ -113,7 +145,7 @@ export default {
         },
         dioramaRotation: function(segment) {
             var u = segment / this.numberOfSegments;
-            var theta =  (-3*Math.PI/4) - (u * Math.PI * 2);
+            var theta =  - (u * Math.PI * 2) + (-3*Math.PI/4); //(-3*Math.PI/4)
 
             var roty = theta * (180/Math.PI);
             var rotx = 0;
@@ -128,9 +160,10 @@ export default {
             var cosTheta = Math.cos( theta );
 
             var x = (this.floorRadius) * sinTheta;
+            var y = 0;
             var z = (this.floorRadius) * cosTheta;
 
-            return `${x} 0 ${z}`;
+            return `${x} ${y} ${z}`;
         },
     },
   }

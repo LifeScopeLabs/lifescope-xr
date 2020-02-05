@@ -92,7 +92,7 @@ function _buildMediaMesh(url, type, width, height, depth, offset, srcFit, aspect
 function _createMedia(offset = { x: 0, y: 0, z: 0, rotx: 0, roty: 0, rotz: 0 }) {
     var self = this;
     var data = self.data;
-
+    
     var Type = data.type.charAt(0).toUpperCase() + data.type.slice(1);
 
     _buildMediaMesh(data.url, data.type, data.width, data.height, data.depth, offset, data.srcFit,

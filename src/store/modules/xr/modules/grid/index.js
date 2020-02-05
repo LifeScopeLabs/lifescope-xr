@@ -15,7 +15,7 @@ export const state = function () {
         focusArrowHeight: 0.2,
         focusArrowWidth: 0.35,
         focusArrowMargin: 0.15,
-        animateInSeconds: 0.5,
+        animateInSeconds: 1,
         animateOutSeconds: 0.2,
      };
 };
@@ -49,6 +49,9 @@ export const mutations = {
     PAGE_RIGHT: function(state) {
         if (CONFIG.DEBUG) {console.log("PAGE_RIGHT");}
         state.page += 1;
+    },
+    RESET_PAGE: function(state) {
+        state.page = 0;
     },
 };
 

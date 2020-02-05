@@ -1,4 +1,6 @@
 import { FONTS, DEFAULT_FONT, loadFont, computeWidth, computeFontWidthFactor } from './text-cell.js';
+import { getContentTypeIconUnicode, getProviderTypeIconUnicode,
+    getEventTypeIconUnicode } from '../../util/FAIconsUtil';
 import moment from 'moment';
 
 AFRAME.registerComponent('ls-cell', {
@@ -18,6 +20,7 @@ AFRAME.registerComponent('ls-cell', {
 
         contenttype: { type: 'string', default: '' },
         provider: { type: 'string', default: '' },
+        connectionname: { type: 'string', default: '' },
         mediatype: { type: 'string', default: '' },
         mediaurl: { type: 'string', default: '' },
 
@@ -27,6 +30,7 @@ AFRAME.registerComponent('ls-cell', {
 
         text: { type: 'string', default: '' },
         tags: { type: 'array', default: [] },
+        url: { type: 'string', default: '' },
 
         avatarurl: { type: 'string', default: '' },
         contactname: { type: 'string', default: '' },
@@ -34,6 +38,9 @@ AFRAME.registerComponent('ls-cell', {
 
         eventtype: { type: 'string', default: '' },
         datetime: { type: 'string', default: '' },
+        first_name: { type: 'string', default: '' },
+        middle_name: { type: 'string', default: '' },
+        last_name: { type: 'string', default: '' },
 
         color:  { default: '#FFF' },
         fontsize: { type: 'number', default: 1 },
@@ -46,15 +53,21 @@ AFRAME.registerComponent('ls-cell', {
         borderColor: { default: '#484848' },
 
         wrapfit: { type: 'boolean', default: false },
+
+        animateLoad: { type: 'boolean', default: true },
+        animateInSeconds: { type: 'number', default: 0.5 },
+        animateOutSeconds: { type: 'number', default: 0.2 },
     },
 
     init: function() {
         var self = this;
+        self.firstUpdate = true;
 
         self.headerScale = 2;
         self.headerFontSize = self.data.fontsize * self.headerScale;
 
         var font = self.data.font || DEFAULT_FONT;
+
 
         loadFont(FONTS[font]).then(
             (result) => {
@@ -77,27 +90,51 @@ AFRAME.registerComponent('ls-cell', {
         
     },
 
+    remove: function() {
+        var root = this.el.querySelector('.ls-cell-root');
+        if (root) this.el.removeChild(root);
+        if (this.el.object3DMap.hasOwnProperty('background')) this.el.removeObject3D('background');
+        if (this.el.object3DMap.hasOwnProperty('border')) this.el.removeObject3D('border');
+
+    },
+
+    updateCell: function() {
+        this._createCell();
+    },
+
     _createCell: function() {
         var self = this;
         var data = self.data;
 
-        if (data.background) {
+        var root = this.el.querySelector('.ls-cell-root');
+        if (root) {
+            this.el.removeChild(root);
+            if (this.el.object3DMap.hasOwnProperty('background')) this.el.removeObject3D('background');
+            if (this.el.object3DMap.hasOwnProperty('border')) this.el.removeObject3D('border');
+        }
+
+        if (self.data.background) {
             this._createBackground();
         }
+
 
         switch (data.facet) {
             case 'content':
                 var contentEls = this._createContentCell();
                 var flexEl = contentEls[0];
+                flexEl.classList.add('ls-cell-root');
                 var headerFlexEl = contentEls[1];
                 self.el.appendChild(flexEl);
-                headerFlexEl.setAttribute('needsUpdate', true);
-                flexEl.setAttribute('needsUpdate', true);
+                headerFlexEl.setAttribute('needsupdate', true);
+                flexEl.setAttribute('needsupdate', true);
                 break;
             case 'events':
                 var flexEl = document.createElement('a-entity');
-                flexEl.setAttribute('flex-container', { width: data.width, height: data.height, flexDirection: 'row',
-                    justifyContent: 'flexStart', alignItems: 'flexStart' });
+                flexEl.classList.add('ls-cell-root');
+                flexEl.setAttribute('flex-container', { width: data.width, height: data.height,
+                    flexDirection: 'row',
+                    justifyContent: 'flexStart',
+                    alignItems: 'flexStart' });
 
                 var eventEls = this._createEventsCell({width: data.width/4});
                 var eventsFlexEl = eventEls[0];
@@ -116,22 +153,28 @@ AFRAME.registerComponent('ls-cell', {
                 flexEl.appendChild(contentFlexEl);
 
                 self.el.appendChild(flexEl);
-                typeFlexEl.setAttribute('needsUpdate', true);
-                providerFlexEl.setAttribute('needsUpdate', true);
+                typeFlexEl.setAttribute('needsupdate', true);
+                providerFlexEl.setAttribute('needsupdate', true);
                 if (!!data.datetime) {
-                    calFlexEl.setAttribute('needsUpdate', true);
-                    timeFlexEl.setAttribute('needsUpdate', true);
+                    calFlexEl.setAttribute('needsupdate', true);
+                    timeFlexEl.setAttribute('needsupdate', true);
                 }
-                headerFlexEl.setAttribute('needsUpdate', true);
-                contentFlexEl.setAttribute('needsUpdate', true);
-                eventsFlexEl.setAttribute('needsUpdate', true);
-                flexEl.setAttribute('needsUpdate', true);
+                headerFlexEl.setAttribute('needsupdate', true);
+                contentFlexEl.setAttribute('needsupdate', true);
+                eventsFlexEl.setAttribute('needsupdate', true);
+                flexEl.setAttribute('needsupdate', true);
                 break;
             case 'contacts':
-                this._createContactsCell();
+                var flexEl = this._createContactsCell();
+                flexEl.classList.add('ls-cell-root');
+                self.el.appendChild(flexEl);
+                flexEl.setAttribute('needsupdate', true);
                 break;
             case 'people':
-                this._createPeopleCell();
+                var flexEl = this._createPeopleCell();
+                flexEl.classList.add('ls-cell-root');
+                self.el.appendChild(flexEl);
+                flexEl.setAttribute('needsupdate', true);
                 break;
             default:
                 break;
@@ -160,9 +203,12 @@ AFRAME.registerComponent('ls-cell', {
         var typeFAEl = document.createElement('a-entity');
         typeFAEl.setAttribute('width', self.headerHeight);
         typeFAEl.setAttribute('height', self.headerHeight);
-        typeFAEl.setAttribute('font-awesome__type', { id: 'type', charcode: 'f121', fontSize: self.headerFontSize,
-            size: 256, color: self.data.color, mesh: true,
-            visibleWhenDrawn: false });
+        typeFAEl.setAttribute('font-awesome__type', { id: 'type',
+        charcode: getContentTypeIconUnicode(data.contenttype),//'f121',
+            fontSize: self.headerFontSize,
+            size: 256, color: self.data.color,
+            mesh: true,
+            version: '"Font Awesome 5 Pro"' });
         typeFAEl.setAttribute('flex-item', { dimtype: 'el' });
         
         var typeEl = document.createElement('a-entity');
@@ -186,7 +232,8 @@ AFRAME.registerComponent('ls-cell', {
         var providerFAEl = document.createElement('a-entity');
         providerFAEl.setAttribute('width', self.headerHeight);
         providerFAEl.setAttribute('height', self.headerHeight);
-        providerFAEl.setAttribute('font-awesome__provider', { id: 'provider', charcode: 'f09b',
+        providerFAEl.setAttribute('font-awesome__provider', { id: 'provider',
+        charcode: getProviderTypeIconUnicode(data.provider),//'f09b',
             fontSize: self.headerFontSize,
             size: 256, color: self.data.color,
             mesh: true,
@@ -206,7 +253,7 @@ AFRAME.registerComponent('ls-cell', {
         */
         if (data.mediatype == 'video' || data.mediatype == 'image') {
             var mediaEl = document.createElement('a-entity');
-            var mediaHeight = self._contentHeight();//self.height - (self.headerHeight * 3 );
+            var mediaHeight = self._contentHeight();
             mediaEl.setAttribute('media-cell', { id: 'content',
                 width: width,
                 height: mediaHeight,
@@ -254,7 +301,7 @@ AFRAME.registerComponent('ls-cell', {
             var contentHeight = self._contentHeight();
             textEl.setAttribute('text-cell', { id: 'content', text: data.text, width: width,
                 height: contentHeight,
-                fontsize: self.fontSize,
+                fontsize: self.headerFontSize,
                 wrapcount: data.wrapcount, wrapfit: data.wrapfit,
                 nobr: data.nobr } );
             textEl.setAttribute('flex-item', { dimtype: 'attr', dimattr: 'text-cell'});
@@ -294,20 +341,20 @@ AFRAME.registerComponent('ls-cell', {
         var self = this;
         var data = self.data;
 
-        // fa-user
         var flexEl = document.createElement('a-entity');
-        flexEl.setAttribute('flex-container', { width: data.width, height: data.height, flexDirection: 'column',
+        flexEl.setAttribute('flex-container', { width: data.width, height: data.height,
+            flexDirection: 'column',
             justifyContent: 'flexStart', alignItems: 'flexStart' });
         flexEl.setAttribute('flex-item', { dimtype: 'el' });
 
         if (!!data.avatarurl) {
             var avatarEl = document.createElement('a-entity');
-            var avatarHeight = self.headerHeight;
+            var avatarHeight = data.height - 2*self.headerHeight;
             avatarEl.setAttribute('media-cell', { id: 'avatar',
                 width: data.width,
                 height: avatarHeight,
-                url: data.mediaurl,
-                type: data.mediatype,
+                url: data.avatarurl,
+                type: 'image',
                 srcFit: 'bothmax',
                 animateLoad: false,
                 selected: true,
@@ -319,7 +366,8 @@ AFRAME.registerComponent('ls-cell', {
             var userFAEl = document.createElement('a-entity');
             userFAEl.setAttribute('width', self.headerHeight);
             userFAEl.setAttribute('height', self.headerHeight);
-            userFAEl.setAttribute('font-awesome__user', { id: 'type', charcode: 'f007', fontSize: 2*self.headerFontSize,
+            userFAEl.setAttribute('font-awesome__user', { id: 'type', charcode: 'f007',
+                fontSize: 10*self.headerFontSize,
                 size: 256, color: self.data.color, mesh: true,
                 visibleWhenDrawn: false });
             userFAEl.setAttribute('flex-item', { dimtype: 'el' });
@@ -350,13 +398,60 @@ AFRAME.registerComponent('ls-cell', {
             flexEl.appendChild(handleEl);
         }
 
-        self.el.appendChild(flexEl);
-        flexEl.setAttribute('needsUpdate', true);
+        return flexEl;
     },
 
     _createPeopleCell: function() {
         var self = this;
         var data = self.data;
+
+        var flexEl = document.createElement('a-entity');
+        flexEl.setAttribute('flex-container', { width: data.width, height: data.height,
+            flexDirection: 'column',
+            justifyContent: 'flexStart', alignItems: 'flexStart' });
+        flexEl.setAttribute('flex-item', { dimtype: 'el' });
+
+        if (!!data.avatarurl) {
+            var avatarEl = document.createElement('a-entity');
+            var avatarHeight = data.height - 2*self.headerHeight;
+            avatarEl.setAttribute('media-cell', { id: 'avatar',
+                width: data.width,
+                height: avatarHeight,
+                url: data.avatarurl,
+                type: 'image',
+                srcFit: 'bothmax',
+                animateLoad: false,
+                selected: true,
+            } );
+            avatarEl.setAttribute('flex-item', { dimtype: 'attr', dimattr: 'media-cell'});
+            flexEl.appendChild(avatarEl);
+        }
+        else {
+            var userFAEl = document.createElement('a-entity');
+            userFAEl.setAttribute('width', self.headerHeight);
+            userFAEl.setAttribute('height', self.headerHeight);
+            userFAEl.setAttribute('font-awesome__user', { id: 'type', charcode: 'f007',
+                fontSize: 10*self.headerFontSize,
+                size: 256, color: self.data.color, mesh: true,
+                visibleWhenDrawn: false });
+            userFAEl.setAttribute('flex-item', { dimtype: 'el' });
+            flexEl.appendChild(userFAEl)
+        }
+
+        if (data.first_name || data.middle_name || data.last_name) {
+            var nameEl = document.createElement('a-entity');
+            var name = self.concatNames(data.first_name, data.middle_name, data.last_name);
+            nameEl.setAttribute('text-cell', { id: 'contactname', text: name, width: self.data.width,
+                height: self.headerHeight,
+                fontsize: self.headerFontSize,
+                wrapcount: data.wrapcount/2, wrapfit: data.wrapfit,
+                color: '#2ac1de',
+                nobr: data.nobr } );
+            nameEl.setAttribute('flex-item', { dimtype: 'attr', dimattr: 'text-cell'});
+            flexEl.appendChild(nameEl);
+        }
+
+        return flexEl;
     },
 
 
@@ -378,11 +473,15 @@ AFRAME.registerComponent('ls-cell', {
         flexEl.setAttribute('flex-item', { dimtype: 'flex-container' });
 
         // type
-        var typeFlexEl = self._createEventsDetailsRow(opts, 'type', 'f121', data.eventtype);
+        var typeFlexEl = self._createEventsDetailsRow(opts, 'type',
+            getEventTypeIconUnicode(data.eventtype),
+            data.eventtype);
         flexEl.appendChild(typeFlexEl);
 
         // provider
-        var providerFlexEl = self._createEventsDetailsRow(opts, 'provider', 'f09b', data.provider,
+        var providerFlexEl = self._createEventsDetailsRow(opts, 'provider',
+            getProviderTypeIconUnicode(data.provider),
+            data.provider,
             '"Font Awesome 5 Brands"');
         flexEl.appendChild(providerFlexEl);
 
@@ -422,6 +521,9 @@ AFRAME.registerComponent('ls-cell', {
         if (!!version) {
             FAprops.version = version;
         }
+        else {
+            FAprops.version ='"Font Awesome 5 Pro"';
+        }
 
         var flexEl = document.createElement('a-entity');
         flexEl.setAttribute('flex-container', flexRowProps);
@@ -457,6 +559,17 @@ AFRAME.registerComponent('ls-cell', {
         self.el.setObject3D('background', bgMesh);
         if (self.data.border) {
             self._createBorder();
+        }
+
+        if (self.data.animateLoad) {
+            AFRAME.ANIME({
+                targets: self.el.object3D.scale,
+                easing: 'linear',
+                x: [0, 1],
+                y: [0, 1],
+                z: [0, 1],
+                duration: 1000*self.data.animateInSeconds,
+            });
         }
     },
 
@@ -498,7 +611,27 @@ AFRAME.registerComponent('ls-cell', {
 
     dateTime: function(date) {
         return moment.utc(date).local().format('hh:mm A');
-    }
+    },
+
+    concatNames: function(first_name='', middle_name='', last_name='') {
+        let returned = '';
+
+        if (first_name || middle_name || last_name) {
+            if (first_name) {
+                returned += first_name + ' ';
+            }
+
+            if (middle_name) {
+                returned += middle_name + ' ';
+            }
+
+            if (last_name) {
+                returned += last_name + ' ';
+            }
+        }
+
+        return returned;
+    },
 
 });
 
@@ -519,6 +652,7 @@ AFRAME.registerPrimitive('a-ls-cell', {
         'color': 'ls-cell.color',
         'contenttype': 'ls-cell.contenttype',
         'provider': 'ls-cell.provider',
+        'connectionname': 'ls-cell.connectionname',
         'title': 'ls-cell.title',
         'font': 'ls-cell.font',
         'wrapfit': 'ls-cell.wrapfit',
@@ -533,7 +667,15 @@ AFRAME.registerPrimitive('a-ls-cell', {
         'contactname': 'ls-cell.contactname',
         'contacthandle': 'ls-cell.contacthandle',
 
+        'firstname': 'ls-cell.first_name',
+        'middlename': 'ls-cell.middle_name',
+        'lastname': 'ls-cell.last_name',
+
         'eventtype': 'ls-cell.eventtype',
         'datetime':'ls-cell.datetime',
+
+        'animate-load': 'ls-cell.animateLoad',
+        'animatein': 'ls-cell.animateInSeconds',
+        'animateout': 'ls-cell.animateOutSeconds',
 	}
 });

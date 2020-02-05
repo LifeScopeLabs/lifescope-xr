@@ -435,7 +435,7 @@ AFRAME.registerComponent('diorama-case', {
         rotationx: { type: 'number', default: 30 }, // degrees
 
         type: { type: 'string', default: 'image' },
-        imageURL: {type: 'string', default: ''},
+        url: {type: 'string', default: ''},
         srcFit: { type: 'string', default: 'width' },
 
         imagewidth: { type: 'number', default: 0.6 },
@@ -484,12 +484,12 @@ AFRAME.registerComponent('diorama-case', {
 
         self._createDiorama();
 
-        if (self.data.imageURL != '' && 
+        if (self.data.url != '' && 
             (self.data.type=="image" || self.data.type=="video")) {
             self._createMedia({ x: 0, y: data.railheight + 0.3, z: -.15, rotx: data.rotationx, roty: 180 });
         }
 
-        // if (self.data.imageURL != '' && self.data.type=="video") {
+        // if (self.data.url != '' && self.data.type=="video") {
         //     self._createMedia();
         //     // if (self.data.selected) {
         //     //     self._createVideoControls();
@@ -512,23 +512,23 @@ AFRAME.registerComponent('diorama-case', {
         }
         
         if ( self.el.object3DMap.hasOwnProperty('image') &&
-            ['imageURL', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio', 'type', 'railheight']
+            ['url', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio', 'type', 'railheight']
             .some(prop => changedData.includes(prop))) {
                 
                 if (self.el.object3DMap.hasOwnProperty('image')) {
                     self.el.removeObject3D('image');
                 }
-            if (self.data.imageURL != '' && self.data.type=="image") {
+            if (self.data.url != '' && self.data.type=="image") {
                 self._createMedia({ x: 0, y: self.data.railheight + 0.3, z: -.15, rotx: self.data.rotationx, roty: 180 });
             }
         }
 
         if ( self.el.object3DMap.hasOwnProperty('video') &&
-            ['imageURL', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio', 'type', 'railheight']
+            ['url', 'srcFit', 'imagewidth', 'imageheight', 'depth', 'aspectratio', 'type', 'railheight']
             .some(prop => changedData.includes(prop)) ) {
                 // console.log('removing video');
             self.el.removeObject3D('video');
-            if (self.data.imageURL != '' && self.data.type=="video") {
+            if (self.data.url != '' && self.data.type=="video") {
                 self._createMedia({ x: 0, y: self.data.railheight + 0.3, z: -.15, rotx: self.data.rotationx, roty: 180 });
             }
         }
@@ -651,12 +651,12 @@ AFRAME.registerPrimitive( 'a-diorama', {
         'normal': 'diorama-case__case.withNormal',
         'rail': 'diorama-case__case.withRail',
         'quality': 'diorama-case__case.quality',
-        'src': 'diorama-case__case.imageURL',
+        'src': 'diorama-case__case.url',
         'srcfit': 'diorama-case__case.srcFit',
         'railheight': 'diorama-case__case.railheight',
         'shading': 'diorama-case__case.shading',
         'type': 'diorama-case__case.type',
-        'animate-load': 'diorama-grid-cell__cell.animateLoad',
+        'animate-load': 'diorama-case__case__cell.animateLoad',
         'animatein': 'diorama-case__case.animateInSeconds',
         'animateout': 'diorama-case__case.animateOutSeconds',
     }

@@ -19,6 +19,8 @@
                 <a-media-cell
                     class="clickable gridcell"
                     clickable="clickevent: cellclicked;"
+                    :highlight="'type: border; target: ' + item.type + '; hoverColor: ' + hoverColor +
+                        '; activeColor: ' + activeColor + '; createborder: true; borderbaseopacity: 0.7;'" 
                     :id="'grid-cell-' + n"
                     :type="item.type"
                     :src="imageSrc(item)"
@@ -26,35 +28,11 @@
                     :height="cellContentHeight"
                     srcFit="bothmax"
                     :animatein="animateInSeconds"
-                    :highlight="'type: border; target: ' + item.type + '; hoverColor: ' + hoverColor +
-                        '; activeColor: ' + activeColor + '; createborder: true;'" 
                     fade
                 />
             </a-entity>
 
-            <a-entity class="skybox-selector"
-                :position="gridCellPosition(-3)"
-                fade>
-                <a-entity  v-if="skybox==SkyboxEnum.STARS"
-                    id="sun-selector"
-                    class="clickable"
-                    clickable="clickevent: objectclicked;"
-                    geometry="primitive: sphere; radius: 0.05;"
-                    material="shader: sunSky"
-                    highlight="type: border; createborder: true;">
-                </a-entity>
-                <a-entity  v-else-if="skybox==SkyboxEnum.SUN"
-                    id="stars-selector"
-                    class="clickable"
-                    clickable="clickevent: objectclicked;"
-                    geometry="primitive: sphere; radius: 0.05;"
-                    material="shader: standard; src: #sky"
-                    highlight="type: border; createborder: true;"
-                    rotation="90 0 90">
-                </a-entity>
-            </a-entity>
-
-            <a-entity class="floor-map-selector"
+            <!-- <a-entity class="floor-map-selector"
                 :position="gridCellPosition(-4)"
                 fade>
                 <a-entity
@@ -65,7 +43,7 @@
                     material="shader: standard; src: #earth"
                     highlight="type: border; createborder: true;">
                 </a-entity>
-            </a-entity>
+            </a-entity> -->
 
         </a-entity>
 
@@ -149,7 +127,6 @@
     <!-- Earth -->
         <a-sphere 
                 id="Earth" class="boundry clickable"
-                @click="toggleLayout"
                 :position="'0 0 0' " 
                 radius=".99" 
                 material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;"
@@ -162,8 +139,6 @@
                 rotation="0 0 0"
                 animation="property: rotation; easing: linear; to: 0 -360; dur: 42000; loop: true;">
             <a-gltf-model 
-                class="clickable"
-                @click="toggleLayout"
                 src="#logo"
                 scale="0.075 0.075 0.075">
             </a-gltf-model>
@@ -180,6 +155,8 @@ import RoomDisplay from '../hud/vr/vrRoomDisplay.vue';
 
 import { SceneLayoutEnum } from '../../store/modules/xr';
 import { SkyboxEnum } from '../../store/modules/xr/modules/graphics';
+
+import TimeUtils from '../../util/TimeUtils.js';
 
 export default {
 
@@ -246,11 +223,16 @@ export default {
                 'normal',
                 'quality',
                 'shading',
+            ]
+        ),
+
+        ...mapGetters('xr/graphics',
+            [
                 'skybox',
             ]
         ),
 
-         ...mapState('xr/style',
+        ...mapState('xr/style',
             [
                 'hoverColor',
                 'activeColor',
@@ -349,7 +331,7 @@ export default {
     mounted() {
         var self = this;
         this.$el.addEventListener('cellclicked', self.cellClickedHandler);
-        this.$el.addEventListener('objectclicked', self.objectClickedHandler);
+        // this.$el.addEventListener('objectclicked', self.objectClickedHandler);
         this.$el.addEventListener('media-mesh-set', self.mediaMeshLoadedHandler);
         this.$el.addEventListener('pageleft', self.handlePageLeft);
         this.$el.addEventListener('pageright', self.handlePageRight);
@@ -360,12 +342,13 @@ export default {
     beforeDestroy() {
         var self = this;
         this.$el.removeEventListener('cellclicked', self.cellClickedHandler);
-        this.$el.removeEventListener('objectclicked', self.objectClickedHandler);
+        // this.$el.removeEventListener('objectclicked', self.objectClickedHandler);
         this.$el.removeEventListener('media-mesh-set', self.mediaMeshLoadedHandler);
         this.$el.removeEventListener('pageleft', self.handlePageLeft);
         this.$el.removeEventListener('pageright', self.handlePageRight);
         this.$el.removeEventListener('previouscell', self.previousCell);
         this.$el.removeEventListener('nextcell', self.nextCell);
+        this.$store.commit('xr/grid/RESET_PAGE');
     },
 
     methods: {
@@ -411,10 +394,13 @@ export default {
             var nextCellEl =  document.querySelector('#' + nextCellId);
             this.focusedCell = nextCellId;
 
+            this.unFocusCell(focusedCellEl);
             if (n == this.numberOfItemsToDisplay - 1 && this.canPageRight) {
                 this.pageRight();
+                this.focusedCell = '';
+                this.revealNonFocusedCells();
+                return;
             }
-            this.unFocusCell(focusedCellEl);
             focusedCellEl.components['fade'].animateHideCellPromise();
             this.focusCell(nextCellEl);
             nextCellEl.components['fade'].animateRevealCellPromise();
@@ -429,10 +415,14 @@ export default {
             var previousCellEl = document.querySelector('#' + previousCellId);
             this.focusedCell = previousCellId;
 
+            this.unFocusCell(focusedCellEl);
+
             if (n == 0 && this.canPageLeft) {
                 this.pageLeft();
+                this.focusedCell = '';
+                self.revealNonFocusedCells();
+                return;
             }
-            this.unFocusCell(focusedCellEl);
             focusedCellEl.components['fade'].animateHideCellPromise();
             if (!!previousCellEl) {
                 this.focusCell(previousCellEl);
@@ -479,25 +469,19 @@ export default {
             }
         },
 
-        objectClickedHandler(evt) {
-            var self = this;
-            var el = evt.target;
-            var id = el.id;
+        // objectClickedHandler(evt) {
+        //     var self = this;
+        //     var el = evt.target;
+        //     var id = el.id;
 
-            switch (id) {
-                case 'stars-selector':
-                    this.$store.commit('xr/graphics/SET_SKYBOX', 'STARS');
-                    break;
-                case 'sun-selector':
-                    this.$store.commit('xr/graphics/SET_SKYBOX', 'SUN');
-                    break;
-                case 'floor-map-selector':
-                    this.$store.commit('xr/map/SET_FLOOR_MAP_ACTIVE', !this.floorMapActive);
-                    break;
-                default:
-                    break;
-            }
-        },
+        //     switch (id) {
+        //         case 'floor-map-selector':
+        //             this.$store.commit('xr/map/SET_FLOOR_MAP_ACTIVE', !this.floorMapActive);
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        // },
 
         mediaMeshLoadedHandler(evt) {
             var self = this;
@@ -526,6 +510,7 @@ export default {
                 duration: self.dur*1000,
                 begin: function(anim) {
                     self.focusedCell = el.id;
+                    self.setSkyFromFocusedCell();
                 },
                 complete: function(anim) {
                     el.setAttribute('selected', true);
@@ -606,7 +591,6 @@ export default {
             var animationPromises = [];
             for (var i=0; i<this.numberOfItemsToDisplay; i++) {
                 if (i==this.focusedCellIndex) continue;
-
                 var el = document.querySelector(`#grid-cell-${i}`);
                 var anim = el.components['fade'].animateHideCellPromise();
                 animationPromises.push(anim);
@@ -614,12 +598,10 @@ export default {
             animationPromises.push()
             var leftArrow = document.querySelector('.grid-arrow-left');
             var rightArrow = document.querySelector('.grid-arrow-right');
-            var skyboxSelector = document.querySelector('.skybox-selector');
-            var floorMapSelector = document.querySelector('.floor-map-selector');
+            // var floorMapSelector = document.querySelector('.floor-map-selector');
             leftArrow.setAttribute('visible', false);
             rightArrow.setAttribute('visible', false);
-            animationPromises.push(skyboxSelector.components['fade'].animateHideCellPromise());
-            animationPromises.push(floorMapSelector.components['fade'].animateHideCellPromise());
+            // animationPromises.push(floorMapSelector.components['fade'].animateHideCellPromise());
             Promise.all(animationPromises);
         },
         revealNonFocusedCells(skipCellIndex=-1) {
@@ -633,10 +615,8 @@ export default {
             }
             var leftArrow = document.querySelector('.grid-arrow-left');
             var rightArrow = document.querySelector('.grid-arrow-right');
-            var skyboxSelector = document.querySelector('.skybox-selector');
-            var floorMapSelector = document.querySelector('.floor-map-selector');
-            animationPromises.push(skyboxSelector.components['fade'].animateRevealCellPromise());
-            animationPromises.push(floorMapSelector.components['fade'].animateRevealCellPromise());
+            // var floorMapSelector = document.querySelector('.floor-map-selector');
+            // animationPromises.push(floorMapSelector.components['fade'].animateRevealCellPromise());
             leftArrow.setAttribute('visible', true);
             rightArrow.setAttribute('visible', true);
             Promise.all(animationPromises);
@@ -701,6 +681,18 @@ export default {
             if (CONFIG.DEBUG) {console.log("toggleLayout");}
             var newVal = this.sceneLayout == SceneLayoutEnum.GRID ? 'GALLERY' : 'GRID';
             this.$store.commit('xr/SET_LAYOUT', newVal);
+        },
+
+        updateSkyTime(item) {
+            var newTime = TimeUtils.datetimeToHourDecimal(item.datetime);
+            this.$store.commit('xr/graphics/SET_SKYTIME', newTime);
+        },
+
+        setSkyFromFocusedCell() {
+            var item = this.items[this.focusedCellIndex];
+            if (typeof item.datetime != 'undefined' && item.datetime != null) {
+                this.updateSkyTime(item);
+            }
         },
     }
 }

@@ -120,6 +120,9 @@ function _setUpFAHandler(id='', offset={}) {
 function _setUpClipping(id='') {
     var self = this;
     var el = self.el;
+    if (self.clippingSetUp) {
+        return;
+    }
 
     var object3DName = id != '' ? `text__${id}` : 'text';
     var textObj = self.el.getObject3D(object3DName);
@@ -171,6 +174,7 @@ function _setUpClipping(id='') {
     // set isMeshBasicMaterial so that the WebGLRenderer updates opacity uniform during animations
     mat.isMeshBasicMaterial = true;
     mat.needsUpdate = true;
+    self.clippingSetUp = true;
 }
 
 
@@ -182,6 +186,9 @@ function _updateClipping(id='') {
 
     var object3DName = id != '' ? `text__${id}` : 'text';
     var textObj = self.el.getObject3D(object3DName);
+    if (!textObj) {
+        return;
+    }
     var lineHeight = textObj.geometry.layout._lineHeight;
     var linesTotal = textObj.geometry.layout._linesTotal;
     var textScale = textObj.scale.x;
@@ -255,6 +262,7 @@ AFRAME.registerComponent('text-cell', {
     init() {
         var self = this;
         var data = self.data;
+        self.clippingSetUp = false;
         this._createText = _createText.bind(this);
         this._setUpTextHandler = _setUpTextHandler.bind(this);
         this._setUpFAHandler = _setUpFAHandler.bind(this);
@@ -263,9 +271,19 @@ AFRAME.registerComponent('text-cell', {
 
         this.worldPosition = this.el.object3D.getWorldPosition();
 
+    },
+
+    update: function(oldData) {
+        var self = this;
+        var data = self.data;
+
+        var textName = data.id != '' ? `text__${data.id}` : 'text';
+
+        self.el.removeAttribute(textName);
+
         var font = self.data.font || DEFAULT_FONT;
 
-        var fontPromise = loadFont(FONTS[font]).then(
+        loadFont(FONTS[font]).then(
             (result) => {
                 self.lineHeight = result.common.lineHeight;
                 self.widthFactor = computeFontWidthFactor(result);
@@ -275,8 +293,10 @@ AFRAME.registerComponent('text-cell', {
                 self.textScale = self.data.width / self.textRenderWidth;
                 self.textHeight = self.lineHeight * self.textScale * self.data.fontsize;
                 
-                self.el.addEventListener('textlayoutchanged', self._textLayoutChangedHandler.bind(self));
-                self.el.addEventListener('font-awesome.drawn', self._fontAwesomeDrawnHandler.bind(self))
+                self.el.addEventListener('textlayoutchanged', self._textLayoutChangedHandler.bind(self),
+                    {once: true});
+                self.el.addEventListener('font-awesome.drawn', self._fontAwesomeDrawnHandler.bind(self),
+                    {once: true})
             
                 self._createText({ id: data.id, text: data.text, width: data.width, 
                     height: data.height, color: data.color });
@@ -291,6 +311,11 @@ AFRAME.registerComponent('text-cell', {
             this._updateClipping(this.data.id);
             this.worldPosition = position;
         }
+    },
+
+    remove() {
+        this.el.removeEventListener('textlayoutchanged', this._textLayoutChangedHandler.bind(this));
+        this.el.removeEventListener('font-awesome.drawn', this._fontAwesomeDrawnHandler.bind(this));
     },
 
     comparePositions(posA, posB) {
