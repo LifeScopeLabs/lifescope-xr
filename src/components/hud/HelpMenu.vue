@@ -41,7 +41,7 @@ import { mapState } from 'vuex';
 
 import HudUtils from './hudutils';
 
-import { SceneLayoutEnum } from '../../store/modules/xr';
+import { SceneLayoutEnum } from '../../store/modules/xr/index.js';
 
 export default {
 

@@ -33,7 +33,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex';
-import { GraphicsQualityEnum, ShadingEnum } from '../../store/modules/xr/modules/graphics';
+import { GraphicsQualityEnum, ShadingEnum } from '../../store/modules/xr/modules/graphics/index.js';
 
 export default {
     computed: {

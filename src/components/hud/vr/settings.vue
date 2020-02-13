@@ -584,7 +584,7 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
-import { GraphicsQualityEnum, ShadingEnum } from '../../../store/modules/xr/modules/graphics';
+import { GraphicsQualityEnum, ShadingEnum } from '../../../store/modules/xr/modules/graphics/index.js';
 
 var baseFontSize = 15;
 
@@ -854,9 +854,9 @@ export default {
         },
         updateSkyListener(evt) {
             // console.log('updateSky');
-            var val = evt.detail.value;
-            var newVal = val.toUpperCase();// == SkyboxEnum.STARS ? 'SUN' : 'STARS';
-            this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
+            // var val = evt.detail.value;
+            // var newVal = val.toUpperCase();// == SkyboxEnum.STARS ? 'SUN' : 'STARS';
+            // this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
         },
         updateBumpListener(evt) {
             var val = evt.detail.value;

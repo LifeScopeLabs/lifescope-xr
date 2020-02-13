@@ -167,6 +167,7 @@ function getCenterPoint(mesh) {
 
 
 
+export default function () {
 
 AFRAME.registerComponent('media-cell', {
     schema: {
@@ -983,5 +984,7 @@ AFRAME.registerPrimitive( 'a-media-cell', {
         'animateout': 'media-cell__cell.animateOutSeconds',
     }
 });
+
+};
 
 export { _buildMediaMesh, _createMedia, _updateAspectRatio, getCenterPoint };

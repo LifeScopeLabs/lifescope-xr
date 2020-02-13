@@ -1,11 +1,6 @@
-if (typeof AFRAME === 'undefined') {
-    throw new Error('Component attempted to register before AFRAME was available.');
-  }
-  else {
-    if (CONFIG.DEBUG) {console.log("Registering sun-sky-position...");}
-  }
-
 import TimeUtils from '../../util/TimeUtils.js';
+
+export default function () {
 
 AFRAME.registerComponent('sun-sky-position', {
     schema: {
@@ -97,3 +92,5 @@ AFRAME.registerComponent('sun-sky-position', {
     },
  
 });
+
+};

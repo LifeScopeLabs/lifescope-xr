@@ -217,6 +217,9 @@ function _updateClipping(id='') {
     mat.needsUpdate = true;
 }
 
+
+export default function () {
+
 AFRAME.registerSystem('text-cell', {
     schema: {}, 
 
@@ -352,5 +355,6 @@ AFRAME.registerPrimitive('a-text-cell', {
         'anchor': 'text-cell.anchor',
 	}
 });
+};
 
 export { FONTS, DEFAULT_FONT, loadFont, computeWidth, computeFontWidthFactor };

@@ -28,6 +28,7 @@ function _raycasterIntersectedClearedHandler(evt) {
     }
 }
 
+export default function () {
 
 AFRAME.registerComponent('clickable', {
 
@@ -105,3 +106,5 @@ AFRAME.registerComponent('clickable', {
 
 
 });
+
+};

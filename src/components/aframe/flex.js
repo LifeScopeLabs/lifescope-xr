@@ -1,3 +1,5 @@
+export default function () {
+
 AFRAME.registerComponent('flex-item', {
     schema: {
         width: { type: 'number', default: 1 },
@@ -231,3 +233,5 @@ AFRAME.registerPrimitive( 'a-flex-container', {
         'align-items': 'flex-container.alignItems',
     }
 });
+
+};

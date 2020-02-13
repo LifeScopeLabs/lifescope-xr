@@ -2,12 +2,7 @@
 //		arjs-hit-testing
 //////////////////////////////////////////////////////////////////////////////
 
-if (typeof AFRAME === 'undefined') {
-    throw new Error('Component attempted to register before AFRAME was available.');
-  }
-  else {
-    if (CONFIG.DEBUG) {console.log("Registering mapbox-terrain...");}
-}
+export default function () {
 
 AFRAME.registerComponent('mapbox-terrain', {
 	schema: {
@@ -269,4 +264,6 @@ AFRAME.registerPrimitive('a-mapbox-terrain', AFRAME.utils.extendDeep({}, AFRAME.
 		'type': 'mapbox-terrain.type',
 		'shape': 'mapbox-terrain.shape',
 	}
-}))
+}));
+
+};

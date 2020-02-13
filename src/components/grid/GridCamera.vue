@@ -152,7 +152,7 @@ export default {
                 if (playerGridRig) {
                     // playerGridRig.setAttribute("character-controller", {'pivot': "#grid-camera"});
                     // playerGridRig.setAttribute("virtual-gamepad-controls", {});
-                    camera.setAttribute('pitch-yaw-rotator', {});
+                    // camera.setAttribute('pitch-yaw-rotator', {});
                     playerGridRig.setAttribute("look-controls", 'reverseMouseDrag', true);
                 }
                 else {
@@ -174,7 +174,7 @@ export default {
                 if (playerGridRig) {
                     // playerGridRig.removeAttribute("character-controller");
                     // playerGridRig.removeAttribute("virtual-gamepad-controls");
-                    camera.removeAttribute('pitch-yaw-rotator');
+                    // camera.removeAttribute('pitch-yaw-rotator');
                     playerGridRig.removeAttribute("look-controls");
                 }
                 else {

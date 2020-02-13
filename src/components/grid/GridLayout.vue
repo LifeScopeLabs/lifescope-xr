@@ -6,12 +6,16 @@
         <a-light type='point' color='#FFF' intensity='0.8' position="10 10 0" ></a-light>
         <a-light type='hemisphere' color='#FFF' groundColor='#00F' intensity='0.8' ></a-light>
     
-        
-        <a-entity class="grid-cylinder"
+        <a-searching v-if="AppType == AppTypeEnum.APP && searching"
+                    radius=0.5
+                    :position="focusedCellPosititon.x + ' ' +focusedCellPosititon.y + ' ' + (focusedCellPosititon.z - offsetz)"/>
+       
+        <a-entity v-if="AppType == AppTypeEnum.XR"
+            class="grid-cylinder"
             :rotation="'0 ' + gridRotation + ' 0'"
             :position="'0 ' + gridOffsetY + ' 0'">
 
-            <a-entity v-for="(item, n) in items"
+            <a-entity v-for="(item, n) in LSItems"
                 :key="'grid-cell-' + n"
                 :position="gridCellPosition(n)"
                 :rotation="gridCellRotation(n)">
@@ -32,19 +36,152 @@
                 />
             </a-entity>
 
-            <!-- <a-entity class="floor-map-selector"
-                :position="gridCellPosition(-4)"
-                fade>
-                <a-entity
-                    id="floor-map-selector"
-                    class="clickable"
-                    clickable="clickevent: objectclicked;"
-                    geometry="primitive: sphere; radius: 0.05;"
-                    material="shader: standard; src: #earth"
-                    highlight="type: border; createborder: true;">
-                </a-entity>
-            </a-entity> -->
 
+        </a-entity>
+
+         <a-entity v-if="AppType == AppTypeEnum.APP"
+            class="grid-cylinder"
+            :rotation="'0 ' + gridRotation + ' 0'"
+            :position="'0 ' + gridOffsetY + ' 0'">
+
+            <a-entity v-for="(item, n) in items"
+                :key="'grid-cell-' + n"
+                :position="gridCellPosition(n)"
+                :rotation="gridCellRotation(n)">
+                
+                <a-ls-cell v-if="$store.state.facet == 'events'"
+                    class="clickable gridcell"
+                    clickable="clickevent: cellclicked;"
+                    :highlight="'type: border; hoverColor: ' + hoverColor +
+                        '; activeColor: ' + activeColor + ';' +
+                        'borderbaseopacity: 0.7;'"
+                    :id="'grid-cell-' + n"
+                    :mediatype="item.content.type"
+                    :mediaurl="item.content.embed_content"
+                    :width="cellWidth"
+                    :height="cellContentHeight"
+                    srcFit="bothmax"
+                    :animatein="animateInSeconds"
+
+                    :provider="item.connection.provider.name"
+                    :contenttype="item.content.type"
+                    :value="item.content.text"
+                    :title="item.content.title"
+                    :price="item.content.price"
+                    :url="item.content.url"
+                    :tags="item.content.tags"
+
+                    :facet="$store.state.facet"
+
+                    :eventtype="item.eventtype"
+                    :datetime="item.datetime"
+
+                    fontsize=1
+                    wrapcount=44
+                    color='#a2a2a2'
+                    nobr=false
+                    background=true
+                    wrapfit=true
+                    fade
+                />
+
+                <a-ls-cell v-else-if="$store.state.facet == 'content'"
+                    :id="'grid-cell-' + n"
+                    :key="'grid-cell-' + n"
+                    class="clickable gridcell"
+
+                    :width="cellWidth"
+                    :height="cellContentHeight"
+                    fontsize=1
+                    wrapcount=44
+                    color='#a2a2a2'
+                    nobr=false
+                    background=true
+                    wrapfit=true
+                    srcFit="bothmax"
+                    :animatein="animateInSeconds"
+                    fade
+                    clickable="clickevent: cellclicked;"
+                    :highlight="'type: border; hoverColor: ' + hoverColor +
+                        '; activeColor: ' + activeColor + ';' +
+                        'borderbaseopacity: 0.7;'"
+
+                    :facet="$store.state.facet"
+                    :contenttype="item.type"
+                    :provider="item.connection.provider.name"
+
+                    :mediatype="item.type"
+                    :mediaurl="item.embed_content"
+                    
+                    :value="item.text"
+                    :title="item.title"
+                    :price="item.price"
+                    :url="item.url"
+                    :tags="item.tags"
+                    />
+
+                <a-ls-cell v-else-if="$store.state.facet == 'contacts'"
+                        class="clickable gridcell"
+                        clickable="clickevent: cellclicked;"
+                        :highlight="'type: border; hoverColor: ' + hoverColor +
+                            '; activeColor: ' + activeColor + ';' +
+                            'borderbaseopacity: 0.7;'"
+                        :id="'grid-cell-' + n"
+                        :mediatype="item.type"
+                        :mediaurl="item.embed_content"
+                        :width="cellWidth"
+                        :height="cellContentHeight"
+                        srcFit="bothmax"
+                        :animatein="animateInSeconds"
+
+                        :facet="$store.state.facet"
+
+                        :avatarurl="item.avatar_url"
+                        :contactname="item.name"
+                        :contacthandle="item.handle"
+
+                        :tags="item.tags"
+
+                        fontsize=1
+                        wrapcount=44
+                        color='#a2a2a2'
+                        nobr=false
+                        background=true
+                        wrapfit=true
+                        fade
+                    />
+
+                <a-ls-cell v-else-if="$store.state.facet == 'people'"
+                        class="clickable gridcell"
+                        clickable="clickevent: cellclicked;"
+                        :highlight="'type: border; hoverColor: ' + hoverColor +
+                            '; activeColor: ' + activeColor + ';' +
+                            'borderbaseopacity: 0.7;'"
+                        :id="'grid-cell-' + n"
+                        :mediatype="item.type"
+                        :mediaurl="item.embed_content"
+                        :width="cellWidth"
+                        :height="cellContentHeight"
+                        srcFit="bothmax"
+                        :animatein="animateInSeconds"
+
+                        :avatarurl="item.avatar_url"
+                        :firstname="item.first_name"
+                        :lastname="item.last_name"
+                        :middlename="item.middle_name"
+                        :tags="item.tags"
+
+                        :facet="$store.state.facet"
+
+                        fontsize=1
+                        wrapcount=44
+                        color='#a2a2a2'
+                        nobr=false
+                        background=true
+                        wrapfit=true
+                        fade
+                    />
+            </a-entity>
         </a-entity>
 
         <a-arrow
@@ -93,6 +230,17 @@
                 :hovercolor="hoverColor"
                 :activecolor="activeColor"
                 />
+            <a-mapbox-terrain v-if="focusedHasLocation"
+                position="0 -0.75 0"
+                rotation="45 0 0"
+                class="focused-cell-map"
+                :scale="floorScale + ' 1 ' + floorScale"
+                :latitude="focusedLatitude" :longitude="focusedLongitude"
+                :zoom-level="floorZoom" :rows="floorRows"
+                :highdpi="floorHighDPI"
+                :heightmap="floorMapHeightmap"
+                :heightmapheight="floorMapHeight"
+                :type="mapboxType"></a-mapbox-terrain>
         </a-entity>
 
     <!-- Demo Map -->
@@ -115,23 +263,34 @@
         :heightmap="worldMapHeightmap"
         :heightmapheight="worldMapHeight"></a-mapbox-terrain>
 
+    <a-entity
+        :position="'0 -0.5 0'"
+        animation="property: rotation; easing: linear; to: 0 360; dur: 15000; loop: true;">
+        <globe>
+        </globe>
+    </a-entity>
+
     <!-- Room Selector -->
-    <room-display v-if="!inVR"
+    <room-display v-if="AppType == AppTypeEnum.XR && !inVR"
         id="room-display"
         :position="'0.1 0.03 ' + (-offsetz)"
+        rotation="0 -90 0"
+    />
+    <saved-searches v-else-if="AppType == AppTypeEnum.APP"
+        :position="'1 0.5 ' + (-offsetz)"
         rotation="0 -90 0"
     />
 
     <!-- Carousel Selector -->
 
     <!-- Earth -->
-        <a-sphere 
+        <!-- <a-sphere 
                 id="Earth" class="boundry clickable"
                 :position="'0 0 0' " 
                 radius=".99" 
                 material="src:#earth; roughness: 1; transparent: true; opacity: 0.9;"
                 animation="property: rotation; easing: linear; to: 0 360; dur: 150000; loop: true;">
-        </a-sphere>
+        </a-sphere> -->
 
         <!-- Logo  -->
         <a-entity 
@@ -152,16 +311,20 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import { Cylinder, CylindricalGrid } from '../../util/GridUtils';
 
 import RoomDisplay from '../hud/vr/vrRoomDisplay.vue';
+import SavedSearches from './SavedSearches.vue';
+import Globe from '../globe/globe.vue';
 
-import { SceneLayoutEnum } from '../../store/modules/xr';
-import { SkyboxEnum } from '../../store/modules/xr/modules/graphics';
+import { AppTypeEnum, SceneLayoutEnum } from '../../store/modules/xr/index.js';
+import { SkyboxEnum } from '../../store/modules/xr/modules/graphics/index.js';
 
 import TimeUtils from '../../util/TimeUtils.js';
 
 export default {
 
     components: {
-        RoomDisplay
+        RoomDisplay,
+        SavedSearches,
+        Globe,
     },
 
     data () {
@@ -170,8 +333,10 @@ export default {
             dur: 0.5, //seconds
             cylinder: null,
             cylindricalGrid: null,
+            AppTypeEnum: AppTypeEnum,
             SkyboxEnum: SkyboxEnum,
             paginatorOffsetZ: 1.4,
+            searchJustChanged: false,
         }
     },
 
@@ -194,11 +359,32 @@ export default {
             return sorted;
         },
 
-        items() {
+        LSItems() {
             return this.sortedLSObjs.slice(this.page * this.itemsPerPage, (this.page+1) * this.itemsPerPage);
         },
+        items: function() {
+            var items;
+            if (this.$store.state.facet === 'contacts') {
+                items = this.LS_CONTACTS.slice(this.page * this.itemsPerPage,
+                    (this.page+1) * this.itemsPerPage);
+            }
+            else if (this.$store.state.facet === 'content') {
+                items = this.LS_CONTENT.slice(this.page * this.itemsPerPage,
+                    (this.page+1) * this.itemsPerPage);
+            }
+            else if (this.$store.state.facet === 'events') {
+                items = this.LS_EVENTS.slice(this.page * this.itemsPerPage,
+                    (this.page+1) * this.itemsPerPage);
+            }
+            else if (this.$store.state.facet === 'people') {
+                items = this.LS_PEOPLE.slice(this.page * this.itemsPerPage,
+                    (this.page+1) * this.itemsPerPage);
+            }
+            return items;
+        },
         numberOfItemsToDisplay() {
-            return Math.min(this.itemsPerPage, this.items.length);
+            var length = this.AppType == AppTypeEnum.XR ? this.LSItems.length : this.items.length;
+            return Math.min(this.itemsPerPage, length);
         },
 
         focusedCellIndex() {
@@ -208,8 +394,41 @@ export default {
             return +(this.focusedCell.match(/\d+$/)[0]);
         },
 
+        focusedHasLocation() {
+            var items = this.AppType == AppTypeEnum.XR ? this.LSItems : this.items;
+            var item = items[this.focusedCellIndex];
+            var result = (typeof item.hydratedLocation != 'undefined' || 
+                typeof item.location != 'undefined' & item.location != null);
+            return result;
+        },
+
+        focusedLatitude() {
+            var items = this.AppType == AppTypeEnum.XR ? this.LSItems : this.items;
+            var item = items[this.focusedCellIndex];
+            if (item.location != null && item.location.geolocation != null) {
+                return item.location.geolocation[1];
+            }
+            return 0;
+        },
+
+        focusedLongitude() {
+            var items = this.AppType == AppTypeEnum.XR ? this.LSItems : this.items;
+            var item = items[this.focusedCellIndex];
+            if (item.location != null && item.location.geolocation != null) {
+                return item.location.geolocation[0];
+            }
+            return 0;
+        },
+
+        ...mapState(
+            [
+                'facet',
+                'searching'
+            ]
+        ),
         ...mapState('xr',
             [
+                'AppType',
                 'inVR',
                 'LSObjs',
                 'roomConfig',
@@ -289,6 +508,15 @@ export default {
             ]
         ),
 
+        ...mapGetters('xr',
+            [
+                'LS_CONTENT',
+                'LS_EVENTS',
+                'LS_CONTACTS',
+                'LS_PEOPLE'
+            ]
+        ),
+
         ...mapGetters('xr/grid',
             [
                 'itemsPerPage',
@@ -308,6 +536,16 @@ export default {
     },
 
     watch: {
+        facet: function (newVal, oldVal) {
+            this.facetJustChanged = true;
+            this.$store.commit('xr/grid/RESET_PAGE');
+        },
+
+        searching: function (newVal, oldVal) {
+            this.searchJustChanged = true;
+            this.$store.commit('xr/grid/RESET_PAGE');
+        },
+
         gridCellsPerRow: function (newVal, oldVal) {
             this.cylinder.cellsPerRow = newVal;
             this.cylindricalGrid.cellsPerRow = newVal;
@@ -319,6 +557,45 @@ export default {
         radius: function (newVal, oldVal) {
             this.cylinder.radius = newVal;
             this.cylindricalGrid.radius = newVal;
+        },
+        items: function (newVal, oldVal) {
+            var self = this;
+            var scene = AFRAME.scenes[0];
+            if (!scene) {console.log('no aframe scene');return;}
+            var self = this;
+            var behavior = {
+                el: scene,
+                get tick() {
+                    return function() {
+                        for (var n=0; n < self.numberOfItemsToDisplay; n++) {
+                            var cell = document.querySelector(`#grid-cell-${n}`);
+                            cell.components['ls-cell'].updateCell();
+                        }
+                        scene.removeBehavior(this);
+                    }
+                }
+            }
+            if( !this.searching ) {
+                if ( !this.searchJustChanged ){
+                    scene.addBehavior(behavior);
+                }
+                else if ( this.searchJustChanged ) {
+                    this.searchJustChanged = false;
+                }
+            }
+        },
+
+        LS_CONTENT: function (newVal, oldVal) {
+            this.$store.commit('xr/grid/RESET_PAGE');
+        },
+        LS_EVENTS: function (newVal, oldVal) {
+            this.$store.commit('xr/grid/RESET_PAGE');
+        },
+        LS_CONTACTS: function (newVal, oldVal) {
+            this.$store.commit('xr/grid/RESET_PAGE');
+        },
+        LS_PEOPLE: function (newVal, oldVal) {
+            this.$store.commit('xr/grid/RESET_PAGE');
         },
     },
     
@@ -636,16 +913,26 @@ export default {
         pageAnimation(pageCallback) {
             var self = this;
             var cellObjs = [];
+            var cells = [];
             var animationPromises = [];
             for (var n=0; n < this.numberOfItemsToDisplay; n++) {
                 var cell = document.querySelector(`#grid-cell-${n}`);
                 animationPromises.push(this.animateCellRemovalPromise(cell.object3D));
                 cellObjs.push(cell.object3D);
+                cells.push(cell);
             }
             Promise.all(animationPromises)
             .then((results) => {
                 pageCallback();
-                cellObjs.forEach((obj) => self.resetCellScale(obj));
+                if (this.AppType == AppTypeEnum.XR) {
+                    cellObjs.forEach((obj) => self.resetCellScale(obj));
+                }
+                else {
+                    cells.forEach((cell) => {
+                        self.resetCellScale(cell.object3D);
+                        // cell.components['ls-cell'].updateCell();
+                    });
+                }
             });
         },
 
@@ -689,7 +976,8 @@ export default {
         },
 
         setSkyFromFocusedCell() {
-            var item = this.items[this.focusedCellIndex];
+            var items = this.AppType == AppTypeEnum.XR ? this.LSItems : this.items;
+            var item = items[this.focusedCellIndex];
             if (typeof item.datetime != 'undefined' && item.datetime != null) {
                 this.updateSkyTime(item);
             }

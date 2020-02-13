@@ -66,8 +66,8 @@ import { mapGetters, mapState } from 'vuex';
 
 import galleryCarousel from "./carousel/gallery-carousel.vue";
 
-import { SceneLayoutEnum } from '../store/modules/xr';
-import { ShadingEnum } from "../store/modules/xr/modules/graphics";
+import { SceneLayoutEnum } from '../store/modules/xr/index.js';
+import { ShadingEnum } from "../store/modules/xr/modules/graphics/index.js";
 
 export default {
 

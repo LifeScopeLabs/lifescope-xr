@@ -1,3 +1,5 @@
+export default function () {
+
 AFRAME.registerComponent('text-link', {
     dependencies: ['text'],
 
@@ -87,4 +89,5 @@ AFRAME.registerComponent('text-link', {
           }
       }
     },
-  })
+  });
+};

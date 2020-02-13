@@ -1,3 +1,5 @@
+export default function () {
+
 AFRAME.registerComponent('fade', {
 
     schema: {
@@ -154,3 +156,5 @@ AFRAME.registerComponent('fade', {
 
 
 });
+
+};

@@ -1,5 +1,5 @@
 <template>
-  <a-scene :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; adapter: easyrtc; connectOnLoad: true;'"
+  <a-scene embedded :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; adapter: easyrtc; connectOnLoad: true;'"
     loading-screen="enabled: false">
 
     <!-- Load assets -->
@@ -50,10 +50,10 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
-import socketIO from 'socket.io-client';
-import easyrtc from '../static/easyrtc/easyrtc.js';
+// import socketIO from 'socket.io-client';
+// import easyrtc from '../static/easyrtc/easyrtc.js';
 
 import gallery from "./components/gallery.vue";
 import GridLayout from "./components/grid/GridLayout.vue"
@@ -61,8 +61,8 @@ import GridLayout from "./components/grid/GridLayout.vue"
 import avatar from "./components/avatar/avatar.vue";
 import GridCamera from "./components/grid/GridCamera.vue";
 
-import { SkyboxEnum } from './store/modules/xr/modules/graphics';
-import { SceneLayoutEnum } from './store/modules/xr';
+import { SkyboxEnum } from './store/modules/xr/modules/graphics/index.js';
+import { AppTypeEnum, SceneLayoutEnum } from './store/modules/xr/index.js';
 
 export default {
     components: {
@@ -81,6 +81,7 @@ export default {
     computed: {
       ...mapState('xr',
         [
+          'AppType',
           'inVR',
           'roomName',
           'sceneLayout'
@@ -89,8 +90,13 @@ export default {
 
       ...mapState('xr/graphics',
         [
-          'skybox',
           'skytime'
+        ]
+      ),
+
+      ...mapGetters('xr/graphics',
+        [
+          'skybox',
         ]
       ),
 
@@ -118,35 +124,35 @@ export default {
       }
       document.body.addEventListener('enter-vr', function (evt) {
         self.onEnterVR();
-      });
-      document.body.addEventListener('exit-vr', function (event) {
-        self.onExitVR();
-      });
-
-
-
-      document.body.addEventListener('connected', function (evt) {
-        if (CONFIG.DEBUG) {console.log('connected event. clientId =', evt.detail.clientId);};
-        if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);};
-
-        // setup chat
-        self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
-        NAF.connection.subscribeToDataChannel('chat', self.chatCB);
-        NAF.connection.subscribeToDataChannel('nameUpdate', self.nameUpdateCB);
+        document.body.addEventListener('exit-vr', function (event) {
+          self.onExitVR();
+        })
       });
 
-      document.body.addEventListener('clientConnected', function (evt) {
-        if (CONFIG.DEBUG) {console.log('clientConnected event. clientId =', evt.detail.clientId);};
-        if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);}
-        self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
-        NAF.connection.sendData(evt.detail.clientId, 'nameUpdate', self.$store.state.xr.naf.playerNames.get(NAF.clientId));
-      });
 
-      document.body.addEventListener('clientDisconnected', function (evt) {
-        if (CONFIG.DEBUG) {console.log('clientDisconnected event. clientId =', evt.detail.clientId);};
-        // self.$store.commit('xr/naf/DECREMENT_PLAYERS');
-        self.$store.dispatch('xr/naf/removePlayer', { clientId: evt.detail.clientId });
-      });
+
+      // document.body.addEventListener('connected', function (evt) {
+      //   if (CONFIG.DEBUG) {console.log('connected event. clientId =', evt.detail.clientId);};
+      //   if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);};
+
+      //   // setup chat
+      //   self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
+      //   NAF.connection.subscribeToDataChannel('chat', self.chatCB);
+      //   NAF.connection.subscribeToDataChannel('nameUpdate', self.nameUpdateCB);
+      // });
+
+      // document.body.addEventListener('clientConnected', function (evt) {
+      //   if (CONFIG.DEBUG) {console.log('clientConnected event. clientId =', evt.detail.clientId);};
+      //   if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);}
+      //   self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
+      //   NAF.connection.sendData(evt.detail.clientId, 'nameUpdate', self.$store.state.xr.naf.playerNames.get(NAF.clientId));
+      // });
+
+      // document.body.addEventListener('clientDisconnected', function (evt) {
+      //   if (CONFIG.DEBUG) {console.log('clientDisconnected event. clientId =', evt.detail.clientId);};
+      //   // self.$store.commit('xr/naf/DECREMENT_PLAYERS');
+      //   self.$store.dispatch('xr/naf/removePlayer', { clientId: evt.detail.clientId });
+      // });
 
 
       if (!self.$route.query.room){
@@ -154,19 +160,23 @@ export default {
       }
           
       var queryRoom = this.$route.query.room || 'ls-room';
-      this.$store.dispatch('xr/setRoomName', queryRoom)
-      .then(() => {
-        return this.$store.dispatch('xr/getRoomConfig');
-      })
-      .then(() => {
-          return this.$store.dispatch('xr/getObjs');
-      })
-      .then(() => {
-          return this.$store.dispatch('xr/avatar/getAvatars');
-      })
-      .catch( ( error ) => {
-        console.log(error);
-      });
+
+      if (this.AppType == AppTypeEnum.XR) {
+        this.$store.dispatch('xr/setRoomName', queryRoom)
+        .then(() => {
+          return this.$store.dispatch('xr/getRoomConfig');
+        })
+        .then(() => {
+            return this.$store.dispatch('xr/getObjs');
+        })
+        .then(() => {
+            return this.$store.dispatch('xr/avatar/getAvatars');
+        })
+        .catch( ( error ) => {
+          console.log(error);
+        });
+      }
+
     },
 
 
@@ -205,7 +215,7 @@ export default {
         if (CONFIG.DEBUG) {console.log("teardownMobile");};
         var playerRig = document.getElementById('playerRig');
         if (playerRig) {
-          playerRig.removeAttribute('virtual-gamepad-controls');
+          // playerRig.removeAttribute('virtual-gamepad-controls');
         }
         var sceneEl = document.getElementsByTagName('a-scene')[0];
         sceneEl.removeAttribute('look-on-mobile');

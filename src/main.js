@@ -23,19 +23,17 @@ import 'aframe-teleport-controls';
 import 'nipplejs';
 import 'particles.js';
 
-import './components/aframe';
+import { registerAframeComponents } from './components/aframe/index.js';
 import './directives';
 
-import './util/setupFontAwesome.js';
-
-import {mappings, inputActions} from './controls/input-mappings';
+import setupFontAwesome from './util/setupFontAwesome.js';
+import registerAframeInput from './controls/registerAframeInput.js';
 
 import App from './App.vue';
 
-
-AFRAME.registerInputActions(inputActions, 'default');
-AFRAME.registerInputMappings(mappings);
-
+registerAframeComponents();
+setupFontAwesome();
+registerAframeInput();
 
 Vue.use(VueRouter);
 var router = new VueRouter({

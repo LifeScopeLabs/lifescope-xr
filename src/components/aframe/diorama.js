@@ -1,6 +1,6 @@
 import TextureLoaderHelper from '../../util/TextureLoaderHelper.js';
-import GradientShader from '../../shaders/GradientShader';
-import CelShader from '../../shaders/CelShader';
+// import GradientShader from '../../shaders/GradientShader';
+// import CelShader from '../../shaders/CelShader';
 import { _buildMediaMesh, _createMedia, _updateAspectRatio, getCenterPoint } from './media-cell';
 
 var materialColors =  new Map([
@@ -31,15 +31,15 @@ function _buildMaterial(shading, type, quality='l', withBump=false, withNormal=f
             resolve(material);
         }
 
-        if (shading=='cel') {
-            var material = new CelShader(materialColors.get(type), props);
-            resolve(material);
-        }
+        // if (shading=='cel') {
+        //     var material = new CelShader(materialColors.get(type), props);
+        //     resolve(material);
+        // }
 
-        if (type=='gradient') {
-            var material = new GradientShader(0xACB6E5, 0x74ebd5);
-            resolve(material);
-        }
+        // if (type=='gradient') {
+        //     var material = new GradientShader(0xACB6E5, 0x74ebd5);
+        //     resolve(material);
+        // }
         
         var tlHelper = new TextureLoaderHelper();
 
@@ -194,6 +194,7 @@ function _buildGeometry(type, data) {
     return geom;
 }
 
+export default function () {
 
 AFRAME.registerComponent('diorama-rail', {
     schema: {
@@ -661,3 +662,5 @@ AFRAME.registerPrimitive( 'a-diorama', {
         'animateout': 'diorama-case__case.animateOutSeconds',
     }
 });
+
+};

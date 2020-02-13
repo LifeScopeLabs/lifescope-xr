@@ -22,7 +22,7 @@ import MenuIcons from './MenuIcons.vue';
 import NafHud from './NAFHud.vue';
 import paginator from './paginator.vue';
 import settings from './settings.vue';
-import { SceneLayoutEnum } from '../../store/modules/xr';
+import { SceneLayoutEnum } from '../../store/modules/xr/index.js';
 
 export default {
     components: {

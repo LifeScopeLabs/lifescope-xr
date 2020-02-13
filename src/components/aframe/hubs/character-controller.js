@@ -2,6 +2,8 @@ const CLAMP_VELOCITY = 0.01;
 const MAX_DELTA = 0.2;
 const EPS = 10e-6;
 
+export default function () {
+
 /**
  * Avatar movement controller that listens to move, rotate and teleportation events and moves the avatar accordingly.
  * The controller accounts for playspace offset and orientation and depends on the nav mesh system for translation.
@@ -232,3 +234,5 @@ AFRAME.registerComponent("character-controller", {
     }
   }
 });
+
+};

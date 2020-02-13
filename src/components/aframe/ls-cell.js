@@ -3,6 +3,8 @@ import { getContentTypeIconUnicode, getProviderTypeIconUnicode,
     getEventTypeIconUnicode } from '../../util/FAIconsUtil';
 import moment from 'moment';
 
+export default function () {
+
 AFRAME.registerComponent('ls-cell', {
 
     schema: {
@@ -679,3 +681,5 @@ AFRAME.registerPrimitive('a-ls-cell', {
         'animateout': 'ls-cell.animateOutSeconds',
 	}
 });
+
+};

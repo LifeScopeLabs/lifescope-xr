@@ -1,13 +1,7 @@
 import nipplejs from "nipplejs";
 import styles from "./virtual-gamepad-controls.css";
 
-if (typeof AFRAME === 'undefined') {
-  throw new Error('Component attempted to register before AFRAME was available.');
-}
-else {
-  if (CONFIG.DEBUG) {console.log("Registering virtual-gamepad-controls...");}
-}
-
+export default function () {
 /**
  * Instantiates 2D virtual gamepads and emits associated events.
  * @namespace user-input
@@ -185,3 +179,5 @@ AFRAME.registerComponent("virtual-gamepad-controls", {
     document.body.removeChild(this.rightTouchZone);
   }
 });
+
+};

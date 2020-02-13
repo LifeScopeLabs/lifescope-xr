@@ -11,11 +11,12 @@
                 camera>
             </a-entity>
             <rightHandController ref="righthand" />
+                  <!-- <a-entity id="rightHand" laser-controls="hand: right" raycaster="objects: [.clickable]" line="color: #118A7E"></a-entity> -->
         </a-entity>
 
         <a-entity v-if="cursorActive"
             cursor="rayOrigin: mouse"
-            raycaster="interval: 1000; objects: .clickable;">
+            raycaster="interval: 1000; objects: .clickable, .a-enter-vr;">
         </a-entity>
 
     </a-entity>
@@ -165,10 +166,10 @@ export default {
             var sceneEl = document.getElementsByTagName('a-scene')[0];
             try {
                 if (playerRig) {
-                    playerRig.setAttribute("character-controller", {'pivot': "#player-camera"});
-                    playerRig.setAttribute("virtual-gamepad-controls", {});
-                    camera.setAttribute('pitch-yaw-rotator', {});
-                    sceneEl.setAttribute("look-on-mobile", "camera", camera);
+                    // playerRig.setAttribute("character-controller", {'pivot': "#player-camera"});
+                    // playerRig.setAttribute("virtual-gamepad-controls", {});
+                    // camera.setAttribute('pitch-yaw-rotator', {});
+                    // sceneEl.setAttribute("look-on-mobile", "camera", camera);
                     // sceneEl.setAttribute("look-on-mobile", "verticalLookSpeedRatio", 3);
                 }
                 else {
@@ -188,10 +189,10 @@ export default {
             var sceneEl = document.getElementsByTagName('a-scene')[0];
             try {
                 if (playerRig) {
-                    playerRig.removeAttribute("character-controller");
-                    playerRig.removeAttribute("virtual-gamepad-controls");
-                    camera.removeAttribute('pitch-yaw-rotator');
-                    sceneEl.removeAttribute("look-on-mobile");
+                    // playerRig.removeAttribute("character-controller");
+                    // playerRig.removeAttribute("virtual-gamepad-controls");
+                    // camera.removeAttribute('pitch-yaw-rotator');
+                    // sceneEl.removeAttribute("look-on-mobile");
                 }
                 else {
                     console.log("failed to teardown mobile controls on playerRig");

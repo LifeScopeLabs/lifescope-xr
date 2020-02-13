@@ -118,8 +118,8 @@ export default {
         },
 
         toggleSky() {
-            var newVal = this.skybox == SkyboxEnum.STARS ? 'SUN' : 'STARS';
-            this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
+            // var newVal = this.skybox == SkyboxEnum.STARS ? 'SUN' : 'STARS';
+            // this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
         },
 
 

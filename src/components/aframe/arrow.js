@@ -1,3 +1,5 @@
+export default function () {
+
 AFRAME.registerComponent('arrow', {
     dependencies: ['highlight'],
 
@@ -125,3 +127,5 @@ AFRAME.registerPrimitive( 'a-arrow', {
         'activecolor': 'highlight.activeColor',
     }
 });
+
+};

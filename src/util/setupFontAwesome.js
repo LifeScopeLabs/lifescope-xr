@@ -1,5 +1,7 @@
 import WebFont from 'webfontloader';
 
+export default function () {
+
 document.addEventListener('font-awesome-system-initialized', (evt) => {
     var scene = evt.detail.scene;
     var behavior = {
@@ -23,4 +25,6 @@ function LoadWebFonts() {
     }
   };
   WebFont.load(WebFontConfig);
+}
+
 }

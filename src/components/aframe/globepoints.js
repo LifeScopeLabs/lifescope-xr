@@ -1,3 +1,4 @@
+export default function () {
 
 AFRAME.registerSystem('globe-points', {
     schema: {}, 
@@ -135,3 +136,5 @@ AFRAME.registerPrimitive('a-globe-points', {
         'points': 'globe-points.points',
 	}
 });
+
+};

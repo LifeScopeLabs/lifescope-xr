@@ -30,6 +30,8 @@ function _mouseupHandler(evt) {
   }
 }
 
+export default function () {
+
 AFRAME.registerComponent('highlight', {
   schema: {
     hover: { type: 'boolean', default: false },
@@ -292,4 +294,6 @@ AFRAME.registerComponent('highlight', {
         }
     }
   }
-})
+});
+
+};

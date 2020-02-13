@@ -441,14 +441,14 @@ export default {
     },
 
     watch: {
-        skySetting: function (newVal, oldVal) {
-            if (SkyboxEnum.hasOwnProperty(newVal)) {
-                this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
-            }
-            else {
-                console.log(`couldn't change skySetting: ${newVal} is not a SkyboxEnum`);
-            }
-        },
+        // skySetting: function (newVal, oldVal) {
+        //     if (SkyboxEnum.hasOwnProperty(newVal)) {
+        //         this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
+        //     }
+        //     else {
+        //         console.log(`couldn't change skySetting: ${newVal} is not a SkyboxEnum`);
+        //     }
+        // },
         qualitySetting: function (newVal, oldVal) {
             if (GraphicsQualityEnum.hasOwnProperty(newVal)) {
                 this.$store.commit('xr/graphics/SET_QUALITY', newVal);
@@ -513,8 +513,8 @@ export default {
             this.hudUtils.toggleHud(this.settingsStyleObject);
         },
         toggleSky() {
-            var newVal = this.skybox == SkyboxEnum.STARS ? 'SUN' : 'STARS';
-            this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
+            // var newVal = this.skybox == SkyboxEnum.STARS ? 'SUN' : 'STARS';
+            // this.$store.commit('xr/graphics/SET_SKYBOX', newVal);
         },
         setMap() {
             this.$store.commit('xr/map/SET_MAP_LATITUDE', this.lat);

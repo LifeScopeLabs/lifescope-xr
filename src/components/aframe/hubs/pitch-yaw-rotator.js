@@ -1,4 +1,6 @@
 const degToRad = THREE.Math.degToRad;
+export default function () {
+
 AFRAME.registerComponent("pitch-yaw-rotator", {
   schema: {
     minPitch: { default: -50 },
@@ -23,3 +25,5 @@ AFRAME.registerComponent("pitch-yaw-rotator", {
     this.el.object3D.rotation.order = "YXZ";
   }
 });
+
+};

@@ -1,25 +1,32 @@
 import axios from 'axios';
 
-import avatarModule from './modules/avatar';
-import carouselModule from './modules/carousel';
-import chatModule from './modules/chat';
-import hudModule from './modules/hud';
-import graphicsModule from './modules/graphics';
-import mapModule from './modules/map';
-import nafModule from './modules/naf';
-import gridModule from './modules/grid';
-import styleModule from './modules/style';
+import avatarModule from './modules/avatar/index.js';
+import carouselModule from './modules/carousel/index.js';
+import chatModule from './modules/chat/index.js';
+import controlsModule from './modules/controls/index.js';
+import hudModule from './modules/hud/index.js';
+import graphicsModule from './modules/graphics/index.js';
+import mapModule from './modules/map/index.js';
+import nafModule from './modules/naf/index.js';
+import gridModule from './modules/grid/index.js';
+import styleModule from './modules/style/index.js';
+
+const AppTypeEnum = Object.freeze({
+    XR: 1,
+    APP: 2
+});
+
 
 const SceneLayoutEnum = Object.freeze({
     GALLERY: 1,
     GRID: 2
 });
 
-
 export const modules = {
         avatar: avatarModule,
         carousel: carouselModule,
         chat: chatModule,
+        controls: controlsModule,
         graphics: graphicsModule,
         hud: hudModule,
         map: mapModule,
@@ -30,6 +37,7 @@ export const modules = {
 
 export const state = function () {
     return {
+        AppType: AppTypeEnum.XR,
         LSObjs: [],
         LSObjsLoaded: false,
         roomConfig: {},
@@ -43,8 +51,61 @@ export const state = function () {
 };
 
 export const getters = {
-    totalItems: (state) => {
-        return state.LSObjs.length;
+    totalItems: (state, getters, rootState, rootGetters) => {
+        if (state.AppType == AppTypeEnum.XR) {
+            return state.LSObjs.length;
+        }
+        else {
+            switch (rootState.facet) {
+                case 'content':
+                    return getters.LS_CONTENT.length;
+                case 'events':
+                    return getters.LS_EVENTS.length;
+                case 'contacts':
+                    return getters.LS_CONTACTS.length;
+                case 'people':
+                    return getters.LS_PEOPLE.length;
+                default:
+                    return 0;
+            }
+        }
+    },
+    LS_CONTENT: (state, getters, rootState, rootGetters) => {
+        if (state.AppType != AppTypeEnum.APP) return [];
+        return rootState.objects.content;
+    },
+    LS_EVENTS: (state, getters, rootState, rootGetters) => {
+        if (state.AppType != AppTypeEnum.APP) return [];
+        var events = rootState.objects.events;
+        var items = [];
+        events.forEach(event => {
+            var obj = {};
+            obj.datetime = event.datetime;
+            obj.eventtype = event.type;
+            obj.connection = event.connection;
+            obj.hydratedLocation = event.hydratedLocation;
+            obj.location = event.location;
+            event.content.forEach(content => {
+                items.push({ ...obj, content: content });
+            });
+        });
+        return items;
+    },
+    LS_CONTACTS: (state, getters, rootState, rootGetters) => {
+        if (state.AppType != AppTypeEnum.APP) return [];
+        rootState.objects.contacts.forEach(contact => {
+            // console.log(contact);
+        });
+
+        return rootState.objects.contacts;
+    },
+    LS_PEOPLE: (state, getters, rootState, rootGetters) => {
+        if (state.AppType != AppTypeEnum.APP) return [];
+        rootState.objects.people.forEach(person => {
+            // console.log(person);
+        });
+
+        return rootState.objects.people;
     }
 };
 
@@ -96,6 +157,15 @@ export const mutations = {
             }
             else {
                 console.log(`cannot set sceneLayout, ${val} is not a SceneLayoutEnum`);
+            }
+        },
+        SET_APPTYPE: function(state, val) {
+            if (CONFIG.DEBUG) {console.log("SET_APPTYPE");}
+            if (AppTypeEnum.hasOwnProperty(val)) {
+                state.AppType = AppTypeEnum[val];
+            }
+            else {
+                console.log(`cannot set AppType, ${val} is not a AppTypeEnum`);
             }
         },
 };
@@ -153,5 +223,5 @@ const xrModule = {
     actions
 };
 
-export { SceneLayoutEnum };
+export { AppTypeEnum, SceneLayoutEnum };
 export default xrModule;

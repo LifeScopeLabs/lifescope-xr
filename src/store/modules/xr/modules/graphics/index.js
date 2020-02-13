@@ -31,7 +31,7 @@ const GraphicsShadingString = new Map([
 export const state = function () {
     return {
         skybox: SkyboxEnum.STARS,
-        skytime: 11, // 24 hours, number
+        skytime: 0, // 24 hours, number
         bump: false,
         normal: false,
         quality: GraphicsQualityEnum.HIGH,
@@ -40,6 +40,9 @@ export const state = function () {
 };
 
 export const getters = {
+    skybox: state => {
+        return (state.skytime > 20) || (state.skytime < 6) ? SkyboxEnum.STARS : SkyboxEnum.SUN;
+    },
     timeHours: state => {
         return TimeUtils.getTimeHours(state.skytime);
     },
