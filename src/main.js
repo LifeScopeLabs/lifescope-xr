@@ -22,6 +22,9 @@ import 'aframe-teleport-controls';
 
 import 'nipplejs';
 import 'particles.js';
+import WebFont from 'webfontloader';
+
+window.WebFont = WebFont;
 
 import { registerAframeComponents } from './components/aframe/index.js';
 import './directives';

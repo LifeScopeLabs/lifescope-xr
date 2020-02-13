@@ -1,7 +1,6 @@
-import WebFont from 'webfontloader';
+// import WebFont from 'webfontloader';
 
 export default function () {
-
 document.addEventListener('font-awesome-system-initialized', (evt) => {
     var scene = evt.detail.scene;
     var behavior = {
@@ -24,7 +23,7 @@ function LoadWebFonts() {
       '"Font Awesome 5 Free"', '"Font Awesome 5 Brands"']
     }
   };
-  WebFont.load(WebFontConfig);
+  window.WebFont.load(WebFontConfig);
 }
 
 }

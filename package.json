@@ -7,7 +7,8 @@
         "type": "git",
         "url": "git://github.com/LifeScopeLabs/lifescope-xr.git"
     },
-    "main": "dist/lifescope-xr.js",
+    "main": "dist/lifescope-xr.umd.js",
+    "module": "dist/lifescope-xr.esm.js",
     "scripts": {
         "build": "webpack && babel ./src/server.js --out-file ./dist/server.js",
         "build-dev": "cross-env NODE_ENV=dev webpack && babel ./src/server.js --out-file ./dist/server.js",

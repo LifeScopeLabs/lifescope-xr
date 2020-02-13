@@ -1,7 +1,6 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import axios from 'axios';
 import moment from 'moment';
-import WebFont from 'webfontloader';
 
 class TimeUtils {
 
@@ -12489,8 +12488,9 @@ var registerAframeComponents = function() {
     // });
 };
 
-function setupFontAwesome () {
+// import WebFont from 'webfontloader';
 
+function setupFontAwesome () {
 document.addEventListener('font-awesome-system-initialized', (evt) => {
     var scene = evt.detail.scene;
     var behavior = {
@@ -12513,7 +12513,7 @@ function LoadWebFonts() {
       '"Font Awesome 5 Free"', '"Font Awesome 5 Brands"']
     }
   };
-  WebFont.load(WebFontConfig);
+  window.WebFont.load(WebFontConfig);
 }
 
 }
