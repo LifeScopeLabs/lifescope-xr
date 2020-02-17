@@ -5,7 +5,12 @@ AFRAME.registerComponent('fade', {
     schema: {
         id: { type: 'string', default: '' },
         eventname: { type: 'string', default: 'cellclicked' },
-        dur: { type: 'number', default: 1 }
+        dur: { type: 'number', default: 1 },
+        animate: { type: 'boolean', default: true }
+    },
+
+    update() {
+        
     },
 
     gatherMeshes(object3D) {
@@ -57,34 +62,50 @@ AFRAME.registerComponent('fade', {
         var promise = new Promise((resolve, reject) => {
             try {
                 result.forEach((mesh) => {
+
+                    if (this.data.animate) {
+                        AFRAME.ANIME({
+                            targets: mesh.material,
+                            easing: 'linear',
+                            opacity: 0,
+                            duration: self.data.dur*1000,
+                            begin: function(anim) {
+                                mesh.material.transparent = true;
+                                // el.classList.remove('clickable');
+                            },
+                            complete: function(anim) {
+                                mesh.visible = false;
+                                mesh.updateMatrix();
+                                mesh.updateMatrixWorld();
+                                resolve();
+                            }
+                        });
+                    }
+                    else {
+                        mesh.material.transparent = true;
+                        mesh.visible = false;
+                        mesh.updateMatrix();
+                        mesh.updateMatrixWorld();
+                    }
+                });
+                if (this.data.animate) {
                     AFRAME.ANIME({
-                        targets: mesh.material,
+                        targets: el,
                         easing: 'linear',
-                        opacity: 0,
                         duration: self.data.dur*1000,
                         begin: function(anim) {
-                            mesh.material.transparent = true;
-                            // el.classList.remove('clickable');
+                            el.classList.remove('clickable');
                         },
                         complete: function(anim) {
-                            mesh.visible = false;
-                            mesh.updateMatrix();
-                            mesh.updateMatrixWorld();
                             resolve();
                         }
                     });
-                });
-                AFRAME.ANIME({
-                    targets: el,
-                    easing: 'linear',
-                    duration: self.data.dur*1000,
-                    begin: function(anim) {
-                        el.classList.remove('clickable');
-                    },
-                    complete: function(anim) {
-                        resolve();
-                    }
-                });
+                }
+                else {
+                    el.classList.remove('clickable');
+                    resolve();
+                }
+                
             }
             catch (error) {
                 console.error('animateHideCellPromise error');
@@ -114,32 +135,44 @@ AFRAME.registerComponent('fade', {
         var promise = new Promise((resolve, reject) => {
             try {
                 result.forEach((mesh) => {
-
+                    if (this.data.animate) {
+                        AFRAME.ANIME({
+                            targets: mesh.material,
+                            easing: 'linear',
+                            opacity: !!self.map && self.map.has(mesh) ? self.map.get(mesh)['opacity'] : 1,
+                            duration: self.data.dur*1000,
+                            begin: function(anim) {
+                                mesh.visible = true;
+                            },
+                            complete: function(anim) {
+                                mesh.material.transparent = !!self.map && self.map.has(mesh) ?
+                                    self.map.get(mesh)['transparency']  : false;
+                                // el.classList.add('clickable');
+                                resolve();
+                            }
+                        });
+                    }
+                    else {
+                        mesh.visible = true;
+                        mesh.material.transparent = !!self.map && self.map.has(mesh) ?
+                        self.map.get(mesh)['transparency']  : false;
+                    }
+                });
+                if (this.data.animate) {
                     AFRAME.ANIME({
-                        targets: mesh.material,
+                        targets: el,
                         easing: 'linear',
-                        opacity: !!self.map && self.map.has(mesh) ? self.map.get(mesh)['opacity'] : 1,
                         duration: self.data.dur*1000,
-                        begin: function(anim) {
-                            mesh.visible = true;
-                        },
                         complete: function(anim) {
-                            mesh.material.transparent = !!self.map && self.map.has(mesh) ?
-                                self.map.get(mesh)['transparency']  : false;
-                            // el.classList.add('clickable');
+                            el.classList.add('clickable');
                             resolve();
                         }
                     });
-                });
-                AFRAME.ANIME({
-                    targets: el,
-                    easing: 'linear',
-                    duration: self.data.dur*1000,
-                    complete: function(anim) {
-                        el.classList.add('clickable');
-                        resolve();
-                    }
-                });
+                }
+                else {
+                    el.classList.add('clickable');
+                    resolve();
+                }
 
             }
             catch (error) {

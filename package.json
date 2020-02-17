@@ -60,7 +60,7 @@
         "webrtc-adapter": "^6.2.1"
     },
     "dependencies": {
-        "aframe": "^1.0.3",
+        "aframe": "^1.0.4",
         "aframe-extras": "^4.1.2",
         "aframe-font-awesome": "git+https://github.com/mohrtw/aframe-font-awesome#fontawesome5",
         "aframe-geojson-component": "^1.2.4",

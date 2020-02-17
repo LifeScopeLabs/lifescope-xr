@@ -1,11 +1,13 @@
 <template>
     <a-entity id="gridController" 
+            teleport-controls="cameraRig: #camera-rig; startEvents: teleportstart; endEvents: teleportend; collisionEntities: .boundry;"
             windows-motion-controls="hand: right;"
             oculus-go-controls="hand: right;"
             oculus-touch-controls="hand: right;"
             daydream-controls="hand: right;"
             vive-controls="hand: right;"
             gearvr-controls="hand: right;"
+            magicleap-controls
             >
             <a-entity id="gridCursor"
                 cursor
@@ -20,6 +22,8 @@ export default {
 
     data () {
         return {
+            teleporting: false,
+            teleportThreshold: 0.4,
             intersected: null,
             activeEl: null,
         }
@@ -46,6 +50,7 @@ export default {
         setupControls() {
             if (CONFIG.DEBUG) {console.log('setupControls');}
             var self = this;
+            document.addEventListener('thumbstickmoved', self.thumbstickmovedListener);
             document.addEventListener('raycaster-intersected', self.intersectedListener);
             document.addEventListener('raycaster-intersected-cleared', self.intersectedClearListener);
             document.addEventListener('triggerdown', self.triggerDownListener);
@@ -56,10 +61,27 @@ export default {
         tearDownControls() {
             if (CONFIG.DEBUG) {console.log('tearDownControls');}
             var self = this;
+            document.removeEventListener('thumbstickmoved', self.thumbstickmovedListener);
             document.removeEventListener('raycaster-intersected', self.intersectedListener);
             document.removeEventListener('raycaster-intersected-cleared', self.intersectedClearListener);
             document.removeEventListener('triggerdown', self.triggerDownListener);
             document.removeEventListener('triggerup', self.triggerUpListener);
+        },
+
+        thumbstickmovedListener(evt) {
+            var self = this;
+            if (self.teleporting) {
+                if (evt.detail.y >= -self.teleportThreshold) {
+                    self.$el.emit('teleportend');
+                    self.teleporting = false;
+                }
+            }
+            else {
+                if (evt.detail.y <= -self.teleportThreshold) {
+                    self.$el.emit('teleportstart');
+                    self.teleporting = true;
+                }
+            }
         },
 
         intersectedListener(evt) {
@@ -103,7 +125,7 @@ export default {
             var cursor = document.querySelector('#gridCursor');
             switch (controllerName) {
                 case 'oculus-touch-controls':
-                    cursor.object3D.rotation.set(THREE.Math.degToRad(-45), THREE.Math.degToRad(2.5), 0);
+                    // cursor.object3D.rotation.set(THREE.Math.degToRad(-45), THREE.Math.degToRad(2.5), 0);
                     cursor.object3D.position.set(0, -0.01, 0);
                     break;
                 case 'windows-motion-controls':

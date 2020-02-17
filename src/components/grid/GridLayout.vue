@@ -1,5 +1,5 @@
 <template>
-    <a-entity class="xr-grid" :position="'0 0 ' + offsetz">
+    <a-entity class="xr-grid" :position="'0 ' + offsety + ' ' + offsetz">
         <!-- lights -->
         <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
         <a-entity id="dirLight" light="type: directional; color: #FFF; intensity: 0.8;" position="-1 -1 0"></a-entity>
@@ -32,7 +32,8 @@
                     :height="cellContentHeight"
                     srcFit="bothmax"
                     :animatein="animateInSeconds"
-                    fade
+                    :fade="'animate: ' + !inVR"
+                    :animateload="!inVR"
                 />
             </a-entity>
 
@@ -82,7 +83,7 @@
                     nobr=false
                     background=true
                     wrapfit=true
-                    fade
+                    :fade="'animate: ' + !inVR"
                 />
 
                 <a-ls-cell v-else-if="$store.state.facet == 'content'"
@@ -100,7 +101,7 @@
                     wrapfit=true
                     srcFit="bothmax"
                     :animatein="animateInSeconds"
-                    fade
+                    :fade="'animate: ' + !inVR"
                     clickable="clickevent: cellclicked;"
                     :highlight="'type: border; hoverColor: ' + hoverColor +
                         '; activeColor: ' + activeColor + ';' +
@@ -148,7 +149,7 @@
                         nobr=false
                         background=true
                         wrapfit=true
-                        fade
+                        :fade="'animate: ' + !inVR"
                     />
 
                 <a-ls-cell v-else-if="$store.state.facet == 'people'"
@@ -179,7 +180,7 @@
                         nobr=false
                         background=true
                         wrapfit=true
-                        fade
+                        :fade="'animate: ' + !inVR"
                     />
             </a-entity>
         </a-entity>
@@ -264,7 +265,7 @@
         :heightmapheight="worldMapHeight"></a-mapbox-terrain>
 
     <a-entity
-        :position="'0 -0.5 0'"
+        :position="'0 ' + '-0.5' + ' ' + +floorRadius"
         animation="property: rotation; easing: linear; to: 0 360; dur: 15000; loop: true;">
         <globe>
         </globe>
@@ -302,6 +303,14 @@
                 scale="0.075 0.075 0.075">
             </a-gltf-model>
         </a-entity>
+        <!-- Floor -->
+        <a-wooden-floor v-if="floorActive"
+            :position="'0 ' + (-playerHeight) + ' 0'"
+            class="boundry"
+            :radius='floorRadius' :radialsegments='numberOfSegments'
+            :bump="bump" :normal="normal" :quality="quality" :shading="qualityString"
+            rotation="0 135 0">
+        </a-wooden-floor>
   </a-entity>
 </template>
 
@@ -340,7 +349,7 @@ export default {
         }
     },
 
-    props: ['offsetz'],
+    props: ['offsety', 'offsetz'],
 
     computed: {
         gridRotation() {
@@ -447,6 +456,7 @@ export default {
 
         ...mapGetters('xr/graphics',
             [
+                'qualityString',
                 'skybox',
             ]
         ),
@@ -522,6 +532,20 @@ export default {
                 'itemsPerPage',
                 'canPageLeft',
                 'canPageRight',
+            ]
+        ),
+
+        ...mapState('xr/carousel',
+            [
+                'floorActive',
+                'floorRadius',
+                'numberOfSegments'
+            ]
+        ),
+
+        ...mapState('xr/avatar',
+            [
+                'playerHeight',
             ]
         ),
 
@@ -775,10 +799,18 @@ export default {
 
             var cylinderEl = this.$el.querySelector(".grid-cylinder");
             var fcp = self.focusedCellPosititon;
-            var position = new THREE.Vector3( fcp.x, fcp.y, fcp.z );
+            var position = new THREE.Vector3( fcp.x, fcp.y + this.offsety, fcp.z );
             position = cylinderEl.object3D.worldToLocal(position);
+            if (this.inVR) {
+                self.focusedCell = el.id;
+                self.setSkyFromFocusedCell();
+                el.parentEl.object3D.position.set(position.x, position.y, position.z);
+                el.parentEl.object3D.rotation.set(0, THREE.Math.degToRad(360-self.gridRotation), 0);
+                el.setAttribute('selected', true);
+                return;
+            }
 
-            AFRAME.ANIME({
+            var positionAnimation = AFRAME.ANIME({ 
                 targets: el.parentEl.object3D.position,
                 easing: 'linear',
                 x: position.x,
@@ -793,7 +825,7 @@ export default {
                     el.setAttribute('selected', true);
                 }
             });
-            AFRAME.ANIME({
+            var rotationAnimation = AFRAME.ANIME({
                 targets: el.parentEl.object3D.rotation,
                 easing: 'linear',
                 x: 0,
@@ -827,6 +859,14 @@ export default {
             rotx = +rotationArray[0] * (Math.PI/180) ;
             roty = +rotationArray[1] * (Math.PI/180);
             rotz = +rotationArray[2] * (Math.PI/180);
+
+            if (this.inVR) {
+                el.setAttribute('selected', false);
+                el.parentEl.object3D.position.set(posx, posy, posz);
+                el.parentEl.object3D.rotation.set(rotx, roty, rotz);
+                return;
+            }
+
             AFRAME.ANIME({
                 targets: el.parentEl.object3D.position,
                 easing: 'linear',
@@ -901,13 +941,23 @@ export default {
         handlePageLeft() {
             if(!this.canPageLeft) return;
             this.unFocusFoscusedCell();
-            this.pageAnimation(this.pageLeft);
+            // if(!this.inVR) {
+                this.pageAnimation(this.pageLeft);
+            // }
+            // else {
+                this.pageLeft();
+            // }
         },
 
         handlePageRight() {
             if(!this.canPageRight) return;
             this.unFocusFoscusedCell();
-            this.pageAnimation(this.pageRight);
+            // if(!this.inVR) {
+                this.pageAnimation(this.pageRight);
+            // }
+            // else {
+            //     this.pageRight();
+            // }
         },
 
         pageAnimation(pageCallback) {
@@ -917,7 +967,7 @@ export default {
             var animationPromises = [];
             for (var n=0; n < this.numberOfItemsToDisplay; n++) {
                 var cell = document.querySelector(`#grid-cell-${n}`);
-                animationPromises.push(this.animateCellRemovalPromise(cell.object3D));
+                if(!this.inVR) animationPromises.push(this.animateCellRemovalPromise(cell.object3D));
                 cellObjs.push(cell.object3D);
                 cells.push(cell);
             }
@@ -940,17 +990,23 @@ export default {
             var self = this;
             return new Promise((resolve, reject) => {
                 try {
-                    AFRAME.ANIME({
-                        targets: obj.scale,
-                        easing: 'linear',
-                        x: [1, 0],
-                        y: [1, 0],
-                        z: [1, 0],
-                        duration: 1000*(self.animateOutSeconds),
-                        complete: function(anim) {
-                            resolve();
-                        }
-                    });
+                    if (!this.inVR) {
+                        AFRAME.ANIME({
+                            targets: obj.scale,
+                            easing: 'linear',
+                            x: [1, 0],
+                            y: [1, 0],
+                            z: [1, 0],
+                            duration: 1000*(self.animateOutSeconds),
+                            complete: function(anim) {
+                                resolve();
+                            }
+                        });
+                    }
+                    else {
+                        obj.scale.set(0,0,0);
+                        resolve();
+                    }
                 }
                 catch (error) {
                     console.error('animateCellRemovalPromise error');

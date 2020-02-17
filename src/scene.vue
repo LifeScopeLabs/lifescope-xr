@@ -32,11 +32,12 @@
     <!-- gallery -->
     <gallery v-if="sceneLayout == SceneLayoutEnum.GALLERY"/>
     <grid-layout v-else-if="sceneLayout == SceneLayoutEnum.GRID"
-      offsetz="1.5"/>
+      :offsety="playerHeight" offsetz="1.5"/>
 
     <avatar v-if="sceneLayout == SceneLayoutEnum.GALLERY" ref="avatar"
       :position="'0 ' + playerHeight + ' 0'"/>
-    <grid-camera v-else-if="sceneLayout == SceneLayoutEnum.GRID" ref="avatar"/>
+    <grid-camera v-else-if="sceneLayout == SceneLayoutEnum.GRID" ref="avatar"
+      :position="'0 ' + playerHeight + ' 0'"/>
 
     <!-- Sky id="Sky" -->
     <a-sky v-if="skybox==SkyboxEnum.STARS"

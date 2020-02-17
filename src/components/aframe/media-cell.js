@@ -979,7 +979,7 @@ AFRAME.registerPrimitive( 'a-media-cell', {
         'isplaying': 'media-cell__cell.isplaying',
         'type': 'media-cell__cell.type',
         'id': 'media-cell__cell.id',
-        'animate-load': 'media-cell__cell.animateLoad',
+        'animateload': 'media-cell__cell.animateLoad',
         'animatein': 'media-cell__cell.animateInSeconds',
         'animateout': 'media-cell__cell.animateOutSeconds',
     }

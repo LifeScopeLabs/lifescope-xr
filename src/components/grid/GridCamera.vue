@@ -79,9 +79,12 @@ export default {
                 }, {once : true}
             );
         }
+        document.body.addEventListener('keypress', self.keypressListener);
     },
 
     beforeDestroy() {
+        document.body.removeEventListener('keypress', this.keypressListener)
+
         if (this.$el.sceneEl.is('vr-mode')) {
             this.tearDownVR();
         }
@@ -109,7 +112,7 @@ export default {
             }
             try {
                 if (playerGridRig) {
-                    // playerGridRig.setAttribute("wasd-controls", {'enabled': true, 'acceleration': 100});
+                    playerGridRig.setAttribute("wasd-controls", {'enabled': true, 'acceleration': 100});
                     playerGridRig.setAttribute("look-controls", 'reverseMouseDrag', true);
                 }
                 else {
@@ -129,7 +132,7 @@ export default {
             var playerGridRig = this.$el;
             try {
                 if (playerGridRig) {
-                    // playerGridRig.removeAttribute("wasd-controls");
+                    playerGridRig.removeAttribute("wasd-controls");
                     playerGridRig.removeAttribute("look-controls");
                     playerGridRig.sceneEl.canvas.classList.remove('a-grab-cursor');
                 }
@@ -189,12 +192,14 @@ export default {
 
         setupVR() {
             if (CONFIG.DEBUG) {console.log("setupVR");};
+            this.fixVRCameraPosition();
             var playerGridRig = document.getElementById('playerGridRig');
             playerGridRig.object3D.matrixAutoUpdate = true;
         },
 
         tearDownVR() {
             if (CONFIG.DEBUG) {console.log("tearDownVR");};
+            this.unFixVRCameraPosition();
             this.$refs.gridcontroller.tearDownControls();
         },
 
@@ -209,6 +214,48 @@ export default {
                     this.setupDesktop();
                 }
             }
+        },
+
+        keypressListener(evt) {
+            if (evt.key == 'c') {
+                this.centerCamera();
+            }
+        },
+
+        centerCamera() {
+            this.$el.object3D.position.set(0, 0, 0);
+        },
+
+        fixVRCameraPosition() {
+            if(CONFIG.DEBUG){console.log('fixVRCameraPosition');}
+
+            var playerRig = this.$el;
+
+            var playerCamera = document.getElementById('grid-camera');
+            var cameraRig = document.getElementById('camera-rig');
+
+            var position;
+            position = playerRig.object3D.getWorldPosition();
+            playerRig.object3D.worldToLocal(position);
+            cameraRig.object3D.position.set(position.x, -this.playerHeight, position.z);
+            cameraRig.object3D.updateMatrix();
+        },
+
+        unFixVRCameraPosition() {
+            if(CONFIG.DEBUG){console.log('unFixVRCameraPosition');}
+
+            var playerRig = this.$el;
+
+            var playerCamera = document.getElementById('grid-camera');
+            var cameraRig = document.getElementById('camera-rig');
+
+            var position;
+            position = playerRig.object3D.getWorldPosition();
+            playerRig.object3D.worldToLocal(position);
+            cameraRig.object3D.position.set(position.x, 0, position.z);
+            cameraRig.object3D.updateMatrix();
+            playerCamera.object3D.position.set(0, 0, 0);
+            playerCamera.object3D.updateMatrix();
         },
 
     }

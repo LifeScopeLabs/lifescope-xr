@@ -997,14 +997,15 @@ const getters$2 = {
         return state.rows * state.columns;
     },
     canPageLeft: (state) => {
-        return !!state.page;
+        return false;//!!state.page;
     },
     canPageRight: (state, getters, rootState, rootGetters) => {
-        if (getters.itemsPerPage >= rootGetters['xr/totalItems']) {
-            return false;
-        }
-        var result = (state.page+1)*getters.itemsPerPage <= rootGetters['xr/totalItems'];
-        return result;
+        return false;
+        // if (getters.itemsPerPage >= rootGetters['xr/totalItems']) {
+        //     return false;
+        // }
+        // var result = (state.page+1)*getters.itemsPerPage <= rootGetters['xr/totalItems'];
+        // return result;
     },
 };
 
@@ -2194,7 +2195,7 @@ var script$5 = {
         }
     },
 
-    props: ['offsetz'],
+    props: ['offsety', 'offsetz'],
 
     computed: {
         gridRotation() {
@@ -2301,6 +2302,7 @@ var script$5 = {
 
         ...mapGetters('xr/graphics',
             [
+                'qualityString',
                 'skybox',
             ]
         ),
@@ -2376,6 +2378,20 @@ var script$5 = {
                 'itemsPerPage',
                 'canPageLeft',
                 'canPageRight',
+            ]
+        ),
+
+        ...mapState('xr/carousel',
+            [
+                'floorActive',
+                'floorRadius',
+                'numberOfSegments'
+            ]
+        ),
+
+        ...mapState('xr/avatar',
+            [
+                'playerHeight',
             ]
         ),
 
@@ -2629,10 +2645,18 @@ var script$5 = {
 
             var cylinderEl = this.$el.querySelector(".grid-cylinder");
             var fcp = self.focusedCellPosititon;
-            var position = new THREE.Vector3( fcp.x, fcp.y, fcp.z );
+            var position = new THREE.Vector3( fcp.x, fcp.y + this.offsety, fcp.z );
             position = cylinderEl.object3D.worldToLocal(position);
+            if (this.inVR) {
+                self.focusedCell = el.id;
+                self.setSkyFromFocusedCell();
+                el.parentEl.object3D.position.set(position.x, position.y, position.z);
+                el.parentEl.object3D.rotation.set(0, THREE.Math.degToRad(360-self.gridRotation), 0);
+                el.setAttribute('selected', true);
+                return;
+            }
 
-            AFRAME.ANIME({
+            var positionAnimation = AFRAME.ANIME({ 
                 targets: el.parentEl.object3D.position,
                 easing: 'linear',
                 x: position.x,
@@ -2647,7 +2671,7 @@ var script$5 = {
                     el.setAttribute('selected', true);
                 }
             });
-            AFRAME.ANIME({
+            var rotationAnimation = AFRAME.ANIME({
                 targets: el.parentEl.object3D.rotation,
                 easing: 'linear',
                 x: 0,
@@ -2681,6 +2705,14 @@ var script$5 = {
             rotx = +rotationArray[0] * (Math.PI/180) ;
             roty = +rotationArray[1] * (Math.PI/180);
             rotz = +rotationArray[2] * (Math.PI/180);
+
+            if (this.inVR) {
+                el.setAttribute('selected', false);
+                el.parentEl.object3D.position.set(posx, posy, posz);
+                el.parentEl.object3D.rotation.set(rotx, roty, rotz);
+                return;
+            }
+
             AFRAME.ANIME({
                 targets: el.parentEl.object3D.position,
                 easing: 'linear',
@@ -2745,13 +2777,23 @@ var script$5 = {
         handlePageLeft() {
             if(!this.canPageLeft) return;
             this.unFocusFoscusedCell();
-            this.pageAnimation(this.pageLeft);
+            // if(!this.inVR) {
+                this.pageAnimation(this.pageLeft);
+            // }
+            // else {
+                this.pageLeft();
+            // }
         },
 
         handlePageRight() {
             if(!this.canPageRight) return;
             this.unFocusFoscusedCell();
-            this.pageAnimation(this.pageRight);
+            // if(!this.inVR) {
+                this.pageAnimation(this.pageRight);
+            // }
+            // else {
+            //     this.pageRight();
+            // }
         },
 
         pageAnimation(pageCallback) {
@@ -2761,7 +2803,7 @@ var script$5 = {
             var animationPromises = [];
             for (var n=0; n < this.numberOfItemsToDisplay; n++) {
                 var cell = document.querySelector(`#grid-cell-${n}`);
-                animationPromises.push(this.animateCellRemovalPromise(cell.object3D));
+                if(!this.inVR) animationPromises.push(this.animateCellRemovalPromise(cell.object3D));
                 cellObjs.push(cell.object3D);
                 cells.push(cell);
             }
@@ -2784,17 +2826,23 @@ var script$5 = {
             var self = this;
             return new Promise((resolve, reject) => {
                 try {
-                    AFRAME.ANIME({
-                        targets: obj.scale,
-                        easing: 'linear',
-                        x: [1, 0],
-                        y: [1, 0],
-                        z: [1, 0],
-                        duration: 1000*(self.animateOutSeconds),
-                        complete: function(anim) {
-                            resolve();
-                        }
-                    });
+                    if (!this.inVR) {
+                        AFRAME.ANIME({
+                            targets: obj.scale,
+                            easing: 'linear',
+                            x: [1, 0],
+                            y: [1, 0],
+                            z: [1, 0],
+                            duration: 1000*(self.animateOutSeconds),
+                            complete: function(anim) {
+                                resolve();
+                            }
+                        });
+                    }
+                    else {
+                        obj.scale.set(0,0,0);
+                        resolve();
+                    }
                 }
                 catch (error) {
                     console.error('animateCellRemovalPromise error');
@@ -2839,7 +2887,10 @@ var __vue_render__$5 = function() {
   var _c = _vm._self._c || _h;
   return _c(
     "a-entity",
-    { staticClass: "xr-grid", attrs: { position: "0 0 " + _vm.offsetz } },
+    {
+      staticClass: "xr-grid",
+      attrs: { position: "0 " + _vm.offsety + " " + _vm.offsetz }
+    },
     [
       _c("a-entity", {
         attrs: { light: "type: ambient; color: #FFF; intensity: 0.8" }
@@ -2925,7 +2976,8 @@ var __vue_render__$5 = function() {
                       height: _vm.cellContentHeight,
                       srcFit: "bothmax",
                       animatein: _vm.animateInSeconds,
-                      fade: ""
+                      fade: "animate: " + !_vm.inVR,
+                      animateload: !_vm.inVR
                     }
                   })
                 ],
@@ -2992,7 +3044,7 @@ var __vue_render__$5 = function() {
                           nobr: "false",
                           background: "true",
                           wrapfit: "true",
-                          fade: ""
+                          fade: "animate: " + !_vm.inVR
                         }
                       })
                     : _vm.$store.state.facet == "content"
@@ -3011,7 +3063,7 @@ var __vue_render__$5 = function() {
                           wrapfit: "true",
                           srcFit: "bothmax",
                           animatein: _vm.animateInSeconds,
-                          fade: "",
+                          fade: "animate: " + !_vm.inVR,
                           clickable: "clickevent: cellclicked;",
                           highlight:
                             "type: border; hoverColor: " +
@@ -3062,7 +3114,7 @@ var __vue_render__$5 = function() {
                           nobr: "false",
                           background: "true",
                           wrapfit: "true",
-                          fade: ""
+                          fade: "animate: " + !_vm.inVR
                         }
                       })
                     : _vm.$store.state.facet == "people"
@@ -3096,7 +3148,7 @@ var __vue_render__$5 = function() {
                           nobr: "false",
                           background: "true",
                           wrapfit: "true",
-                          fade: ""
+                          fade: "animate: " + !_vm.inVR
                         }
                       })
                     : _vm._e()
@@ -3253,7 +3305,7 @@ var __vue_render__$5 = function() {
         "a-entity",
         {
           attrs: {
-            position: "0 -0.5 0",
+            position: "0 " + "-0.5" + " " + +_vm.floorRadius,
             animation:
               "property: rotation; easing: linear; to: 0 360; dur: 15000; loop: true;"
           }
@@ -3293,7 +3345,23 @@ var __vue_render__$5 = function() {
           })
         ],
         1
-      )
+      ),
+      _vm._v(" "),
+      _vm.floorActive
+        ? _c("a-wooden-floor", {
+            staticClass: "boundry",
+            attrs: {
+              position: "0 " + -_vm.playerHeight + " 0",
+              radius: _vm.floorRadius,
+              radialsegments: _vm.numberOfSegments,
+              bump: _vm.bump,
+              normal: _vm.normal,
+              quality: _vm.quality,
+              shading: _vm.qualityString,
+              rotation: "0 135 0"
+            }
+          })
+        : _vm._e()
     ],
     1
   )
@@ -5616,6 +5684,8 @@ var script$b = {
 
     data () {
         return {
+            teleporting: false,
+            teleportThreshold: 0.4,
             intersected: null,
             activeEl: null,
         }
@@ -5642,6 +5712,7 @@ var script$b = {
         setupControls() {
             if (CONFIG.DEBUG) {console.log('setupControls');}
             var self = this;
+            document.addEventListener('thumbstickmoved', self.thumbstickmovedListener);
             document.addEventListener('raycaster-intersected', self.intersectedListener);
             document.addEventListener('raycaster-intersected-cleared', self.intersectedClearListener);
             document.addEventListener('triggerdown', self.triggerDownListener);
@@ -5652,10 +5723,27 @@ var script$b = {
         tearDownControls() {
             if (CONFIG.DEBUG) {console.log('tearDownControls');}
             var self = this;
+            document.removeEventListener('thumbstickmoved', self.thumbstickmovedListener);
             document.removeEventListener('raycaster-intersected', self.intersectedListener);
             document.removeEventListener('raycaster-intersected-cleared', self.intersectedClearListener);
             document.removeEventListener('triggerdown', self.triggerDownListener);
             document.removeEventListener('triggerup', self.triggerUpListener);
+        },
+
+        thumbstickmovedListener(evt) {
+            var self = this;
+            if (self.teleporting) {
+                if (evt.detail.y >= -self.teleportThreshold) {
+                    self.$el.emit('teleportend');
+                    self.teleporting = false;
+                }
+            }
+            else {
+                if (evt.detail.y <= -self.teleportThreshold) {
+                    self.$el.emit('teleportstart');
+                    self.teleporting = true;
+                }
+            }
         },
 
         intersectedListener(evt) {
@@ -5699,7 +5787,7 @@ var script$b = {
             var cursor = document.querySelector('#gridCursor');
             switch (controllerName) {
                 case 'oculus-touch-controls':
-                    cursor.object3D.rotation.set(THREE.Math.degToRad(-45), THREE.Math.degToRad(2.5), 0);
+                    // cursor.object3D.rotation.set(THREE.Math.degToRad(-45), THREE.Math.degToRad(2.5), 0);
                     cursor.object3D.position.set(0, -0.01, 0);
                     break;
                 case 'windows-motion-controls':
@@ -5728,12 +5816,15 @@ var __vue_render__$b = function() {
     {
       attrs: {
         id: "gridController",
+        "teleport-controls":
+          "cameraRig: #camera-rig; startEvents: teleportstart; endEvents: teleportend; collisionEntities: .boundry;",
         "windows-motion-controls": "hand: right;",
         "oculus-go-controls": "hand: right;",
         "oculus-touch-controls": "hand: right;",
         "daydream-controls": "hand: right;",
         "vive-controls": "hand: right;",
-        "gearvr-controls": "hand: right;"
+        "gearvr-controls": "hand: right;",
+        "magicleap-controls": ""
       }
     },
     [
@@ -5840,9 +5931,12 @@ var script$c = {
                 }, {once : true}
             );
         }
+        document.body.addEventListener('keypress', self.keypressListener);
     },
 
     beforeDestroy() {
+        document.body.removeEventListener('keypress', this.keypressListener);
+
         if (this.$el.sceneEl.is('vr-mode')) {
             this.tearDownVR();
         }
@@ -5869,7 +5963,7 @@ var script$c = {
             }
             try {
                 if (playerGridRig) {
-                    // playerGridRig.setAttribute("wasd-controls", {'enabled': true, 'acceleration': 100});
+                    playerGridRig.setAttribute("wasd-controls", {'enabled': true, 'acceleration': 100});
                     playerGridRig.setAttribute("look-controls", 'reverseMouseDrag', true);
                 }
                 else {
@@ -5888,7 +5982,7 @@ var script$c = {
             if (CONFIG.DEBUG) {console.log("tearDownDesktop");}            var playerGridRig = this.$el;
             try {
                 if (playerGridRig) {
-                    // playerGridRig.removeAttribute("wasd-controls");
+                    playerGridRig.removeAttribute("wasd-controls");
                     playerGridRig.removeAttribute("look-controls");
                     playerGridRig.sceneEl.canvas.classList.remove('a-grab-cursor');
                 }
@@ -5945,12 +6039,14 @@ var script$c = {
         },
 
         setupVR() {
-            if (CONFIG.DEBUG) {console.log("setupVR");}            var playerGridRig = document.getElementById('playerGridRig');
+            if (CONFIG.DEBUG) {console.log("setupVR");}            this.fixVRCameraPosition();
+            var playerGridRig = document.getElementById('playerGridRig');
             playerGridRig.object3D.matrixAutoUpdate = true;
         },
 
         tearDownVR() {
-            if (CONFIG.DEBUG) {console.log("tearDownVR");}            this.$refs.gridcontroller.tearDownControls();
+            if (CONFIG.DEBUG) {console.log("tearDownVR");}            this.unFixVRCameraPosition();
+            this.$refs.gridcontroller.tearDownControls();
         },
 
         onSceneLoaded() {
@@ -5964,6 +6060,48 @@ var script$c = {
                     this.setupDesktop();
                 }
             }
+        },
+
+        keypressListener(evt) {
+            if (evt.key == 'c') {
+                this.centerCamera();
+            }
+        },
+
+        centerCamera() {
+            this.$el.object3D.position.set(0, 0, 0);
+        },
+
+        fixVRCameraPosition() {
+            if(CONFIG.DEBUG){console.log('fixVRCameraPosition');}
+
+            var playerRig = this.$el;
+
+            var playerCamera = document.getElementById('grid-camera');
+            var cameraRig = document.getElementById('camera-rig');
+
+            var position;
+            position = playerRig.object3D.getWorldPosition();
+            playerRig.object3D.worldToLocal(position);
+            cameraRig.object3D.position.set(position.x, -this.playerHeight, position.z);
+            cameraRig.object3D.updateMatrix();
+        },
+
+        unFixVRCameraPosition() {
+            if(CONFIG.DEBUG){console.log('unFixVRCameraPosition');}
+
+            var playerRig = this.$el;
+
+            var playerCamera = document.getElementById('grid-camera');
+            var cameraRig = document.getElementById('camera-rig');
+
+            var position;
+            position = playerRig.object3D.getWorldPosition();
+            playerRig.object3D.worldToLocal(position);
+            cameraRig.object3D.position.set(position.x, 0, position.z);
+            cameraRig.object3D.updateMatrix();
+            playerCamera.object3D.position.set(0, 0, 0);
+            playerCamera.object3D.updateMatrix();
         },
 
     }
@@ -6346,7 +6484,9 @@ var __vue_render__$d = function() {
       _vm.sceneLayout == _vm.SceneLayoutEnum.GALLERY
         ? _c("gallery")
         : _vm.sceneLayout == _vm.SceneLayoutEnum.GRID
-        ? _c("grid-layout", { attrs: { offsetz: "1.5" } })
+        ? _c("grid-layout", {
+            attrs: { offsety: _vm.playerHeight, offsetz: "1.5" }
+          })
         : _vm._e(),
       _vm._v(" "),
       _vm.sceneLayout == _vm.SceneLayoutEnum.GALLERY
@@ -6355,7 +6495,10 @@ var __vue_render__$d = function() {
             attrs: { position: "0 " + _vm.playerHeight + " 0" }
           })
         : _vm.sceneLayout == _vm.SceneLayoutEnum.GRID
-        ? _c("grid-camera", { ref: "avatar" })
+        ? _c("grid-camera", {
+            ref: "avatar",
+            attrs: { position: "0 " + _vm.playerHeight + " 0" }
+          })
         : _vm._e(),
       _vm._v(" "),
       _vm.skybox == _vm.SkyboxEnum.STARS
@@ -6381,7 +6524,7 @@ __vue_render__$d._withStripped = true;
   /* style */
   const __vue_inject_styles__$d = function (inject) {
     if (!inject) return
-    inject("data-v-b883b1ce_0", { source: ".visuallyhidden {\n    display: block;\n    border: 0;\n    clip: rect(0 0 0 0);\n    height: 1px;\n    width: 1px;\n    margin: -1px;\n    padding: 0;\n    overflow: hidden;\n    position: absolute !important;\n}\na-scene {\n    position: absolute\n}\n.a-enter-vr {\n    height: 100%;\n    pointer-events: none;\n}\n.a-enter-vr-button {\n    z-index: 99999;\n    right: 3%;\n    bottom: 1%;\n    pointer-events: visible;\n}", map: undefined, media: undefined });
+    inject("data-v-33e63b10_0", { source: ".visuallyhidden {\n    display: block;\n    border: 0;\n    clip: rect(0 0 0 0);\n    height: 1px;\n    width: 1px;\n    margin: -1px;\n    padding: 0;\n    overflow: hidden;\n    position: absolute !important;\n}\na-scene {\n    position: absolute\n}\n.a-enter-vr {\n    height: 100%;\n    pointer-events: none;\n}\n.a-enter-vr-button {\n    z-index: 99999;\n    right: 3%;\n    bottom: 1%;\n    pointer-events: visible;\n}", map: undefined, media: undefined });
 
   };
   /* scoped */
@@ -7935,7 +8078,7 @@ AFRAME.registerPrimitive( 'a-media-cell', {
         'isplaying': 'media-cell__cell.isplaying',
         'type': 'media-cell__cell.type',
         'id': 'media-cell__cell.id',
-        'animate-load': 'media-cell__cell.animateLoad',
+        'animateload': 'media-cell__cell.animateLoad',
         'animatein': 'media-cell__cell.animateInSeconds',
         'animateout': 'media-cell__cell.animateOutSeconds',
     }
@@ -8610,7 +8753,12 @@ AFRAME.registerComponent('fade', {
     schema: {
         id: { type: 'string', default: '' },
         eventname: { type: 'string', default: 'cellclicked' },
-        dur: { type: 'number', default: 1 }
+        dur: { type: 'number', default: 1 },
+        animate: { type: 'boolean', default: true }
+    },
+
+    update() {
+        
     },
 
     gatherMeshes(object3D) {
@@ -8662,34 +8810,50 @@ AFRAME.registerComponent('fade', {
         var promise = new Promise((resolve, reject) => {
             try {
                 result.forEach((mesh) => {
+
+                    if (this.data.animate) {
+                        AFRAME.ANIME({
+                            targets: mesh.material,
+                            easing: 'linear',
+                            opacity: 0,
+                            duration: self.data.dur*1000,
+                            begin: function(anim) {
+                                mesh.material.transparent = true;
+                                // el.classList.remove('clickable');
+                            },
+                            complete: function(anim) {
+                                mesh.visible = false;
+                                mesh.updateMatrix();
+                                mesh.updateMatrixWorld();
+                                resolve();
+                            }
+                        });
+                    }
+                    else {
+                        mesh.material.transparent = true;
+                        mesh.visible = false;
+                        mesh.updateMatrix();
+                        mesh.updateMatrixWorld();
+                    }
+                });
+                if (this.data.animate) {
                     AFRAME.ANIME({
-                        targets: mesh.material,
+                        targets: el,
                         easing: 'linear',
-                        opacity: 0,
                         duration: self.data.dur*1000,
                         begin: function(anim) {
-                            mesh.material.transparent = true;
-                            // el.classList.remove('clickable');
+                            el.classList.remove('clickable');
                         },
                         complete: function(anim) {
-                            mesh.visible = false;
-                            mesh.updateMatrix();
-                            mesh.updateMatrixWorld();
                             resolve();
                         }
                     });
-                });
-                AFRAME.ANIME({
-                    targets: el,
-                    easing: 'linear',
-                    duration: self.data.dur*1000,
-                    begin: function(anim) {
-                        el.classList.remove('clickable');
-                    },
-                    complete: function(anim) {
-                        resolve();
-                    }
-                });
+                }
+                else {
+                    el.classList.remove('clickable');
+                    resolve();
+                }
+                
             }
             catch (error) {
                 console.error('animateHideCellPromise error');
@@ -8719,32 +8883,44 @@ AFRAME.registerComponent('fade', {
         var promise = new Promise((resolve, reject) => {
             try {
                 result.forEach((mesh) => {
-
+                    if (this.data.animate) {
+                        AFRAME.ANIME({
+                            targets: mesh.material,
+                            easing: 'linear',
+                            opacity: !!self.map && self.map.has(mesh) ? self.map.get(mesh)['opacity'] : 1,
+                            duration: self.data.dur*1000,
+                            begin: function(anim) {
+                                mesh.visible = true;
+                            },
+                            complete: function(anim) {
+                                mesh.material.transparent = !!self.map && self.map.has(mesh) ?
+                                    self.map.get(mesh)['transparency']  : false;
+                                // el.classList.add('clickable');
+                                resolve();
+                            }
+                        });
+                    }
+                    else {
+                        mesh.visible = true;
+                        mesh.material.transparent = !!self.map && self.map.has(mesh) ?
+                        self.map.get(mesh)['transparency']  : false;
+                    }
+                });
+                if (this.data.animate) {
                     AFRAME.ANIME({
-                        targets: mesh.material,
+                        targets: el,
                         easing: 'linear',
-                        opacity: !!self.map && self.map.has(mesh) ? self.map.get(mesh)['opacity'] : 1,
                         duration: self.data.dur*1000,
-                        begin: function(anim) {
-                            mesh.visible = true;
-                        },
                         complete: function(anim) {
-                            mesh.material.transparent = !!self.map && self.map.has(mesh) ?
-                                self.map.get(mesh)['transparency']  : false;
-                            // el.classList.add('clickable');
+                            el.classList.add('clickable');
                             resolve();
                         }
                     });
-                });
-                AFRAME.ANIME({
-                    targets: el,
-                    easing: 'linear',
-                    duration: self.data.dur*1000,
-                    complete: function(anim) {
-                        el.classList.add('clickable');
-                        resolve();
-                    }
-                });
+                }
+                else {
+                    el.classList.add('clickable');
+                    resolve();
+                }
 
             }
             catch (error) {
@@ -12330,7 +12506,167 @@ AFRAME.registerComponent('text-link', {
   });
 }
 
-// import CelShader from '../../shaders/CelShader';
+class CelShader$1 extends THREE.ShaderMaterial {
+    constructor(color=0xFFFFFF, props={}) {
+
+        var opacity = props.opacity != undefined ? props.opacity : 1.0;
+        var diffuse = props.diffuse != undefined ? props.diffuse : 0xeeeeee;
+        var specular = props.specular != undefined ? props.specular : 0x111111;
+        var uniforms = THREE.UniformsUtils.merge( [
+
+			THREE.UniformsLib[ "fog" ],
+            THREE.UniformsLib[ "lights" ],
+
+            {
+                "uBaseColor": { value: new THREE.Color( color ) },
+                "diffuse": { value: new THREE.Color( diffuse ) },
+                "specular": { value: new THREE.Color( specular ) },
+                "opacity": { value: opacity },
+            }
+        ]);
+        
+
+        var vertexShader = [
+            THREE.ShaderChunk[ "common" ],
+            // THREE.ShaderChunk[ "fog_pars_vertex" ],
+			"varying vec3 vNormal;",
+			"varying vec3 vViewPosition;",
+
+            "void main() {",
+
+                "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
+
+                "vViewPosition = -mvPosition.xyz;",
+
+                "vNormal = normalize( normalMatrix * normal );",
+
+                "gl_Position = projectionMatrix * mvPosition;",
+
+            "}",
+        ].join('\n');
+
+        var fragmentShader = [
+
+            THREE.ShaderChunk[ "common" ],
+            THREE.ShaderChunk[ "bsdfs" ],
+            // THREE.ShaderChunk[ "fog_pars_vertex" ],
+            THREE.ShaderChunk[ "lights_pars_begin" ],
+			"varying vec3 vNormal;",
+            "uniform vec3 testlight;",
+            "uniform vec3 uBaseColor;",
+
+            "uniform float opacity;",
+            "uniform vec3 diffuse;",
+
+            "varying vec3 vViewPosition;",
+
+            "float diffuseFactor(vec3 normal, vec3 light_direction) {",
+                "float df = dot(normalize(normal), normalize(light_direction));",
+            
+                "if (gl_FrontFacing) {",
+                    "df = -df;",
+                "}",
+            
+                "return max(0.0, df);",
+            "}",
+
+            "float calcLightAttenuation( float lightDistance, float cutoffDistance, float decayExponent ) {",
+ 				"if ( decayExponent > 0.0 ) {",
+ 					"return pow( saturate( - lightDistance / cutoffDistance + 1.0 ), decayExponent );",
+ 				"}",
+ 				"return 1.0;",
+ 			"}",
+
+
+			"void main() {",
+                "vec3 outgoingLight = vec3( 0.0 );",
+
+                "vec3 totalDiffuseLight = vec3( 0.0 );",
+                "float totalDF = 0.0;",
+
+                // Point Lights
+                "#if NUM_POINT_LIGHTS > 0",
+
+					"for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {",
+
+						"vec3 lVector = pointLights[ i ].position + vViewPosition.xyz;",
+
+						"float attenuation = calcLightAttenuation( length( lVector ), pointLights[ i ].distance, pointLights[ i ].decay );",
+
+                        "lVector = normalize( lVector );",
+                        
+                        "float df = diffuseFactor(vNormal, lVector);",
+
+                        "totalDF += df;",
+
+
+						"totalDiffuseLight += pointLights[ i ].color * ( df * attenuation );",
+
+					"}",
+
+				"#endif",
+
+                // Directional Lights
+                "#if NUM_DIR_LIGHTS > 0",
+
+                    "for( int i = 0; i < NUM_DIR_LIGHTS; i++ ) {",
+
+                        "vec3 dirVector = directionalLights[ 0 ].direction;",
+
+                        "float df = diffuseFactor(vNormal, dirVector);",
+
+                        "totalDF += df;",
+
+                        "totalDiffuseLight += directionalLights[ i ].color * df;",
+					"}",
+
+                "#endif",
+
+                // Hemisphere Lights
+				"#if NUM_HEMI_LIGHTS > 0",
+
+                "for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {",
+
+                    "vec3 lVector = hemisphereLights[ i ].direction;",
+
+                    "float dotProduct = dot( vNormal, lVector );",
+                    "float hemiDiffuseWeight = 0.5 * dotProduct + 0.5;",
+
+                    "totalDiffuseLight += mix( hemisphereLights[ i ].groundColor, hemisphereLights[ i ].skyColor, hemiDiffuseWeight );",
+
+                "}",
+
+            "#endif",
+
+                 "float nSteps = 6.0;",
+                 "float step = sqrt(totalDF) * nSteps;",
+                 "step = (floor(step) + smoothstep(0.48, 0.52, fract(step))) / nSteps;", 
+                 "float surface_color = step * step;",
+
+                "vec3 colorVec = vec3(surface_color * uBaseColor.r, surface_color * uBaseColor.g, surface_color * uBaseColor.b );",
+
+                "outgoingLight += colorVec.rgb * ( totalDiffuseLight + ambientLightColor * diffuse );",
+
+                "gl_FragColor = vec4(outgoingLight, opacity);",
+
+            "}",
+
+        ].join('\n');
+
+
+        super({
+            uniforms: uniforms,
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            lights: true
+        });
+    }
+}
+
+// Attributions
+// @mohrtw
+// modified from: https://github.com/jagracar/webgl-shader-examples/blob/master/WebContent/toon-example.html @author Javier Gracia Carpio
+// and https://github.com/mrdoob/three.js/blob/master/examples/js/shaders/SkinShader.js @author alteredq / http://alteredqualia.com/
 
 function woodenFloorComp () {
 
@@ -12432,8 +12768,8 @@ AFRAME.registerComponent('wooden-floor', {
                 // onError
                 function (error) {
                     console.log('failed to load texture');
-                    // var material = new CelShader(0xA0522D);
-                    // resolve(material);
+                    var material = new CelShader$1(0xA0522D);
+                    resolve(material);
                 }
             );
         });
