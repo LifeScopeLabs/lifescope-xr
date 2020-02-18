@@ -572,7 +572,9 @@
             numberOfSegments: 24,
             floorRadius: 5,
             railHeight: 1.2,
-            floorActive: true
+            floorActive: true,
+            spawnRingOuterRadius: 0.25,
+            spawnRingInnerRadius: 0.2
          };
     };
 
@@ -987,8 +989,8 @@
             gridCellsPerRow: 24,
             focusedCellPosititon: { x:0, y:0.1, z:-1.5 },
             focusedCellScale: { x:1, y:1, z:1 },
-            arrowWidth: 0.2,
-            arrowHeight: 0.3,
+            arrowWidth: 0.4,
+            arrowHeight: 0.6,
             focusArrowHeight: 0.2,
             focusArrowWidth: 0.35,
             focusArrowMargin: 0.15,
@@ -1002,15 +1004,14 @@
             return state.rows * state.columns;
         },
         canPageLeft: (state) => {
-            return false;//!!state.page;
+            return !!state.page;
         },
         canPageRight: (state, getters, rootState, rootGetters) => {
-            return false;
-            // if (getters.itemsPerPage >= rootGetters['xr/totalItems']) {
-            //     return false;
-            // }
-            // var result = (state.page+1)*getters.itemsPerPage <= rootGetters['xr/totalItems'];
-            // return result;
+        if (getters.itemsPerPage >= rootGetters['xr/totalItems']) {
+                return false;
+            }
+            var result = (state.page+1)*getters.itemsPerPage <= rootGetters['xr/totalItems'];
+            return result;
         },
     };
 
@@ -1605,6 +1606,13 @@
             }
         },
 
+        props: {
+            size: {
+                type: Number,
+                default: 1
+            },
+        },
+
         computed: vuex.mapState('xr',
         [
             'roomName',
@@ -1668,9 +1676,9 @@
               id: "room-selector",
               geometry:
                 "primitive: plane; width: " +
-                _vm.width +
+                _vm.width * _vm.size +
                 "; height: " +
-                _vm.lineSep +
+                _vm.lineSep * _vm.size +
                 ";",
               material: "color: " + _vm.headerBackgroundColor + "; side: double;",
               text: "value: Room Selection; align: center;",
@@ -1689,14 +1697,14 @@
                       id: "room-label-" + index,
                       geometry:
                         "primitive: plane; width: " +
-                        _vm.width +
+                        _vm.width * _vm.size +
                         "; height: " +
-                        _vm.lineSep +
+                        _vm.lineSep * _vm.size +
                         ";",
                       material: "color: " + _vm.backgroundColor + "; side: double;",
                       text: "value: " + room + "; align: center;",
                       "text-link": "",
-                      position: "0 " + -_vm.lineSep * (index + 1) + " 0"
+                      position: "0 " + -_vm.lineSep * _vm.size * (index + 1) + " 0"
                     },
                     on: { click: _vm.roomClickHandler }
                   })
@@ -2280,6 +2288,10 @@
                 return 0;
             },
 
+            roomDisplayRotation() {
+                return Math.tan(this.floorRadius/this.offsetz)* (180/Math.PI)-90;
+            },
+
             ...vuex.mapState(
                 [
                     'facet',
@@ -2390,7 +2402,9 @@
                 [
                     'floorActive',
                     'floorRadius',
-                    'numberOfSegments'
+                    'numberOfSegments',
+                    'spawnRingInnerRadius',
+                    'spawnRingOuterRadius'
                 ]
             ),
 
@@ -2401,11 +2415,11 @@
             ),
 
             leftArrowPosition() {
-                return `${-this.cellWidth} ${this.gridOffsetY-this.cellHeight} ${-this.offsetz - this.paginatorOffsetZ}`;
+                return `${-this.cellWidth} ${this.gridOffsetY-this.cellHeight} ${-this.offsetz - this.floorRadius}`;
             },
 
             rightArrowPosition() {
-                return `${this.cellWidth} ${this.gridOffsetY-this.cellHeight} ${-this.offsetz - this.paginatorOffsetZ}`;
+                return `${this.cellWidth} ${this.gridOffsetY-this.cellHeight} ${-this.offsetz - this.floorRadius}`;
             },
 
         },
@@ -2782,23 +2796,13 @@
             handlePageLeft() {
                 if(!this.canPageLeft) return;
                 this.unFocusFoscusedCell();
-                // if(!this.inVR) {
-                    this.pageAnimation(this.pageLeft);
-                // }
-                // else {
-                    this.pageLeft();
-                // }
+                this.pageAnimation(this.pageLeft);
             },
 
             handlePageRight() {
                 if(!this.canPageRight) return;
                 this.unFocusFoscusedCell();
-                // if(!this.inVR) {
-                    this.pageAnimation(this.pageRight);
-                // }
-                // else {
-                //     this.pageRight();
-                // }
+                this.pageAnimation(this.pageRight);
             },
 
             pageAnimation(pageCallback) {
@@ -2982,7 +2986,7 @@
                           srcFit: "bothmax",
                           animatein: _vm.animateInSeconds,
                           fade: "animate: " + !_vm.inVR,
-                          animateload: !_vm.inVR
+                          animateload: _vm.inVR ? "false" : "true"
                         }
                       })
                     ],
@@ -3033,6 +3037,7 @@
                               height: _vm.cellContentHeight,
                               srcFit: "bothmax",
                               animatein: _vm.animateInSeconds,
+                              "animate-load": _vm.inVR ? "false" : "true",
                               provider: item.connection.provider.name,
                               contenttype: item.content.type,
                               value: item.content.text,
@@ -3068,6 +3073,7 @@
                               wrapfit: "true",
                               srcFit: "bothmax",
                               animatein: _vm.animateInSeconds,
+                              "animate-load": _vm.inVR ? "false" : "true",
                               fade: "animate: " + !_vm.inVR,
                               clickable: "clickevent: cellclicked;",
                               highlight:
@@ -3108,6 +3114,7 @@
                               height: _vm.cellContentHeight,
                               srcFit: "bothmax",
                               animatein: _vm.animateInSeconds,
+                              "animate-load": _vm.inVR ? "false" : "true",
                               facet: _vm.$store.state.facet,
                               avatarurl: item.avatar_url,
                               contactname: item.name,
@@ -3141,6 +3148,7 @@
                               height: _vm.cellContentHeight,
                               srcFit: "bothmax",
                               animatein: _vm.animateInSeconds,
+                              "animate-load": _vm.inVR ? "false" : "true",
                               avatarurl: item.avatar_url,
                               firstname: item.first_name,
                               lastname: item.last_name,
@@ -3273,6 +3281,16 @@
               )
             : _vm._e(),
           _vm._v(" "),
+          _c("a-ring", {
+            attrs: {
+              position: "0 " + (-_vm.playerHeight + 0.01) + " " + -_vm.offsetz,
+              rotation: "-90 0 0",
+              color: "teal",
+              "radius-inner": _vm.spawnRingInnerRadius,
+              "radius-outer": _vm.spawnRingOuterRadius
+            }
+          }),
+          _vm._v(" "),
           _vm.floorMapActive == true
             ? _c("a-mapbox-terrain", {
                 attrs: {
@@ -3319,12 +3337,14 @@
             1
           ),
           _vm._v(" "),
-          _vm.AppType == _vm.AppTypeEnum.XR && !_vm.inVR
+          _vm.AppType == _vm.AppTypeEnum.XR
             ? _c("room-display", {
                 attrs: {
                   id: "room-display",
-                  position: "0.1 0.03 " + -_vm.offsetz,
-                  rotation: "0 -90 0"
+                  position:
+                    _vm.floorRadius + " " + _vm.cellHeight * 2 + " " + -_vm.offsetz,
+                  rotation: "0 " + _vm.roomDisplayRotation + " 0",
+                  size: 30
                 }
               })
             : _vm.AppType == _vm.AppTypeEnum.APP
@@ -6079,6 +6099,7 @@
 
             fixVRCameraPosition() {
                 if(CONFIG.DEBUG){console.log('fixVRCameraPosition');}
+                if (!AFRAME.utils.checkHeadsetConnected()) return;
 
                 var playerRig = this.$el;
 
@@ -6094,6 +6115,7 @@
 
             unFixVRCameraPosition() {
                 if(CONFIG.DEBUG){console.log('unFixVRCameraPosition');}
+                if (!AFRAME.utils.checkHeadsetConnected()) return;
 
                 var playerRig = this.$el;
 
@@ -6490,7 +6512,7 @@
             ? _c("gallery")
             : _vm.sceneLayout == _vm.SceneLayoutEnum.GRID
             ? _c("grid-layout", {
-                attrs: { offsety: _vm.playerHeight, offsetz: "1.5" }
+                attrs: { offsety: _vm.playerHeight, offsetz: 1.5 }
               })
             : _vm._e(),
           _vm._v(" "),
@@ -6529,7 +6551,7 @@
       /* style */
       const __vue_inject_styles__$d = function (inject) {
         if (!inject) return
-        inject("data-v-33e63b10_0", { source: ".visuallyhidden {\n    display: block;\n    border: 0;\n    clip: rect(0 0 0 0);\n    height: 1px;\n    width: 1px;\n    margin: -1px;\n    padding: 0;\n    overflow: hidden;\n    position: absolute !important;\n}\na-scene {\n    position: absolute\n}\n.a-enter-vr {\n    height: 100%;\n    pointer-events: none;\n}\n.a-enter-vr-button {\n    z-index: 99999;\n    right: 3%;\n    bottom: 1%;\n    pointer-events: visible;\n}", map: undefined, media: undefined });
+        inject("data-v-1d25d034_0", { source: ".visuallyhidden {\n    display: block;\n    border: 0;\n    clip: rect(0 0 0 0);\n    height: 1px;\n    width: 1px;\n    margin: -1px;\n    padding: 0;\n    overflow: hidden;\n    position: absolute !important;\n}\na-scene {\n    position: absolute\n}\n.a-enter-vr {\n    height: 100%;\n    pointer-events: none;\n}\n.a-enter-vr-button {\n    z-index: 99999;\n    right: 3%;\n    bottom: 1%;\n    pointer-events: visible;\n}", map: undefined, media: undefined });
 
       };
       /* scoped */

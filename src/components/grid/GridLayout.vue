@@ -33,7 +33,7 @@
                     srcFit="bothmax"
                     :animatein="animateInSeconds"
                     :fade="'animate: ' + !inVR"
-                    :animateload="!inVR"
+                    :animateload="inVR ? 'false' : 'true'"
                 />
             </a-entity>
 
@@ -63,6 +63,7 @@
                     :height="cellContentHeight"
                     srcFit="bothmax"
                     :animatein="animateInSeconds"
+                    :animate-load="inVR ? 'false' : 'true'"
 
                     :provider="item.connection.provider.name"
                     :contenttype="item.content.type"
@@ -101,6 +102,8 @@
                     wrapfit=true
                     srcFit="bothmax"
                     :animatein="animateInSeconds"
+                    :animate-load="inVR ? 'false' : 'true'"
+
                     :fade="'animate: ' + !inVR"
                     clickable="clickevent: cellclicked;"
                     :highlight="'type: border; hoverColor: ' + hoverColor +
@@ -134,6 +137,7 @@
                         :height="cellContentHeight"
                         srcFit="bothmax"
                         :animatein="animateInSeconds"
+                        :animate-load="inVR ? 'false' : 'true'"
 
                         :facet="$store.state.facet"
 
@@ -165,6 +169,7 @@
                         :height="cellContentHeight"
                         srcFit="bothmax"
                         :animatein="animateInSeconds"
+                        :animate-load="inVR ? 'false' : 'true'"
 
                         :avatarurl="item.avatar_url"
                         :firstname="item.first_name"
@@ -956,23 +961,13 @@ export default {
         handlePageLeft() {
             if(!this.canPageLeft) return;
             this.unFocusFoscusedCell();
-            // if(!this.inVR) {
-                this.pageAnimation(this.pageLeft);
-            // }
-            // else {
-                this.pageLeft();
-            // }
+            this.pageAnimation(this.pageLeft);
         },
 
         handlePageRight() {
             if(!this.canPageRight) return;
             this.unFocusFoscusedCell();
-            // if(!this.inVR) {
-                this.pageAnimation(this.pageRight);
-            // }
-            // else {
-            //     this.pageRight();
-            // }
+            this.pageAnimation(this.pageRight);
         },
 
         pageAnimation(pageCallback) {

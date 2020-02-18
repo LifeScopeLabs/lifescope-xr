@@ -25,15 +25,14 @@ export const getters = {
         return state.rows * state.columns;
     },
     canPageLeft: (state) => {
-        return false;//!!state.page;
+        return !!state.page;
     },
     canPageRight: (state, getters, rootState, rootGetters) => {
-        return false;
-        // if (getters.itemsPerPage >= rootGetters['xr/totalItems']) {
-        //     return false;
-        // }
-        // var result = (state.page+1)*getters.itemsPerPage <= rootGetters['xr/totalItems'];
-        // return result;
+    if (getters.itemsPerPage >= rootGetters['xr/totalItems']) {
+            return false;
+        }
+        var result = (state.page+1)*getters.itemsPerPage <= rootGetters['xr/totalItems'];
+        return result;
     },
 };
 

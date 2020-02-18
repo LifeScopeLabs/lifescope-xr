@@ -228,6 +228,7 @@ export default {
 
         fixVRCameraPosition() {
             if(CONFIG.DEBUG){console.log('fixVRCameraPosition');}
+            if (!AFRAME.utils.checkHeadsetConnected()) return;
 
             var playerRig = this.$el;
 
@@ -243,6 +244,7 @@ export default {
 
         unFixVRCameraPosition() {
             if(CONFIG.DEBUG){console.log('unFixVRCameraPosition');}
+            if (!AFRAME.utils.checkHeadsetConnected()) return;
 
             var playerRig = this.$el;
 
