@@ -244,6 +244,14 @@
                 :type="mapboxType"></a-mapbox-terrain>
         </a-entity>
 
+    <!-- spawn position -->
+    <a-ring
+        :position="'0 ' + (-playerHeight + 0.01) + ' ' + (-offsetz)"
+        rotation="-90 0 0"
+        color="teal"
+        :radius-inner="spawnRingInnerRadius"
+        :radius-outer="spawnRingOuterRadius">
+    </a-ring>
     <!-- Demo Map -->
     <!-- Floor -->
     <a-mapbox-terrain v-if="floorMapActive == true"
@@ -272,10 +280,11 @@
     </a-entity>
 
     <!-- Room Selector -->
-    <room-display v-if="AppType == AppTypeEnum.XR && !inVR"
+    <room-display v-if="AppType == AppTypeEnum.XR"
         id="room-display"
-        :position="'0.1 0.03 ' + (-offsetz)"
-        rotation="0 -90 0"
+        :position="floorRadius + ' ' + cellHeight*2 + ' ' + (-offsetz)"
+        :rotation="'0 ' + roomDisplayRotation + ' 0'"
+        :size="30"
     />
     <saved-searches v-else-if="AppType == AppTypeEnum.APP"
         :position="'1 0.5 ' + (-offsetz)"
@@ -429,6 +438,10 @@ export default {
             return 0;
         },
 
+        roomDisplayRotation() {
+            return Math.tan(this.floorRadius/this.offsetz)* (180/Math.PI)-90;
+        },
+
         ...mapState(
             [
                 'facet',
@@ -539,7 +552,9 @@ export default {
             [
                 'floorActive',
                 'floorRadius',
-                'numberOfSegments'
+                'numberOfSegments',
+                'spawnRingInnerRadius',
+                'spawnRingOuterRadius'
             ]
         ),
 
@@ -550,11 +565,11 @@ export default {
         ),
 
         leftArrowPosition() {
-            return `${-this.cellWidth} ${this.gridOffsetY-this.cellHeight} ${-this.offsetz - this.paginatorOffsetZ}`;
+            return `${-this.cellWidth} ${this.gridOffsetY-this.cellHeight} ${-this.offsetz - this.floorRadius}`;
         },
 
         rightArrowPosition() {
-            return `${this.cellWidth} ${this.gridOffsetY-this.cellHeight} ${-this.offsetz - this.paginatorOffsetZ}`;
+            return `${this.cellWidth} ${this.gridOffsetY-this.cellHeight} ${-this.offsetz - this.floorRadius}`;
         },
 
     },

@@ -5,7 +5,9 @@ export const state = function () {
         numberOfSegments: 24,
         floorRadius: 5,
         railHeight: 1.2,
-        floorActive: true
+        floorActive: true,
+        spawnRingOuterRadius: 0.25,
+        spawnRingInnerRadius: 0.2
      };
 };
 

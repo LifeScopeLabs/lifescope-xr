@@ -3,7 +3,7 @@
         <a-entity 
             id="room-selector"
             class="clickable"
-            :geometry="'primitive: plane; width: ' + width + '; height: ' + lineSep + ';'"
+            :geometry="'primitive: plane; width: ' + width*size + '; height: ' + lineSep*size + ';'"
             :material="'color: ' + headerBackgroundColor + '; side: double;'"
             text="value: Room Selection; align: center;"
             text-link>
@@ -12,11 +12,11 @@
         <a-entity v-if="displayRooms">
                 <a-entity v-for="(room, index) in rooms" v-bind:key="'room-label-' + index"
                     :id="'room-label-' + index"
-                    :geometry="'primitive: plane; width: ' + width + '; height: ' + lineSep + ';'"
+                    :geometry="'primitive: plane; width: ' + width*size + '; height: ' + lineSep*size + ';'"
                     :material="'color: ' + backgroundColor + '; side: double;'"
                     :text="'value: ' + room + '; align: center;'"
                     text-link
-                    :position="'0 ' + (-lineSep*(index+1)) + ' 0'"
+                    :position="'0 ' + (-lineSep*size*(index+1)) + ' 0'"
                     class="clickable"
                     @click="roomClickHandler">
                 </a-entity>
@@ -40,6 +40,13 @@ export default {
             backgroundColor: '#22252a',
             headerBackgroundColor: '#29434E',
         }
+    },
+
+    props: {
+        size: {
+            type: Number,
+            default: 1
+        },
     },
 
     computed: mapState('xr',
