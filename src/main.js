@@ -10,6 +10,7 @@ import './lib/three/three';
 import BufferGeometryUtils from './lib/three/BufferGeometryUtils';
 THREE.BufferGeometryUtils = BufferGeometryUtils;
 
+import io from 'socket.io-client';
 import 'aframe';
 import 'networked-aframe';
 import 'aframe-extras';
@@ -37,6 +38,8 @@ import App from './App.vue';
 registerAframeComponents();
 setupFontAwesome();
 registerAframeInput();
+const ICE_SERVERS = Object.keys(CONFIG.iceServers).map(x => CONFIG.iceServers[x]);
+NAF.adapters.setIceServers(ICE_SERVERS);
 
 Vue.use(VueRouter);
 var router = new VueRouter({

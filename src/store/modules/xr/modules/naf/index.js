@@ -3,6 +3,7 @@ export const state = function () {
         numberOfPlayers: 0,
         playerNames: new Map(),
         updateNames: 1,
+        connectOnLoad: false,
     };
 };
 
@@ -26,7 +27,11 @@ export const mutations = {
                 state.playerNames.set(payload.clientId, payload.name);
                 state.updateNames += 1;
         }
-    }
+    },
+    SET_CONNECT_ON_LOAD: function(state, bool=true) {
+        if (CONFIG.DEBUG) {console.log("SET_CONNECT_ON_LOAD");}
+        state.connectOnLoad = true;
+    },
 };
 
 

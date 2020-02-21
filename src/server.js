@@ -1,7 +1,6 @@
 import path from 'path';
 import config from 'config';
 import http from "http";
-import easyRTC from "easyrtc";
 import express from 'express';
 import socketIO from "socket.io";
 import AWS from 'aws-sdk';
@@ -29,7 +28,7 @@ const AWSConfig = {
 
 var gallery_content = {};
 var avatars = [];
-const server = express();
+const app = express();
  
 // Set aws config
 AWS.config.update(AWSConfig);
@@ -104,74 +103,90 @@ Promise.resolve()
     };
 
     // CORS
-    server.use(function(req, res, next) {
+    app.use(function(req, res, next) {
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         next();
       });
 
     // serve static files
-    server.use('/static/', express.static(path.join(__dirname, '../static')));
-    server.use(express.static('./dist'));
-    server.use('/dist', express.static('./dist'));
+    app.use('/static/', express.static(path.join(__dirname, '../static')));
+    app.use(express.static('./dist'));
+    app.use('/dist', express.static('./dist'));
 
     // test content
-    server.get('/test/content/', function(req, res) {
+    app.get('/test/content/', function(req, res) {
         // //debugger;
         res.json(gallery_content);
     });
 
     // room configuration
-    server.get('/roomconfig', function (req, res) {
+    app.get('/roomconfig', function (req, res) {
         res.json(ROOM_CONFIG);
     });
 
     // avatars
-    server.get('/avatars', function (req, res) {
+    app.get('/avatars', function (req, res) {
         // console.log(avatars);
         res.json(avatars);
     });
 
     // start websockets for NAF
     // Start Express http server for NAF
-    var NAFServer = http.createServer(server);
-    var socketServer = socketIO.listen(NAFServer, {"log level":1});
+    var NAFapp = express();
+    var NAFServer = http.createServer(NAFapp);
+    var io = socketIO(NAFServer);
+    const rooms = {};
 
-    // start RTC for NAF
-    easyRTC.setOption("appIceServers", ICE_SERVERS);
-    easyRTC.setOption("logLevel", "debug");
-    easyRTC.setOption("demosEnable", false);
+    io.on("connection", socket => {
+        console.log("user connected", socket.id);
 
-    // Overriding the default easyrtcAuth listener, only so we can directly access its callback
-    easyRTC.events.on("easyrtcAuth", function(socket, easyrtcid, msg, socketCallback, callback) {
-        easyRTC.events.defaultListeners.easyrtcAuth(socket, easyrtcid, msg, socketCallback, function(err, connectionObj){
-            if (err || !msg.msgData || !msg.msgData.credential || !connectionObj) {
-                callback(err, connectionObj);
-                return;
+        let curRoom = null;
+
+        socket.on("joinRoom", data => {
+            const { room } = data;
+
+            if (!rooms[room]) {
+            rooms[room] = {
+                name: room,
+                occupants: {},
+            };
             }
 
-            connectionObj.setField("credential", msg.msgData.credential, {"isShared":false});
+            const joinedTime = Date.now();
+            rooms[room].occupants[socket.id] = joinedTime;
+            curRoom = room;
 
-            console.log("["+easyrtcid+"] Credential saved!", connectionObj.getFieldValueSync("credential"));
+            console.log(`${socket.id} joined room ${room}`);
+            socket.join(room);
 
-            callback(err, connectionObj);
+            socket.emit("connectSuccess", { joinedTime });
+            const occupants = rooms[room].occupants;
+            io.in(curRoom).emit("occupantsChanged", { occupants });
         });
-    });
 
-    // To test, lets print the credential to the console for every room join!
-    easyRTC.events.on("roomJoin", function(connectionObj, roomName, roomParameter, callback) {
-        console.log("["+connectionObj.getEasyrtcid()+"] Credential retrieved!", connectionObj.getFieldValueSync("credential"));
-        easyRTC.events.defaultListeners.roomJoin(connectionObj, roomName, roomParameter, callback);
-    });
+        socket.on("send", data => {
+            io.to(data.to).emit("send", data);
+        });
 
-    // Start EasyRTC server
-    var rtc = easyRTC.listen(server, socketServer, null, function(err, rtcRef) {
-        console.log("Initiated");
+        socket.on("broadcast", data => {
+            socket.to(curRoom).broadcast.emit("broadcast", data);
+        });
 
-        rtcRef.events.on("roomCreate", function(appObj, creatorConnectionObj, roomName, roomOptions, callback) {
-            console.log("roomCreate fired! Trying to create: " + roomName);
+        socket.on("disconnect", () => {
+            console.log('disconnected: ', socket.id, curRoom);
+            if (rooms[curRoom]) {
+            console.log("user disconnected", socket.id);
 
-            appObj.events.defaultListeners.roomCreate(appObj, creatorConnectionObj, roomName, roomOptions, callback);
+            delete rooms[curRoom].occupants[socket.id];
+            const occupants = rooms[curRoom].occupants;
+            socket.to(curRoom).broadcast.emit("occupantsChanged", { occupants });
+
+            if (occupants == {}) {
+                console.log("everybody left room");
+                delete rooms[curRoom];
+            }
+            }
         });
     });
 
@@ -179,6 +194,6 @@ Promise.resolve()
         console.log('NAFServer listening on http://localhost:' + NAF_LISTEN_PORT);
     });
 
-    server.listen(LISTEN_PORT, () => console.log('LIFESCOPE XR config server listening on port:' + LISTEN_PORT));
+    app.listen(LISTEN_PORT, () => console.log('LIFESCOPE XR config server listening on port:' + LISTEN_PORT));
 
   })

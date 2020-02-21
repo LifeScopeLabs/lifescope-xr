@@ -37,8 +37,10 @@ export default {
     },
 
     beforeMount () {
-      var type = this.apptype == 'xr' ? 'XR' : 'APP';
+      const type = this.apptype == 'xr' ? 'XR' : 'APP';
+      const connectOnLoad = this.apptype == 'xr' ? true : false;
       this.$store.commit('xr/SET_APPTYPE', type);
+      this.$store.commit('xr/naf/SET_CONNECT_ON_LOAD', connectOnLoad);
     }
 }
 </script>

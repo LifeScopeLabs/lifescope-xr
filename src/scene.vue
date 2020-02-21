@@ -1,5 +1,6 @@
 <template>
-  <a-scene embedded :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; adapter: easyrtc; connectOnLoad: true;'"
+  <a-scene embedded :networked-scene="'serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ' +
+    roomName + '; connectOnLoad: ' + connectOnLoad + '; audio: true; adapter: webrtc;'"
     loading-screen="enabled: false">
 
     <!-- Load assets -->
@@ -53,8 +54,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 
-// import socketIO from 'socket.io-client';
-// import easyrtc from '../static/easyrtc/easyrtc.js';
+// import io from 'socket.io-client';
 
 import gallery from "./components/gallery.vue";
 import GridLayout from "./components/grid/GridLayout.vue"
@@ -107,6 +107,12 @@ export default {
           'playerHeight',
         ]
       ),
+
+      ...mapState('xr/naf',
+        [
+          'connectOnLoad'
+        ]
+      ),
     },
 
     mounted () {
@@ -131,29 +137,33 @@ export default {
       });
 
 
-
-      // document.body.addEventListener('connected', function (evt) {
-      //   if (CONFIG.DEBUG) {console.log('connected event. clientId =', evt.detail.clientId);};
-      //   if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);};
-
-      //   // setup chat
-      //   self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
-      //   NAF.connection.subscribeToDataChannel('chat', self.chatCB);
-      //   NAF.connection.subscribeToDataChannel('nameUpdate', self.nameUpdateCB);
+      // var socketIO = io('http://localhost');
+      // socketIO.on("connection", socket => {
+      //   console.log("user connected", socket.id);
       // });
 
-      // document.body.addEventListener('clientConnected', function (evt) {
-      //   if (CONFIG.DEBUG) {console.log('clientConnected event. clientId =', evt.detail.clientId);};
-      //   if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);}
-      //   self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
-      //   NAF.connection.sendData(evt.detail.clientId, 'nameUpdate', self.$store.state.xr.naf.playerNames.get(NAF.clientId));
-      // });
+      document.body.addEventListener('connected', function (evt) {
+        if (CONFIG.DEBUG) {console.log('connected event. clientId =', evt.detail.clientId);};
+        if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);};
 
-      // document.body.addEventListener('clientDisconnected', function (evt) {
-      //   if (CONFIG.DEBUG) {console.log('clientDisconnected event. clientId =', evt.detail.clientId);};
-      //   // self.$store.commit('xr/naf/DECREMENT_PLAYERS');
-      //   self.$store.dispatch('xr/naf/removePlayer', { clientId: evt.detail.clientId });
-      // });
+        // setup chat
+        // self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
+        // NAF.connection.subscribeToDataChannel('chat', self.chatCB);
+        // NAF.connection.subscribeToDataChannel('nameUpdate', self.nameUpdateCB);
+      });
+
+      document.body.addEventListener('clientConnected', function (evt) {
+        if (CONFIG.DEBUG) {console.log('clientConnected event. clientId =', evt.detail.clientId);};
+        if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);}
+        self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
+        NAF.connection.sendData(evt.detail.clientId, 'nameUpdate', self.$store.state.xr.naf.playerNames.get(NAF.clientId));
+      });
+
+      document.body.addEventListener('clientDisconnected', function (evt) {
+        if (CONFIG.DEBUG) {console.log('clientDisconnected event. clientId =', evt.detail.clientId);};
+        // self.$store.commit('xr/naf/DECREMENT_PLAYERS');
+        self.$store.dispatch('xr/naf/removePlayer', { clientId: evt.detail.clientId });
+      });
 
 
       if (!self.$route.query.room){
