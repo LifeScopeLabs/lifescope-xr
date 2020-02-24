@@ -923,6 +923,7 @@ const state$7 = function () {
         numberOfPlayers: 0,
         playerNames: new Map(),
         updateNames: 1,
+        connectOnLoad: false,
     };
 };
 
@@ -946,7 +947,11 @@ const mutations$7 = {
                 state.playerNames.set(payload.clientId, payload.name);
                 state.updateNames += 1;
         }
-    }
+    },
+    SET_CONNECT_ON_LOAD: function(state, bool=true) {
+        if (CONFIG.DEBUG) {console.log("SET_CONNECT_ON_LOAD");}
+        state.connectOnLoad = true;
+    },
 };
 
 
@@ -5972,26 +5977,26 @@ var script$c = {
     methods: {
         setupDesktop() {
             if (CONFIG.DEBUG) {console.log("setupDesktop");}            var self = this;
-            var playerGridRig = self.$el;
-            if (playerGridRig.hasLoaded) {
-                playerGridRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop, {once : true});
+            var playerRig = self.$el;
+            if (playerRig.hasLoaded) {
+                playerRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop, {once : true});
             }
             else {
-                playerGridRig.addEventListener('loaded', function () {
-                    playerGridRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop, {once : true});
+                playerRig.addEventListener('loaded', function () {
+                    playerRig.sceneEl.addEventListener('enter-vr', self.tearDownDesktop, {once : true});
                 }, {once : true});
             }
             try {
-                if (playerGridRig) {
-                    playerGridRig.setAttribute("wasd-controls", {'enabled': true, 'acceleration': 100});
-                    playerGridRig.setAttribute("look-controls", 'reverseMouseDrag', true);
+                if (playerRig) {
+                    playerRig.setAttribute("wasd-controls", {'enabled': true, 'acceleration': 100});
+                    playerRig.setAttribute("look-controls", 'reverseMouseDrag', true);
                 }
                 else {
-                    console.log("failed to set controls on playerGridRig");
+                    console.log("failed to set controls on playerRig");
                 }
             }
             catch (e) {
-                console.log("failed to set controls on playerGridRig");
+                console.log("failed to set controls on playerRig");
                 console.log(e);
             }
 
@@ -5999,69 +6004,69 @@ var script$c = {
         },
 
         tearDownDesktop() {
-            if (CONFIG.DEBUG) {console.log("tearDownDesktop");}            var playerGridRig = this.$el;
+            if (CONFIG.DEBUG) {console.log("tearDownDesktop");}            var playerRig = this.$el;
             try {
-                if (playerGridRig) {
-                    playerGridRig.removeAttribute("wasd-controls");
-                    playerGridRig.removeAttribute("look-controls");
-                    playerGridRig.sceneEl.canvas.classList.remove('a-grab-cursor');
+                if (playerRig) {
+                    playerRig.removeAttribute("wasd-controls");
+                    playerRig.removeAttribute("look-controls");
+                    playerRig.sceneEl.canvas.classList.remove('a-grab-cursor');
                 }
                 else {
-                    console.log("failed to teardown desktop controls on playerGridRig");
+                    console.log("failed to teardown desktop controls on playerRig");
                 }
             }
             catch (e) {
-                console.log("failed to teardown desktop controls on playerGridRig");
+                console.log("failed to teardown desktop controls on playerRig");
                 console.log(e);
             }
         },
 
         setupMobile() {
-            if (CONFIG.DEBUG) {console.log("setupMobile");}            var playerGridRig = this.$el;
-            var camera = playerGridRig.querySelector('#grid-camera');
+            if (CONFIG.DEBUG) {console.log("setupMobile");}            var playerRig = this.$el;
+            var camera = playerRig.querySelector('#player-camera');
             var sceneEl = document.getElementsByTagName('a-scene')[0];
             try {
-                if (playerGridRig) {
-                    // playerGridRig.setAttribute("character-controller", {'pivot': "#grid-camera"});
-                    // playerGridRig.setAttribute("virtual-gamepad-controls", {});
+                if (playerRig) {
+                    // playerRig.setAttribute("character-controller", {'pivot': "#player-camera"});
+                    // playerRig.setAttribute("virtual-gamepad-controls", {});
                     // camera.setAttribute('pitch-yaw-rotator', {});
-                    playerGridRig.setAttribute("look-controls", 'reverseMouseDrag', true);
+                    playerRig.setAttribute("look-controls", 'reverseMouseDrag', true);
                 }
                 else {
-                    console.log("failed to set controls on playerGridRig");
+                    console.log("failed to set controls on playerRig");
                 }
             }
             catch (e) {
-                console.log("failed to set controls on playerGridRig");
+                console.log("failed to set controls on playerRig");
                 console.log(e);
             }
         },
 
         tearDownMobile() {
-            if (CONFIG.DEBUG) {console.log("tearDownMobile");}            var playerGridRig = this.$el;
-            var camera = playerGridRig.querySelector('#grid-camera');
+            if (CONFIG.DEBUG) {console.log("tearDownMobile");}            var playerRig = this.$el;
+            var camera = playerRig.querySelector('#player-camera');
             var sceneEl = document.getElementsByTagName('a-scene')[0];
             try {
-                if (playerGridRig) {
-                    // playerGridRig.removeAttribute("character-controller");
-                    // playerGridRig.removeAttribute("virtual-gamepad-controls");
+                if (playerRig) {
+                    // playerRig.removeAttribute("character-controller");
+                    // playerRig.removeAttribute("virtual-gamepad-controls");
                     // camera.removeAttribute('pitch-yaw-rotator');
-                    playerGridRig.removeAttribute("look-controls");
+                    playerRig.removeAttribute("look-controls");
                 }
                 else {
-                    console.log("failed to teardown mobile controls on playerGridRig");
+                    console.log("failed to teardown mobile controls on playerRig");
                 }
             }
             catch (e) {
-                console.log("failed to teardown mobile controls on playerGridRig");
+                console.log("failed to teardown mobile controls on playerRig");
                 console.log(e);
             }
         },
 
         setupVR() {
             if (CONFIG.DEBUG) {console.log("setupVR");}            this.fixVRCameraPosition();
-            var playerGridRig = document.getElementById('playerGridRig');
-            playerGridRig.object3D.matrixAutoUpdate = true;
+            var playerRig = document.getElementById('playerRig');
+            playerRig.object3D.matrixAutoUpdate = true;
         },
 
         tearDownVR() {
@@ -6080,6 +6085,101 @@ var script$c = {
                     this.setupDesktop();
                 }
             }
+            this.createAvatarTemplate();
+            this.addAvatarTemplate();
+            this.networkAvatarRig();
+        },
+
+        createAvatarTemplate() {
+            if (CONFIG.DEBUG) {console.log('createAvatarGLTFTemplate()');}
+            //                         <rightHandController ref="righthand" />
+            var frag = this.fragmentFromString(`
+            <template id="avatar-rig-template" v-pre>
+                <a-entity>
+                    <a-entity class="camera-rig"
+                        position="0 0 0">
+                        <a-entity
+                            class="player-camera camera">
+                            <a-gltf-model class="gltfmodel" src="#avatar-0"
+                                scale="0.02 0.02 0.02">
+                            </a-gltf-model>
+                        </a-entity>
+                    </a-entity>
+                </a-entity>
+            </template> 
+            `);
+            var assets = document.querySelector('a-assets');
+            try {
+                assets.appendChild(frag);
+            }
+            catch (err) {
+                console.log('createAvatarGLTFTemplate error');
+                console.log(err);
+            }
+            
+        },
+
+        addAvatarTemplate() {
+            if (CONFIG.DEBUG) {console.log("addAvatarTemplate");}
+            try {
+                NAF.schemas.add({
+                    template: '#avatar-rig-template',
+                    components: [
+                    {
+                        component: 'position'
+                    },
+                    {
+                        component: 'rotation'
+                    },
+                    {
+                        selector: '.camera-rig',
+                        component: 'rotation'
+                    },
+                    {
+                        selector: '.camera-rig',
+                        component: 'position'
+                    },
+                    {
+                        selector: '.player-camera',
+                        component: 'rotation'
+                    },
+                    {
+                        selector: '.player-camera',
+                        component: 'position'
+                    },
+                    ]
+                });
+            }
+            catch (err) {
+                console.log('addAvatarRigTemplate error');
+                console.log(err);
+            }
+        },
+
+        networkAvatarRig() {
+            if (CONFIG.DEBUG) {console.log('networkAvatarRig');}
+            var playerRig = document.getElementById('playerRig');
+            try {
+                if (playerRig) {
+                    playerRig.setAttribute("networked",
+                        { 'template': '#avatar-rig-template',
+                        'attachTemplateToLocal': false });
+                }
+                else {
+                    console.log("failed to set up NAF on playerRig");
+                }
+            }
+            catch (e) {
+                console.log("failed to set up NAF on playerRig");
+                console.log(e);
+            }
+            finally {
+                // console.log('networkAvatarRig finally');
+            }
+        },
+
+        fragmentFromString(strHTML) {
+            return document.createRange().createContextualFragment(strHTML);
         },
 
         keypressListener(evt) {
@@ -6089,7 +6189,7 @@ var script$c = {
         },
 
         centerCamera() {
-            this.$el.object3D.position.set(0, 0, 0);
+            this.$el.object3D.position.set(0, this.playerHeight, 0);
         },
 
         fixVRCameraPosition() {
@@ -6098,7 +6198,7 @@ var script$c = {
 
             var playerRig = this.$el;
 
-            var playerCamera = document.getElementById('grid-camera');
+            var playerCamera = document.getElementById('player-camera');
             var cameraRig = document.getElementById('camera-rig');
 
             var position;
@@ -6114,7 +6214,7 @@ var script$c = {
 
             var playerRig = this.$el;
 
-            var playerCamera = document.getElementById('grid-camera');
+            var playerCamera = document.getElementById('player-cameraf');
             var cameraRig = document.getElementById('camera-rig');
 
             var position;
@@ -6139,15 +6239,15 @@ var __vue_render__$c = function() {
   var _c = _vm._self._c || _h;
   return _c(
     "a-entity",
-    { attrs: { id: "playerGridRig" } },
+    { attrs: { id: "playerRig" } },
     [
       _c(
         "a-entity",
         { staticClass: "camera-rig", attrs: { id: "camera-rig" } },
         [
           _c("a-entity", {
-            staticClass: "grid-camera camera",
-            attrs: { id: "grid-camera", camera: "" }
+            staticClass: "player-camera camera",
+            attrs: { id: "player-camera", camera: "" }
           }),
           _vm._v(" "),
           _vm.inVR ? _c("grid-controller", { ref: "gridcontroller" }) : _vm._e()
@@ -6243,6 +6343,12 @@ var script$d = {
           'playerHeight',
         ]
       ),
+
+      ...mapState('xr/naf',
+        [
+          'connectOnLoad'
+        ]
+      ),
     },
 
     mounted () {
@@ -6266,39 +6372,42 @@ var script$d = {
       });
 
 
-
-      // document.body.addEventListener('connected', function (evt) {
-      //   if (CONFIG.DEBUG) {console.log('connected event. clientId =', evt.detail.clientId);};
-      //   if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);};
-
-      //   // setup chat
-      //   self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
-      //   NAF.connection.subscribeToDataChannel('chat', self.chatCB);
-      //   NAF.connection.subscribeToDataChannel('nameUpdate', self.nameUpdateCB);
+      // var socketIO = io('http://localhost');
+      // socketIO.on("connection", socket => {
+      //   console.log("user connected", socket.id);
       // });
 
-      // document.body.addEventListener('clientConnected', function (evt) {
-      //   if (CONFIG.DEBUG) {console.log('clientConnected event. clientId =', evt.detail.clientId);};
-      //   if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);}
-      //   self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
-      //   NAF.connection.sendData(evt.detail.clientId, 'nameUpdate', self.$store.state.xr.naf.playerNames.get(NAF.clientId));
-      // });
+      document.body.addEventListener('connected', function (evt) {
+        if (CONFIG.DEBUG) {console.log('connected event. clientId =', evt.detail.clientId);}        if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);}
+        // setup chat
+        // self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
+        // NAF.connection.subscribeToDataChannel('chat', self.chatCB);
+        // NAF.connection.subscribeToDataChannel('nameUpdate', self.nameUpdateCB);
+      });
 
-      // document.body.addEventListener('clientDisconnected', function (evt) {
-      //   if (CONFIG.DEBUG) {console.log('clientDisconnected event. clientId =', evt.detail.clientId);};
-      //   // self.$store.commit('xr/naf/DECREMENT_PLAYERS');
-      //   self.$store.dispatch('xr/naf/removePlayer', { clientId: evt.detail.clientId });
-      // });
+      document.body.addEventListener('clientConnected', function (evt) {
+        if (CONFIG.DEBUG) {console.log('clientConnected event. clientId =', evt.detail.clientId);}        if (CONFIG.DEBUG) {console.log('roomName: ' + self.roomName);}
+        self.$store.dispatch('xr/naf/addPlayer', { clientId: evt.detail.clientId, name: evt.detail.clientId });
+        NAF.connection.sendData(evt.detail.clientId, 'nameUpdate', self.$store.state.xr.naf.playerNames.get(NAF.clientId));
+      });
 
+      document.body.addEventListener('clientDisconnected', function (evt) {
+        if (CONFIG.DEBUG) {console.log('clientDisconnected event. clientId =', evt.detail.clientId);}        // self.$store.commit('xr/naf/DECREMENT_PLAYERS');
+        self.$store.dispatch('xr/naf/removePlayer', { clientId: evt.detail.clientId });
+      });
 
-      if (!self.$route.query.room){
-          self.$route.query.room = 'ls-room';
+      var roomName = this.$route.query.room || 'ls-room';
+
+      // name == 'shared'
+      // query.id
+      // query.passcode
+      if (this.AppType == AppTypeEnum.APP && self.$route.name == 'shared') {
+        roomName = 'id' + self.$route.query.id + 'passcode' + self.$route.query.passcode;
+        this.$store.dispatch('xr/setRoomName', roomName);
       }
-          
-      var queryRoom = this.$route.query.room || 'ls-room';
 
       if (this.AppType == AppTypeEnum.XR) {
-        this.$store.dispatch('xr/setRoomName', queryRoom)
+        this.$store.dispatch('xr/setRoomName', roomName)
         .then(() => {
           return this.$store.dispatch('xr/getRoomConfig');
         })
@@ -6438,7 +6547,11 @@ var __vue_render__$d = function() {
       attrs: {
         embedded: "",
         "networked-scene":
-          "serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: ls-room; audio: true; adapter: easyrtc; connectOnLoad: true;",
+          "serverURL: https://nxr.lifescope.io; app: lifescope-xr; room: " +
+          _vm.roomName +
+          "; connectOnLoad: " +
+          _vm.connectOnLoad +
+          "; audio: true; adapter: webrtc;",
         "loading-screen": "enabled: false"
       }
     },
@@ -6496,7 +6609,7 @@ var __vue_render__$d = function() {
             attrs: {
               id: "avatar-0",
               src:
-                "../static/avatars/modified/head_female_-_low_poly/scene.gltf"
+                "https://lifescope-static.s3.amazonaws.com/static/xr/avatars/head_female_-_low_poly/scene.gltf"
             }
           })
         ],
@@ -6546,7 +6659,7 @@ __vue_render__$d._withStripped = true;
   /* style */
   const __vue_inject_styles__$d = function (inject) {
     if (!inject) return
-    inject("data-v-1d25d034_0", { source: ".visuallyhidden {\n    display: block;\n    border: 0;\n    clip: rect(0 0 0 0);\n    height: 1px;\n    width: 1px;\n    margin: -1px;\n    padding: 0;\n    overflow: hidden;\n    position: absolute !important;\n}\na-scene {\n    position: absolute\n}\n.a-enter-vr {\n    height: 100%;\n    pointer-events: none;\n}\n.a-enter-vr-button {\n    z-index: 99999;\n    right: 3%;\n    bottom: 1%;\n    pointer-events: visible;\n}", map: undefined, media: undefined });
+    inject("data-v-c8e17234_0", { source: ".visuallyhidden {\n    display: block;\n    border: 0;\n    clip: rect(0 0 0 0);\n    height: 1px;\n    width: 1px;\n    margin: -1px;\n    padding: 0;\n    overflow: hidden;\n    position: absolute !important;\n}\na-scene {\n    position: absolute\n}\n.a-enter-vr {\n    height: 100%;\n    pointer-events: none;\n}\n.a-enter-vr-button {\n    z-index: 99999;\n    right: 3%;\n    bottom: 1%;\n    pointer-events: visible;\n}", map: undefined, media: undefined });
 
   };
   /* scoped */
@@ -6783,8 +6896,10 @@ var script$f = {
     },
 
     beforeMount () {
-      var type = this.apptype == 'xr' ? 'XR' : 'APP';
+      const type = this.apptype == 'xr' ? 'XR' : 'APP';
+      const connectOnLoad = this.apptype == 'xr' ? true : false;
       this.$store.commit('xr/SET_APPTYPE', type);
+      this.$store.commit('xr/naf/SET_CONNECT_ON_LOAD', connectOnLoad);
     }
 };
 
@@ -6813,7 +6928,7 @@ __vue_render__$f._withStripped = true;
   /* style */
   const __vue_inject_styles__$f = function (inject) {
     if (!inject) return
-    inject("data-v-d0b0bfea_0", { source: "body {\n    background-color: black;\n}", map: undefined, media: undefined });
+    inject("data-v-00b7d9fa_0", { source: "body {\n    background-color: black;\n}", map: undefined, media: undefined });
 
   };
   /* scoped */
@@ -12528,167 +12643,7 @@ AFRAME.registerComponent('text-link', {
   });
 }
 
-class CelShader$1 extends THREE.ShaderMaterial {
-    constructor(color=0xFFFFFF, props={}) {
-
-        var opacity = props.opacity != undefined ? props.opacity : 1.0;
-        var diffuse = props.diffuse != undefined ? props.diffuse : 0xeeeeee;
-        var specular = props.specular != undefined ? props.specular : 0x111111;
-        var uniforms = THREE.UniformsUtils.merge( [
-
-			THREE.UniformsLib[ "fog" ],
-            THREE.UniformsLib[ "lights" ],
-
-            {
-                "uBaseColor": { value: new THREE.Color( color ) },
-                "diffuse": { value: new THREE.Color( diffuse ) },
-                "specular": { value: new THREE.Color( specular ) },
-                "opacity": { value: opacity },
-            }
-        ]);
-        
-
-        var vertexShader = [
-            THREE.ShaderChunk[ "common" ],
-            // THREE.ShaderChunk[ "fog_pars_vertex" ],
-			"varying vec3 vNormal;",
-			"varying vec3 vViewPosition;",
-
-            "void main() {",
-
-                "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
-
-                "vViewPosition = -mvPosition.xyz;",
-
-                "vNormal = normalize( normalMatrix * normal );",
-
-                "gl_Position = projectionMatrix * mvPosition;",
-
-            "}",
-        ].join('\n');
-
-        var fragmentShader = [
-
-            THREE.ShaderChunk[ "common" ],
-            THREE.ShaderChunk[ "bsdfs" ],
-            // THREE.ShaderChunk[ "fog_pars_vertex" ],
-            THREE.ShaderChunk[ "lights_pars_begin" ],
-			"varying vec3 vNormal;",
-            "uniform vec3 testlight;",
-            "uniform vec3 uBaseColor;",
-
-            "uniform float opacity;",
-            "uniform vec3 diffuse;",
-
-            "varying vec3 vViewPosition;",
-
-            "float diffuseFactor(vec3 normal, vec3 light_direction) {",
-                "float df = dot(normalize(normal), normalize(light_direction));",
-            
-                "if (gl_FrontFacing) {",
-                    "df = -df;",
-                "}",
-            
-                "return max(0.0, df);",
-            "}",
-
-            "float calcLightAttenuation( float lightDistance, float cutoffDistance, float decayExponent ) {",
- 				"if ( decayExponent > 0.0 ) {",
- 					"return pow( saturate( - lightDistance / cutoffDistance + 1.0 ), decayExponent );",
- 				"}",
- 				"return 1.0;",
- 			"}",
-
-
-			"void main() {",
-                "vec3 outgoingLight = vec3( 0.0 );",
-
-                "vec3 totalDiffuseLight = vec3( 0.0 );",
-                "float totalDF = 0.0;",
-
-                // Point Lights
-                "#if NUM_POINT_LIGHTS > 0",
-
-					"for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {",
-
-						"vec3 lVector = pointLights[ i ].position + vViewPosition.xyz;",
-
-						"float attenuation = calcLightAttenuation( length( lVector ), pointLights[ i ].distance, pointLights[ i ].decay );",
-
-                        "lVector = normalize( lVector );",
-                        
-                        "float df = diffuseFactor(vNormal, lVector);",
-
-                        "totalDF += df;",
-
-
-						"totalDiffuseLight += pointLights[ i ].color * ( df * attenuation );",
-
-					"}",
-
-				"#endif",
-
-                // Directional Lights
-                "#if NUM_DIR_LIGHTS > 0",
-
-                    "for( int i = 0; i < NUM_DIR_LIGHTS; i++ ) {",
-
-                        "vec3 dirVector = directionalLights[ 0 ].direction;",
-
-                        "float df = diffuseFactor(vNormal, dirVector);",
-
-                        "totalDF += df;",
-
-                        "totalDiffuseLight += directionalLights[ i ].color * df;",
-					"}",
-
-                "#endif",
-
-                // Hemisphere Lights
-				"#if NUM_HEMI_LIGHTS > 0",
-
-                "for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {",
-
-                    "vec3 lVector = hemisphereLights[ i ].direction;",
-
-                    "float dotProduct = dot( vNormal, lVector );",
-                    "float hemiDiffuseWeight = 0.5 * dotProduct + 0.5;",
-
-                    "totalDiffuseLight += mix( hemisphereLights[ i ].groundColor, hemisphereLights[ i ].skyColor, hemiDiffuseWeight );",
-
-                "}",
-
-            "#endif",
-
-                 "float nSteps = 6.0;",
-                 "float step = sqrt(totalDF) * nSteps;",
-                 "step = (floor(step) + smoothstep(0.48, 0.52, fract(step))) / nSteps;", 
-                 "float surface_color = step * step;",
-
-                "vec3 colorVec = vec3(surface_color * uBaseColor.r, surface_color * uBaseColor.g, surface_color * uBaseColor.b );",
-
-                "outgoingLight += colorVec.rgb * ( totalDiffuseLight + ambientLightColor * diffuse );",
-
-                "gl_FragColor = vec4(outgoingLight, opacity);",
-
-            "}",
-
-        ].join('\n');
-
-
-        super({
-            uniforms: uniforms,
-            vertexShader: vertexShader,
-            fragmentShader: fragmentShader,
-            lights: true
-        });
-    }
-}
-
-// Attributions
-// @mohrtw
-// modified from: https://github.com/jagracar/webgl-shader-examples/blob/master/WebContent/toon-example.html @author Javier Gracia Carpio
-// and https://github.com/mrdoob/three.js/blob/master/examples/js/shaders/SkinShader.js @author alteredq / http://alteredqualia.com/
+// import CelShader from '../../shaders/CelShader';
 
 function woodenFloorComp () {
 
@@ -12790,8 +12745,8 @@ AFRAME.registerComponent('wooden-floor', {
                 // onError
                 function (error) {
                     console.log('failed to load texture');
-                    var material = new CelShader$1(0xA0522D);
-                    resolve(material);
+                    // var material = new CelShader(0xA0522D);
+                    // resolve(material);
                 }
             );
         });

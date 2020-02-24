@@ -26,7 +26,8 @@
         :id="'avatar-' + index"
         crossorigin="anonymous">
       </a-asset-item> -->
-      <a-gltf-model id="avatar-0" src="../static/avatars/modified/head_female_-_low_poly/scene.gltf">
+      <a-gltf-model id="avatar-0"
+        src="https://lifescope-static.s3.amazonaws.com/static/xr/avatars/head_female_-_low_poly/scene.gltf">
       </a-gltf-model>
     </a-assets>
 
@@ -165,15 +166,15 @@ export default {
         self.$store.dispatch('xr/naf/removePlayer', { clientId: evt.detail.clientId });
       });
 
+      var roomName = this.$route.query.room || 'ls-room';
 
-      if (!self.$route.query.room){
-          self.$route.query.room = 'ls-room';
+      if (this.AppType == AppTypeEnum.APP && self.$route.name == 'shared') {
+        roomName = 'id' + self.$route.query.id + 'passcode' + self.$route.query.passcode;
+        this.$store.dispatch('xr/setRoomName', roomName);
       }
-          
-      var queryRoom = this.$route.query.room || 'ls-room';
 
       if (this.AppType == AppTypeEnum.XR) {
-        this.$store.dispatch('xr/setRoomName', queryRoom)
+        this.$store.dispatch('xr/setRoomName', roomName)
         .then(() => {
           return this.$store.dispatch('xr/getRoomConfig');
         })

@@ -1,5 +1,5 @@
 import TextureLoaderHelper from '../../util/TextureLoaderHelper.js';
-import CelShader from '../../shaders/CelShader';
+// import CelShader from '../../shaders/CelShader';
 
 export default function () {
 
@@ -102,8 +102,8 @@ AFRAME.registerComponent('wooden-floor', {
                 // onError
                 function (error) {
                     console.log('failed to load texture');
-                    var material = new CelShader(0xA0522D);
-                    resolve(material);
+                    // var material = new CelShader(0xA0522D);
+                    // resolve(material);
                 }
             );
         });
