@@ -6403,9 +6403,6 @@
 
           var roomName = this.$route.query.room || 'ls-room';
 
-          // name == 'shared'
-          // query.id
-          // query.passcode
           if (this.AppType == AppTypeEnum.APP && self.$route.name == 'shared') {
             roomName = 'id' + self.$route.query.id + 'passcode' + self.$route.query.passcode;
             this.$store.dispatch('xr/setRoomName', roomName);
@@ -6664,7 +6661,7 @@
       /* style */
       const __vue_inject_styles__$d = function (inject) {
         if (!inject) return
-        inject("data-v-c8e17234_0", { source: ".visuallyhidden {\n    display: block;\n    border: 0;\n    clip: rect(0 0 0 0);\n    height: 1px;\n    width: 1px;\n    margin: -1px;\n    padding: 0;\n    overflow: hidden;\n    position: absolute !important;\n}\na-scene {\n    position: absolute\n}\n.a-enter-vr {\n    height: 100%;\n    pointer-events: none;\n}\n.a-enter-vr-button {\n    z-index: 99999;\n    right: 3%;\n    bottom: 1%;\n    pointer-events: visible;\n}", map: undefined, media: undefined });
+        inject("data-v-7d3910dd_0", { source: ".visuallyhidden {\n    display: block;\n    border: 0;\n    clip: rect(0 0 0 0);\n    height: 1px;\n    width: 1px;\n    margin: -1px;\n    padding: 0;\n    overflow: hidden;\n    position: absolute !important;\n}\na-scene {\n    position: absolute\n}\n.a-enter-vr {\n    height: 100%;\n    pointer-events: none;\n}\n.a-enter-vr-button {\n    z-index: 99999;\n    right: 3%;\n    bottom: 1%;\n    pointer-events: visible;\n}", map: undefined, media: undefined });
 
       };
       /* scoped */
@@ -12889,12 +12886,36 @@
         AFRAME.registerInputMappings(mappings);
     }
 
+    async function xrPluginStore ({ store }) {
+        const opts = {};
+        opts.preserveState = false;
+        store.registerModule('xr', xrModule, opts);
+    }
+    function install(Vue) {
+        if (install.installed) return;
+        install.installed = true;
+            
+        registerAframeComponents();
+        setupFontAwesome();
+        registerAframeInput();
+        Vue.component('xr-app', __vue_component__$f);
+
+        // ignore elements for Firefox
+        // core elements
+        ['a-scene', 'a-assets', 'a-entity', 'xr-app'].forEach((val,index) => {Vue.config.ignoredElements.push(val);});
+        // primitives
+        Object.keys(AFRAME.primitives.primitives).forEach(function(key,index) {
+        Vue.config.ignoredElements.push(key);
+        });
+    }
+
+    const xrPlugin = {
+        install,
+    };
+
     exports.AppTypeEnum = AppTypeEnum;
-    exports.XRApp = __vue_component__$f;
-    exports.registerAframeComponents = registerAframeComponents;
-    exports.registerAframeInput = registerAframeInput;
-    exports.setupFontAwesome = setupFontAwesome;
-    exports.xrModule = xrModule;
+    exports.xrPlugin = xrPlugin;
+    exports.xrPluginStore = xrPluginStore;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
