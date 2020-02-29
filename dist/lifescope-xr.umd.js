@@ -5903,6 +5903,16 @@
 
     //
 
+    var avatarColors = [
+        [.9, .15, .2, 1],
+        [1,.55,0,1],
+        [0.165, 0.757, 0.871, 1],
+        [0,.2,.37,1],
+        [.6, .3, .6, 1],
+        [.66, .69, .76, 1],
+        [.21, .39, .63, 1]
+    ];
+
     var script$c = {
 
         components: {
@@ -6098,6 +6108,9 @@
             createAvatarTemplate() {
                 if (CONFIG.DEBUG) {console.log('createAvatarGLTFTemplate()');}
                 //                         <rightHandController ref="righthand" />
+                //src="#avatar-0"
+                var color = this.getRandomColor();
+                var colorString = color.reduce((ac, v) => ac+','+v);
                 var frag = this.fragmentFromString(`
             <template id="avatar-rig-template" v-pre>
                 <a-entity>
@@ -6105,9 +6118,10 @@
                         position="0 0 0">
                         <a-entity
                             class="player-camera camera">
-                            <a-gltf-model class="gltfmodel" src="#avatar-0"
+                            <a-avatar class="gltfmodel"
+                                color=${colorString}
                                 scale="0.02 0.02 0.02">
-                            </a-gltf-model>
+                            </a-avatar>
                         </a-entity>
                     </a-entity>
                 </a-entity>
@@ -6152,6 +6166,10 @@
                             selector: '.player-camera',
                             component: 'position'
                         },
+                        {
+                            selector: '.gltfmodel',
+                            component: 'color'
+                        }
                         ]
                     });
                 }
@@ -6230,6 +6248,10 @@
                 playerCamera.object3D.position.set(0, 0, 0);
                 playerCamera.object3D.updateMatrix();
             },
+
+            getRandomColor() {
+                return avatarColors[Math.floor(Math.random() * Math.floor(avatarColors.length))];
+            }
 
         }
     };
@@ -7086,6 +7108,210 @@
         }
     });
 
+    }
+
+    /**
+     * @author mohrtw
+     */
+
+    function ModifiedGLTFLoader( manager ) {
+        this.manager = ( manager !== undefined ) ? manager : THREE.DefaultLoadingManager;
+        
+        this.colorArray = [];
+        this.cachePath = '';
+
+        this.binLoader = new THREE.FileLoader( this.manager );
+        this.transformLoader = new THREE.FileLoader( this.manager );
+        this.gltfLoader = new THREE.GLTFLoader( this.manager );
+
+        this.url = '';
+        this.baseURL = '';
+        this.onLoad = undefined;
+        this.onProgress = undefined;
+        this.onError = undefined;
+    }
+
+    Object.assign( ModifiedGLTFLoader.prototype, {
+
+    	load: function ( url, onLoad, onProgress, onError ) {
+            var scope = this;
+            scope.url = url;
+            scope.baseURL = scope.extractUrlName( url );
+
+            scope.onLoad = onLoad;
+            scope.onProgress = onProgress;
+            scope.onError = onError;
+            
+            scope.binLoader.setResponseType( 'arraybuffer' );
+    		scope.binLoader.setPath( scope.path );
+            scope.binLoader.load( scope.baseURL + '.bin', scope.binOnLoad.bind(scope),
+                onProgress.bind(scope), onError.bind(scope) );
+
+    	},
+
+
+    	setPath: function ( value ) {
+    		this.path = value;
+    		return this;
+
+        },
+
+        setCachePath: function ( value ) {
+    		this.cachePath = value;
+    		return this;
+
+        },
+
+        setColorArray: function ( value ) {
+    		this.colorArray = value;
+    		return this;
+
+        },
+
+        extractUrlName: function ( url ) {
+    		var index = url.lastIndexOf( '.' );
+
+            if ( index === - 1 ) return url;
+
+            // substr to index will not include .
+    		return url.substr( 0, index );
+
+        },
+        
+        binOnLoad: function ( bin ) {
+            var scope = this;
+            THREE.Cache.add( scope.cachePath + '/scene.bin', bin);
+
+            scope.transformLoader.load( scope.baseURL + '.gltf', scope.transformOnLoad.bind(scope),
+                scope.onProgress.bind(scope), scope.onError.bind(scope) );
+        },
+
+        transformOnLoad: function ( gltf ) {
+            var scope = this;
+            var data = JSON.parse(gltf);
+
+            scope.transformGltf( data );
+            THREE.Cache.add( scope.cachePath + '/scene.gltf', JSON.stringify(data));
+
+            scope.gltfLoader.load( scope.cachePath + '/scene.gltf', scope.gltfOnLoad.bind(scope),
+                scope.onProgress.bind(scope), this.onError.bind(scope) );
+        },
+
+        transformGltf: function( data ) {
+            if (this.colorArray != false) {
+                data.materials[0].pbrMetallicRoughness.baseColorFactor = this.colorArray;
+            }
+        },
+
+        gltfOnLoad: function ( gltf ) {
+            this.onLoad( gltf );
+        },
+        
+
+    } );
+
+    function avatarComp () {
+
+        AFRAME.registerSystem('avatar', {
+            schema: {}, 
+        
+            init: function () {
+                this.baseURI = 'https://s3.amazonaws.com/lifescope-static/static/xr/avatars/';
+                this.cache = new Map();
+            },
+
+            loadAvatar: function(model, colorArray) {
+                var self = this;
+                return new Promise((resolve, reject) => {
+                    var manager = THREE.DefaultLoadingManager;
+
+                    var loader = new ModifiedGLTFLoader(manager);
+                    var cachePath = self.avatarURL(model, colorArray);
+                    loader.setCachePath(cachePath);
+                    loader.setColorArray(colorArray);
+
+                    loader.load(`${self.baseURI}${model}/scene.gltf` ,
+                        function(gltf) {
+                            self.cache.set(cachePath, gltf);
+                            resolve(gltf);
+                        },
+                        function() { console.log("onProgress"); },
+                        function(e) {
+                            console.log("onError");
+                            console.log(e);
+                            reject();
+                        },
+                    );
+                });
+            },
+
+            getGLTF(model, colorArray) {
+                var self = this;
+                return new Promise((resolve, reject) => {
+                    var cachePath = self.avatarURL(model, colorArray);
+                    if (self.cache.has(cachePath)) {
+                        resolve(self.cache.get(cachePath));
+                    }
+                    self.loadAvatar(model, colorArray)
+                    .then( (gltf) => {
+                        resolve(gltf);
+                    });
+
+                });
+            },
+
+            avatarURL(model, colorArray) {
+                var colorString = 'r' + colorArray[0] + '-g' + colorArray[1] + '-b' + colorArray[2] + '-a';
+                return model + '-' + colorString + '/scene.gltf';
+            }
+
+
+          
+          });
+        
+        AFRAME.registerComponent('avatar', {
+        
+            schema: {
+                id: { type: 'string', default: '' },
+                model: { type: 'string', default: 'head_female_-_low_poly' },
+                color: { type: 'array', default: [0.165, 0.757, 0.871, 1] },
+            },
+
+            init() {
+                this.model = null;
+            },
+            update(oldData) {
+                this.remove();
+                this.createAvatar();
+            },
+
+            remove: function () {
+                if (!this.model) { return; }
+                this.el.removeObject3D('avatar');
+            },
+
+            createAvatar() {
+                var self = this;
+                this.system.getGLTF(this.data.model, this.data.color)
+                .then( (gltf) => {
+                    self.model = gltf.scene || gltf.scenes[0];
+                    self.model.animations = gltf.animations;
+                    this.el.setObject3D('avatar', self.model);
+                });
+            }
+
+        });
+
+        AFRAME.registerPrimitive( 'a-avatar', {
+            defaultComponents: {
+                'avatar': {
+                },
+            },
+            mappings: {
+                'model': 'avatar.model',
+                'color': 'avatar.color',
+            }
+        });
     }
 
     function _clickHandler(evt) {
@@ -12778,6 +13004,7 @@
 
     var comps = {
         arrowComp,
+        avatarComp,
         clickableComp,
         dioramaComp,
         fadeComp,

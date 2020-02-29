@@ -1,4 +1,5 @@
 import arrowComp from './arrow.js';
+import avatarComp from './avatar.js';
 import clickableComp from './clickable.js';
 import dioramaComp from './diorama.js';
 import fadeComp from './fade.js';
@@ -18,6 +19,7 @@ import woodenFloorComp from './woodenfloor.js';
 
 var comps = {
     arrowComp,
+    avatarComp,
     clickableComp,
     dioramaComp,
     fadeComp,

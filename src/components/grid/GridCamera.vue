@@ -21,6 +21,16 @@ import { mapState } from 'vuex';
 
 import GridController from './GridController.vue';
 
+var avatarColors = [
+    [.9, .15, .2, 1],
+    [1,.55,0,1],
+    [0.165, 0.757, 0.871, 1],
+    [0,.2,.37,1],
+    [.6, .3, .6, 1],
+    [.66, .69, .76, 1],
+    [.21, .39, .63, 1]
+];
+
 export default {
 
     components: {
@@ -222,6 +232,8 @@ export default {
         createAvatarTemplate() {
             if (CONFIG.DEBUG) {console.log('createAvatarGLTFTemplate()');}
             //                         <rightHandController ref="righthand" />
+            var color = this.getRandomColor();
+            var colorString = color.reduce((ac, v) => ac+','+v);
             var frag = this.fragmentFromString(`
             <template id="avatar-rig-template" v-pre>
                 <a-entity>
@@ -229,9 +241,10 @@ export default {
                         position="0 0 0">
                         <a-entity
                             class="player-camera camera">
-                            <a-gltf-model class="gltfmodel" src="#avatar-0"
+                            <a-avatar class="gltfmodel"
+                                color=${colorString}
                                 scale="0.02 0.02 0.02">
-                            </a-gltf-model>
+                            </a-avatar>
                         </a-entity>
                     </a-entity>
                 </a-entity>
@@ -277,6 +290,10 @@ export default {
                         selector: '.player-camera',
                         component: 'position'
                     },
+                    {
+                        selector: '.gltfmodel',
+                        component: 'color'
+                    }
                     ]
                 });
             }
@@ -355,6 +372,10 @@ export default {
             playerCamera.object3D.position.set(0, 0, 0);
             playerCamera.object3D.updateMatrix();
         },
+
+        getRandomColor() {
+            return avatarColors[Math.floor(Math.random() * Math.floor(avatarColors.length))];
+        }
 
     }
 }
