@@ -6103,7 +6103,6 @@ var script$c = {
         createAvatarTemplate() {
             if (CONFIG.DEBUG) {console.log('createAvatarGLTFTemplate()');}
             //                         <rightHandController ref="righthand" />
-            //src="#avatar-0"
             var color = this.getRandomColor();
             var colorString = color.reduce((ac, v) => ac+','+v);
             var frag = this.fragmentFromString(`
@@ -6947,7 +6946,7 @@ __vue_render__$f._withStripped = true;
   /* style */
   const __vue_inject_styles__$f = function (inject) {
     if (!inject) return
-    inject("data-v-00b7d9fa_0", { source: "body {\n    background-color: black;\n}", map: undefined, media: undefined });
+    inject("data-v-00b7d9fa_0", { source: "#xrapp {\n    background-color: black;\n}", map: undefined, media: undefined });
 
   };
   /* scoped */

@@ -4,8 +4,8 @@
     (global = global || self, factory(global['lifescope-xr'] = {}, global.vuex, global.axios, global.moment));
 }(this, (function (exports, vuex, axios, moment) { 'use strict';
 
-    axios = axios && axios.hasOwnProperty('default') ? axios['default'] : axios;
-    moment = moment && moment.hasOwnProperty('default') ? moment['default'] : moment;
+    axios = axios && Object.prototype.hasOwnProperty.call(axios, 'default') ? axios['default'] : axios;
+    moment = moment && Object.prototype.hasOwnProperty.call(moment, 'default') ? moment['default'] : moment;
 
     class TimeUtils {
 
@@ -6108,7 +6108,6 @@
             createAvatarTemplate() {
                 if (CONFIG.DEBUG) {console.log('createAvatarGLTFTemplate()');}
                 //                         <rightHandController ref="righthand" />
-                //src="#avatar-0"
                 var color = this.getRandomColor();
                 var colorString = color.reduce((ac, v) => ac+','+v);
                 var frag = this.fragmentFromString(`
@@ -6952,7 +6951,7 @@
       /* style */
       const __vue_inject_styles__$f = function (inject) {
         if (!inject) return
-        inject("data-v-00b7d9fa_0", { source: "body {\n    background-color: black;\n}", map: undefined, media: undefined });
+        inject("data-v-00b7d9fa_0", { source: "#xrapp {\n    background-color: black;\n}", map: undefined, media: undefined });
 
       };
       /* scoped */
