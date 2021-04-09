@@ -83,7 +83,7 @@
         "load-bmfont": "^1.4.0",
         "moment": "^2.24.0",
         "networked-aframe": "git+https://github.com/mohrtw/networked-aframe",
-        "nipplejs": "^0.7.1",
+        "nipplejs": "^0.9.0",
         "node-sass": "^4.12.0",
         "npm": "^6.1.0",
         "particles.js": "^2.0.0",
