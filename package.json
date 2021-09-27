@@ -85,7 +85,7 @@
         "networked-aframe": "git+https://github.com/mohrtw/networked-aframe",
         "nipplejs": "^0.7.1",
         "node-sass": "^4.12.0",
-        "npm": "^6.1.0",
+        "npm": "^7.0.0",
         "particles.js": "^2.0.0",
         "popper.js": "^1.15.0",
         "sass-loader": "^7.3.1",
