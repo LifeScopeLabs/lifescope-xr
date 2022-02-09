@@ -72,7 +72,7 @@
         "aframe-teleport-controls": "git+https://github.com/mohrtw/aframe-teleport-controls",
         "async": "^2.6.1",
         "aws-sdk": "^2.244.1",
-        "axios": "^0.18.0",
+        "axios": "^0.20.0",
         "babel-plugin-transform-object-rest-spread": "^6.26.0",
         "bootstrap": "^4.2.1",
         "colors": "^1.3.0",
