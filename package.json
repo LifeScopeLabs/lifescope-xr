@@ -70,7 +70,7 @@
         "aframe-sun-sky": "^3.0.3",
         "aframe-super-keyboard": "^2.0.2",
         "aframe-teleport-controls": "git+https://github.com/mohrtw/aframe-teleport-controls",
-        "async": "^2.6.1",
+        "async": "^3.2.2",
         "aws-sdk": "^2.244.1",
         "axios": "^0.18.0",
         "babel-plugin-transform-object-rest-spread": "^6.26.0",
